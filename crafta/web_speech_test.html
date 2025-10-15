@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crafta Speech Test - Web Version</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFF9F0 0%, #FFE5F1 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .title {
+            color: #FF6B9D;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .mic-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            background: #98D8C8;
+            color: white;
+            font-size: 48px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px;
+            box-shadow: 0 5px 15px rgba(152, 216, 200, 0.3);
+        }
+        
+        .mic-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .mic-button.listening {
+            background: #FF6B9D;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .status {
+            background: #F8F9FA;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .result {
+            background: #FFF0F5;
+            border: 2px solid #FF6B9D;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .result-label {
+            color: #FF6B9D;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .result-text {
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .instructions {
+            background: #E8F4FD;
+            border: 1px solid #B3D9FF;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .test-phrases {
+            background: #F0F8E8;
+            border: 1px solid #C8E6C9;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .test-phrases h4 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+        
+        .test-phrases ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .test-phrases li {
+            margin: 5px 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🎤 Crafta Speech Test</h1>
+        <p class="subtitle">Test speech recognition in your browser</p>
+        
+        <div class="instructions">
+            <strong>⚠️ Platform Limitation:</strong><br>
+            Speech recognition in Crafta only works on Android/iOS devices.<br>
+            This web test is for demonstration purposes only.<br>
+            <br>
+            <strong>For Real Testing:</strong><br>
+            Use the desktop app with Mock Test button instead.
+        </div>
+        
+        <button id="micButton" class="mic-button" onclick="toggleListening()">
+            🎤
+        </button>
+        
+        <div id="status" class="status">
+            ⚠️ This is a demo - Real Crafta speech only works on Android/iOS
+        </div>
+        
+        <div id="results" style="display: none;">
+            <div class="result">
+                <div class="result-label">Recognized Text:</div>
+                <div id="recognizedText" class="result-text"></div>
+            </div>
+        </div>
+        
+        <div class="test-phrases">
+            <h4>📱 For Real Testing on Android/iOS:</h4>
+            <ul>
+                <li>Use the desktop app: <code>flutter run -d linux test_speech.dart</code></li>
+                <li>Click the Mock Test button (robot icon)</li>
+                <li>Test on actual Android/iOS device</li>
+                <li>Use the main Crafta app with mock speech</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let recognition;
+        let isListening = false;
+        
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+            } else if ('SpeechRecognition' in window) {
+                recognition = new SpeechRecognition();
+            } else {
+                document.getElementById('status').innerHTML = 
+                    'Speech recognition not supported in this browser. Try Chrome or Safari.';
+                return false;
+            }
+            
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = function() {
+                isListening = true;
+                updateUI();
+            };
+            
+            recognition.onresult = function(event) {
+                const result = event.results[0][0].transcript;
+                document.getElementById('recognizedText').textContent = result;
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('status').innerHTML = 
+                    '✅ Speech recognized! Try another phrase.';
+            };
+            
+            recognition.onerror = function(event) {
+                document.getElementById('status').innerHTML = 
+                    '❌ Error: ' + event.error + '. Try again.';
+                isListening = false;
+                updateUI();
+            };
+            
+            recognition.onend = function() {
+                isListening = false;
+                updateUI();
+            };
+            
+            return true;
+        }
+        
+        function toggleListening() {
+            if (!recognition) {
+                if (!initSpeechRecognition()) {
+                    return;
+                }
+            }
+            
+            if (isListening) {
+                recognition.stop();
+            } else {
+                document.getElementById('status').innerHTML = 
+                    '🎤 Listening... Speak now!';
+                document.getElementById('results').style.display = 'none';
+                recognition.start();
+            }
+        }
+        
+        function updateUI() {
+            const button = document.getElementById('micButton');
+            const status = document.getElementById('status');
+            
+            if (isListening) {
+                button.classList.add('listening');
+                button.innerHTML = '🔴';
+                status.innerHTML = '🎤 Listening... Speak now!';
+            } else {
+                button.classList.remove('listening');
+                button.innerHTML = '🎤';
+                if (status.innerHTML.includes('Listening')) {
+                    status.innerHTML = 'Click the microphone to start testing';
+                }
+            }
+        }
+        
+        // Initialize on page load
+        window.onload = function() {
+            initSpeechRecognition();
+        };
+    </script>
+</body>
+</html>
+

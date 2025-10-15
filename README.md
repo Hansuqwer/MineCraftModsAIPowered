@@ -26,36 +26,36 @@ This repository contains comprehensive planning documents for the Crafta project
 
 | Document | Purpose | Read This If... |
 |----------|---------|-----------------|
-| **[CONCEPT_DOCUMENT.md](CONCEPT_DOCUMENT.md)** | Complete project vision and features | You want to understand the full vision |
-| **[MVP_SCOPE.md](MVP_SCOPE.md)** | What to build first (simplified scope) | You want to know what to build for v1.0 |
-| **[TECH_STACK.md](TECH_STACK.md)** | Technical architecture and decisions | You want to know HOW to build it |
-| **[CRAFTA_CONSTITUTION.md](CRAFTA_CONSTITUTION.md)** | Core principles and values | You need ethical/safety guidelines |
-| **[Crafta_AI_Rules.md](Crafta_AI_Rules.md)** | AI behavior and safety rules | You're configuring AI interactions |
-| **[Crafta_Prompt_Library.md](Crafta_Prompt_Library.md)** | Ready-to-use AI prompts | You need prompts for content generation |
+| **[CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md)** | Complete project vision and features | You want to understand the full vision |
+| **[MVP_SCOPE.md](docs/MVP_SCOPE.md)** | What to build first (simplified scope) | You want to know what to build for v1.0 |
+| **[TECH_STACK.md](docs/TECH_STACK.md)** | Technical architecture and decisions | You want to know HOW to build it |
+| **[CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md)** | Core principles and values | You need ethical/safety guidelines |
+| **[Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md)** | AI behavior and safety rules | You're configuring AI interactions |
+| **[Crafta_Prompt_Library.md](docs/Crafta_Prompt_Library.md)** | Ready-to-use AI prompts | You need prompts for content generation |
 
 ---
 
 ## 🚀 Quick Start Guide
 
 ### For Understanding the Project
-1. Read [CONCEPT_DOCUMENT.md](CONCEPT_DOCUMENT.md) - Get the full vision
-2. Read [MVP_SCOPE.md](MVP_SCOPE.md) - Understand what's being built first
-3. Read [CRAFTA_CONSTITUTION.md](CRAFTA_CONSTITUTION.md) - Learn the guiding principles
+1. Read [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) - Get the full vision
+2. Read [MVP_SCOPE.md](docs/MVP_SCOPE.md) - Understand what's being built first
+3. Read [CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md) - Learn the guiding principles
 
 ### For Developers
-1. Read [MVP_SCOPE.md](MVP_SCOPE.md) - Know the scope
-2. Read [TECH_STACK.md](TECH_STACK.md) - Understand the architecture
-3. Read [Crafta_AI_Rules.md](Crafta_AI_Rules.md) - Follow AI guidelines
+1. Read [MVP_SCOPE.md](docs/MVP_SCOPE.md) - Know the scope
+2. Read [TECH_STACK.md](docs/TECH_STACK.md) - Understand the architecture
+3. Read [Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md) - Follow AI guidelines
 
 ### For Designers
-1. Read [CONCEPT_DOCUMENT.md](CONCEPT_DOCUMENT.md) - Understand user experience
-2. Read [CRAFTA_CONSTITUTION.md](CRAFTA_CONSTITUTION.md) - Know the values
+1. Read [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) - Understand user experience
+2. Read [CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md) - Know the values
 3. Check UI/UX sections in CONCEPT_DOCUMENT.md
 
 ### For Using AI Tools
-1. Read [Crafta_AI_Rules.md](Crafta_AI_Rules.md) - Understand guidelines
-2. Use [Crafta_Prompt_Library.md](Crafta_Prompt_Library.md) - Copy-paste ready prompts
-3. Reference [CRAFTA_CONSTITUTION.md](CRAFTA_CONSTITUTION.md) - Stay aligned with values
+1. Read [Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md) - Understand guidelines
+2. Use [Crafta_Prompt_Library.md](docs/Crafta_Prompt_Library.md) - Copy-paste ready prompts
+3. Reference [CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md) - Stay aligned with values
 
 ---
 
@@ -79,7 +79,7 @@ This repository contains comprehensive planning documents for the Crafta project
 - AR preview mode
 - Multi-language support
 
-See [CONCEPT_DOCUMENT.md](CONCEPT_DOCUMENT.md) for complete feature roadmap.
+See [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) for complete feature roadmap.
 
 ---
 
@@ -92,7 +92,7 @@ See [CONCEPT_DOCUMENT.md](CONCEPT_DOCUMENT.md) for complete feature roadmap.
 **Voice Output:** OpenAI TTS or Apple AVSpeechSynthesizer
 **Minecraft:** Bedrock Edition 1.20+ format
 
-See [TECH_STACK.md](TECH_STACK.md) for detailed architecture.
+See [TECH_STACK.md](docs/TECH_STACK.md) for detailed architecture.
 
 ---
 
@@ -111,7 +111,7 @@ See [TECH_STACK.md](TECH_STACK.md) for detailed architecture.
 - Need content visibility and controls
 - Value creativity over passive consumption
 
-See [CONCEPT_DOCUMENT.md](CONCEPT_DOCUMENT.md) for detailed user personas.
+See [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) for detailed user personas.
 
 ---
 
@@ -123,7 +123,7 @@ See [CONCEPT_DOCUMENT.md](CONCEPT_DOCUMENT.md) for detailed user personas.
 4. Voice over text for accessibility
 5. Play is the path to learning
 
-Read the full [CRAFTA_CONSTITUTION.md](CRAFTA_CONSTITUTION.md) for all 10 principles.
+Read the full [CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md) for all 10 principles.
 
 ---
 
@@ -146,7 +146,7 @@ All planning documents created and reviewed.
 - Testing (Week 10)
 - Launch Prep (Weeks 11-12)
 
-See [MVP_SCOPE.md](MVP_SCOPE.md) for detailed timeline.
+See [MVP_SCOPE.md](docs/MVP_SCOPE.md) for detailed timeline.
 
 ---
 
@@ -164,7 +164,7 @@ Crafta uses AI in three ways:
 - No violent or scary content
 - Parent-approved responses
 
-See [Crafta_AI_Rules.md](Crafta_AI_Rules.md) for complete AI guidelines.
+See [Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md) for complete AI guidelines.
 
 ---
 
@@ -182,7 +182,7 @@ See [Crafta_AI_Rules.md](Crafta_AI_Rules.md) for complete AI guidelines.
 "I need a tiny pig with wings for my adventure"
 → Encourages narrative thinking
 
-See [CONCEPT_DOCUMENT.md](CONCEPT_DOCUMENT.md) for more examples.
+See [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) for more examples.
 
 ---
 
@@ -200,7 +200,7 @@ See [CONCEPT_DOCUMENT.md](CONCEPT_DOCUMENT.md) for more examples.
 - Pre-moderated attribute options
 - Parent review of all creations
 
-See [Crafta_AI_Rules.md](Crafta_AI_Rules.md) for safety protocols.
+See [Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md) for safety protocols.
 
 ---
 
@@ -283,21 +283,21 @@ Every decision, from technical architecture to UI design, must pass this test. W
 Start Here: README.md (you are here)
     │
     ├─→ Want the full vision?
-    │   └─→ CONCEPT_DOCUMENT.md
+    │   └─→ docs/CONCEPT_DOCUMENT.md
     │
     ├─→ Want to know what to build first?
-    │   └─→ MVP_SCOPE.md
+    │   └─→ docs/MVP_SCOPE.md
     │
     ├─→ Want to know HOW to build it?
-    │   └─→ TECH_STACK.md
+    │   └─→ docs/TECH_STACK.md
     │
     ├─→ Need AI guidelines?
-    │   ├─→ CRAFTA_CONSTITUTION.md (values)
-    │   ├─→ Crafta_AI_Rules.md (rules)
-    │   └─→ Crafta_Prompt_Library.md (prompts)
+    │   ├─→ docs/CRAFTA_CONSTITUTION.md (values)
+    │   ├─→ docs/Crafta_AI_Rules.md (rules)
+    │   └─→ docs/Crafta_Prompt_Library.md (prompts)
     │
     └─→ Ready to code?
-        └─→ Check MVP_SCOPE.md for Phase 1 tasks
+        └─→ Check docs/MVP_SCOPE.md for Phase 1 tasks
 ```
 
 ---

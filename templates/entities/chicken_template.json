@@ -1,0 +1,33 @@
+{
+  "format_version": "1.20.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "crafta:{{CREATURE_ID}}",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": ["chicken", "mob", "crafta_creation"]
+      },
+      "minecraft:health": {
+        "value": 4,
+        "max": 4
+      },
+      "minecraft:movement": {
+        "value": {{MOVEMENT_SPEED}}
+      },
+      "minecraft:collision_box": {
+        "width": {{SIZE_WIDTH}},
+        "height": {{SIZE_HEIGHT}}
+      },
+      "minecraft:nameable": {},
+      "minecraft:leashable": {
+        "soft_distance": 4.0,
+        "hard_distance": 6.0,
+        "max_distance": 10.0
+      }
+    }
+  }
+}

@@ -1,0 +1,196 @@
+# Crafta iOS Project - Git Ignore
+
+# ============================================
+# macOS
+# ============================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# ============================================
+# Xcode
+# ============================================
+# Build generated
+build/
+DerivedData/
+
+# Various settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+
+# Obj-C/Swift specific
+*.hmap
+
+# App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+.swiftpm/
+.build/
+Packages/
+Package.pins
+Package.resolved
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+
+# CocoaPods
+Pods/
+*.xcworkspace
+!default.xcworkspace
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+Carthage/Checkouts/
+
+# Accio dependency management
+Dependencies/
+.accio/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code Injection
+iOSInjectionProject/
+
+# ============================================
+# Swift
+# ============================================
+# Swift Package Manager artifacts
+/.build
+/Packages
+/*.xcodeproj
+xcuserdata/
+DerivedData/
+.swiftpm/config/registries.json
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.netrc
+
+# ============================================
+# API Keys & Secrets
+# ============================================
+.env
+.env.local
+.env.*.local
+secrets.plist
+Config/Secrets.swift
+APIKeys.swift
+APIKeys.plist
+
+# OpenAI API keys
+openai_key.txt
+api_keys.json
+
+# ============================================
+# Development
+# ============================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# IntelliJ
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+*~
+
+# ============================================
+# Testing
+# ============================================
+*.gcov
+*.gcno
+*.gcda
+xcov/
+coverage/
+
+# ============================================
+# Documentation
+# ============================================
+docs/_build/
+docs/.doctrees/
+
+# ============================================
+# Crafta-Specific
+# ============================================
+# Generated mod files during testing
+generated_mods/
+*.mcaddon
+*.mcpack
+
+# Temporary voice recordings
+temp_audio/
+*.m4a
+*.wav
+
+# AI-generated test content
+ai_test_outputs/
+
+# Local test data
+test_creations/
+local_db/
+
+# User data (for testing)
+user_data/
+creations_backup/
+
+# Asset working files
+resources/working/
+*.psd
+*.sketch
+*.fig
+
+# ============================================
+# CI/CD
+# ============================================
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# ============================================
+# Temporary Files
+# ============================================
+tmp/
+temp/
+*.tmp
+*.bak
+*.cache

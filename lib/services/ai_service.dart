@@ -1,22 +1,55 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'offline_ai_service.dart';
+import 'connectivity_service.dart';
+import 'local_storage_service.dart';
 
 class AIService {
   /// Get API key from environment variables
   static String get _apiKey => dotenv.env['OPENAI_API_KEY'] ?? '';
   static const String _baseUrl = 'https://api.openai.com/v1';
 
+  /// Offline AI service for when network is unavailable
+  final OfflineAIService _offlineService = OfflineAIService();
+
+  /// Connectivity service
+  final ConnectivityService _connectivityService = ConnectivityService();
+
+  /// Local storage service
+  final LocalStorageService _storageService = LocalStorageService();
+
   /// Check if API key is configured
   bool get isConfigured => _apiKey.isNotEmpty && _apiKey != 'YOUR_OPENAI_API_KEY';
   
   /// Send a message to GPT-4o-mini and get Crafta's response with improved error handling
-  Future<String> getCraftaResponse(String userMessage) async {
+  /// Supports offline mode with cached responses
+  Future<String> getCraftaResponse(String userMessage, {int age = 6}) async {
+    // First, check cache for recent response
+    final cachedResponse = await _storageService.getCachedAPIResponse(
+      userMessage,
+      maxAge: const Duration(hours: 1),
+    );
+
+    if (cachedResponse != null) {
+      print('✅ Using cached response');
+      return cachedResponse;
+    }
+
+    // Check connectivity
+    final isConnected = await _connectivityService.checkConnectivity();
+
+    if (!isConnected) {
+      print('📡 No internet - using offline mode');
+      return _offlineService.getOfflineResponse(userMessage, age: age);
+    }
+
     // Check if API key is configured
     if (!isConfigured) {
       print('⚠️ API key not configured. Please set OPENAI_API_KEY in .env file');
-      return 'Let me think about that... [API key not configured]';
+      return _offlineService.getOfflineResponse(userMessage, age: age);
     }
 
     try {
@@ -45,7 +78,12 @@ class AIService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['choices'][0]['message']['content'];
+        final aiResponse = data['choices'][0]['message']['content'] as String;
+
+        // Cache successful response
+        await _storageService.cacheAPIResponse(userMessage, aiResponse);
+
+        return aiResponse;
       } else if (response.statusCode == 429) {
         print('⚠️ Rate limit exceeded');
         return 'Let\'s take a little break and try again soon!';
@@ -56,14 +94,25 @@ class AIService {
         print('⚠️ API error: ${response.statusCode}');
         return 'Hmm, I didn\'t quite catch that. Can you tell me again?';
       }
+    } on SocketException {
+      print('📡 Network error - using offline mode');
+      return _offlineService.getOfflineResponse(userMessage, age: age);
     } on TimeoutException {
-      print('⚠️ Request timeout');
-      return 'That took too long! Let\'s try something quicker!';
+      print('⚠️ Request timeout - trying offline mode');
+      return _offlineService.getOfflineResponse(userMessage, age: age);
     } catch (e) {
-      print('❌ AI Service Error: $e');
-      return 'Oops! Let\'s try that again - what would you like to create?';
+      print('❌ AI Service Error: $e - falling back to offline mode');
+      return _offlineService.getOfflineResponse(userMessage, age: age);
     }
   }
+
+  /// Check if currently online
+  Future<bool> isOnline() async {
+    return await _connectivityService.checkConnectivity();
+  }
+
+  /// Get offline service for direct access
+  OfflineAIService get offlineService => _offlineService;
 
   /// Get the system prompt that defines Crafta's personality
   String _getSystemPrompt() {

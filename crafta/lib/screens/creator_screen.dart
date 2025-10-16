@@ -12,7 +12,8 @@ class CreatorScreen extends StatefulWidget {
   State<CreatorScreen> createState() => _CreatorScreenState();
 }
 
-class _CreatorScreenState extends State<CreatorScreen> {
+class _CreatorScreenState extends State<CreatorScreen>
+    with TickerProviderStateMixin {
   final SpeechService _speechService = SpeechService();
   final AIService _aiService = AIService();
   final TTSService _ttsService = TTSService();
@@ -20,11 +21,57 @@ class _CreatorScreenState extends State<CreatorScreen> {
   String _recognizedText = '';
   bool _isListening = false;
   bool _isProcessing = false;
+  String _currentCreatureType = '';
+  List<String> _creatureSuggestions = [];
+  int _userAge = 6; // Default age for suggestions
+  
+  late AnimationController _micController;
+  late AnimationController _sparkleController;
+  late Animation<double> _micAnimation;
+  late Animation<double> _sparkleAnimation;
 
   @override
   void initState() {
     super.initState();
+    _initializeAnimations();
     _initializeSpeech();
+  }
+
+  void _initializeAnimations() {
+    // Microphone animation
+    _micController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    
+    _micAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _micController,
+      curve: Curves.easeInOut,
+    ));
+    
+    // Sparkle animation for Crafta's avatar
+    _sparkleController = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    )..repeat();
+    
+    _sparkleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.1,
+    ).animate(CurvedAnimation(
+      parent: _sparkleController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _micController.dispose();
+    _sparkleController.dispose();
+    super.dispose();
   }
 
   Future<void> _initializeSpeech() async {
@@ -49,6 +96,15 @@ class _CreatorScreenState extends State<CreatorScreen> {
     if (ttsSuccess) {
       _ttsService.speak(welcomeMessage);
     }
+    
+    // Load creature suggestions
+    _loadCreatureSuggestions();
+  }
+
+  void _loadCreatureSuggestions() {
+    setState(() {
+      _creatureSuggestions = _aiService.getAgeAppropriateSuggestions(_userAge);
+    });
   }
 
   Future<void> _startListening() async {
@@ -130,6 +186,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
 
   /// Mock speech test for development
   Future<void> _testMockSpeech() async {
+    print('DEBUG: Mock speech test button pressed!');
     // Simulate speech recognition with a test phrase
     const testPhrase = 'I want to create a rainbow cow with sparkles';
     
@@ -151,23 +208,90 @@ class _CreatorScreenState extends State<CreatorScreen> {
       
       // Check if we have enough info to create the creature
       final attributes = _aiService.parseCreatureRequest(testPhrase);
-      if (attributes['creatureType'] != null && attributes['color'] != null) {
+      print('DEBUG: Parsed attributes: $attributes');
+      
+      // Validate content for age
+      final isAgeAppropriate = _aiService.validateContentForAge(testPhrase, _userAge);
+      print('DEBUG: Age appropriate for $_userAge: $isAgeAppropriate');
+      
+      if (attributes['creatureType'] != null && attributes['color'] != null && isAgeAppropriate) {
         _conversation = _conversation.markComplete(attributes);
         
-        // Navigate to complete screen after a short delay
-        Future.delayed(const Duration(seconds: 2), () {
+        // Show visual preview first
+        Future.delayed(const Duration(seconds: 1), () {
           if (mounted) {
+            print('DEBUG: Navigating to creature preview with: $attributes');
             Navigator.pushNamed(
               context,
-              '/complete',
+              '/creature-preview',
               arguments: {
+                'creatureAttributes': attributes,
                 'creatureName': '${attributes['color']} ${attributes['creatureType']}',
-                'creatureType': attributes['creatureType'],
-                'creatureAttributes': '${attributes['color']} color with ${attributes['effects'].join(' and ')}',
               },
             );
           }
         });
+      } else {
+        print('DEBUG: Not enough attributes - creatureType: ${attributes['creatureType']}, color: ${attributes['color']}');
+      }
+    } catch (e) {
+      final errorMessage = 'Oops! Let\'s try that again - what would you like to create?';
+      _conversation = _conversation.addMessage(errorMessage, false);
+      _ttsService.speak(errorMessage);
+    }
+    
+    setState(() {
+      _isProcessing = false;
+    });
+  }
+
+  void _useSuggestion(String suggestion) async {
+    setState(() {
+      _isProcessing = true;
+      _recognizedText = suggestion;
+    });
+
+    // Play thinking sound
+    _ttsService.playThinkingSound();
+
+    // Get AI response
+    try {
+      final aiResponse = await _aiService.getCraftaResponse(suggestion);
+      _conversation = _conversation.addMessage(aiResponse, false);
+      
+      // Speak Crafta's response
+      _ttsService.speak(aiResponse);
+      
+      // Check if we have enough info to create the creature
+      final attributes = _aiService.parseCreatureRequest(suggestion);
+      print('DEBUG: Suggestion parsed attributes: $attributes');
+      
+      // Validate content for age
+      final isAgeAppropriate = _aiService.validateContentForAge(suggestion, _userAge);
+      print('DEBUG: Suggestion age appropriate for $_userAge: $isAgeAppropriate');
+      
+      if (attributes['creatureType'] != null && attributes['color'] != null && isAgeAppropriate) {
+        _conversation = _conversation.markComplete(attributes);
+        
+        // Play creature sound
+        _ttsService.playCreatureSound(attributes['creatureType']);
+        
+        // Show visual preview first
+        Future.delayed(const Duration(seconds: 1), () {
+          if (mounted) {
+            print('DEBUG: Navigating to creature preview from suggestion with: $attributes');
+            Navigator.pushNamed(
+              context,
+              '/creature-preview',
+              arguments: {
+                'creatureAttributes': attributes,
+                'creatureName': '${attributes['color']} ${attributes['creatureType']}',
+              },
+            );
+          }
+        });
+      } else {
+        print('DEBUG: Suggestion not enough attributes - creatureType: ${attributes['creatureType']}, color: ${attributes['color']}');
       }
     } catch (e) {
       final errorMessage = 'Oops! Let\'s try that again - what would you like to create?';
@@ -206,19 +330,34 @@ class _CreatorScreenState extends State<CreatorScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Crafta Avatar
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF98D8C8), // Crafta mint
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.face,
-                        size: 60,
-                        color: Colors.white,
-                      ),
+                    // Animated Crafta Avatar
+                    AnimatedBuilder(
+                      animation: _sparkleAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _sparkleAnimation.value,
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF98D8C8), // Crafta mint
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF98D8C8).withOpacity(0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.auto_awesome,
+                              size: 60,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 24),
                     
@@ -273,35 +412,52 @@ class _CreatorScreenState extends State<CreatorScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Microphone Button
-                    GestureDetector(
-                      onTapDown: (_) => _startListening(),
-                      onTapUp: (_) => _stopListening(),
-                      onTapCancel: () => _stopListening(),
-                      child: Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: _isListening 
-                            ? const Color(0xFFFF6B9D) // Crafta pink when listening
-                            : const Color(0xFF98D8C8), // Crafta mint when not listening
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: (_isListening 
-                                ? const Color(0xFFFF6B9D) 
-                                : const Color(0xFF98D8C8)).withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                    // Animated Microphone Button
+                    AnimatedBuilder(
+                      animation: _micAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _isListening ? _micAnimation.value : 1.0,
+                          child: GestureDetector(
+                            onTapDown: (_) {
+                              _startListening();
+                              _micController.repeat(reverse: true);
+                            },
+                            onTapUp: (_) {
+                              _stopListening();
+                              _micController.stop();
+                            },
+                            onTapCancel: () {
+                              _stopListening();
+                              _micController.stop();
+                            },
+                            child: Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                color: _isListening 
+                                  ? const Color(0xFFFF6B9D) // Crafta pink when listening
+                                  : const Color(0xFF98D8C8), // Crafta mint when not listening
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: (_isListening 
+                                      ? const Color(0xFFFF6B9D)
+                                      : const Color(0xFF98D8C8)).withOpacity(0.4),
+                                    blurRadius: _isListening ? 20 : 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                _isListening ? Icons.mic : Icons.mic_none,
+                                size: 48,
+                                color: Colors.white,
+                              ),
                             ),
-                          ],
-                        ),
-                        child: Icon(
-                          _isListening ? Icons.mic : Icons.mic_none,
-                          size: 48,
-                          color: Colors.white,
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 16),
                     
@@ -338,6 +494,50 @@ class _CreatorScreenState extends State<CreatorScreen> {
                         ),
                       ),
                     ],
+                    
+                    // Creature Suggestions
+                    if (_creatureSuggestions.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      const Text(
+                        '💡 Try saying:',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF666666),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _creatureSuggestions.take(3).map((suggestion) {
+                          return GestureDetector(
+                            onTap: () => _useSuggestion(suggestion),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF98D8C8).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: const Color(0xFF98D8C8),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                suggestion,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF333333),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -362,7 +562,10 @@ class _CreatorScreenState extends State<CreatorScreen> {
               // Mock Speech Test Button (for development)
               const SizedBox(height: 8),
               TextButton(
-                onPressed: _testMockSpeech,
+                onPressed: () {
+                  print('DEBUG: Mock speech button tapped!');
+                  _testMockSpeech();
+                },
                 child: const Text(
                   '🧪 Test Speech (Mock)',
                   style: TextStyle(

@@ -1,7 +1,58 @@
 import 'package:flutter/material.dart';
 
-class CompleteScreen extends StatelessWidget {
+class CompleteScreen extends StatefulWidget {
   const CompleteScreen({super.key});
+
+  @override
+  State<CompleteScreen> createState() => _CompleteScreenState();
+}
+
+class _CompleteScreenState extends State<CompleteScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _celebrationController;
+  late AnimationController _bounceController;
+  late Animation<double> _celebrationAnimation;
+  late Animation<double> _bounceAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Celebration animation for success
+    _celebrationController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat();
+    
+    _celebrationAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _celebrationController,
+      curve: Curves.easeInOut,
+    ));
+    
+    // Bounce animation for buttons
+    _bounceController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+    
+    _bounceAnimation = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(CurvedAnimation(
+      parent: _bounceController,
+      curve: Curves.elasticInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _celebrationController.dispose();
+    _bounceController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,19 +85,34 @@ class CompleteScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Success Icon
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF98D8C8), // Crafta mint
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.check,
-                        size: 60,
-                        color: Colors.white,
-                      ),
+                    // Animated Success Icon
+                    AnimatedBuilder(
+                      animation: _celebrationAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _celebrationAnimation.value,
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF98D8C8), // Crafta mint
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF98D8C8).withOpacity(0.4),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.auto_awesome,
+                              size: 60,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 24),
                     
@@ -91,19 +157,34 @@ class CompleteScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      // Creature Preview Image
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF7DC6F), // Crafta yellow
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Icon(
-                          Icons.pets,
-                          size: 60,
-                          color: Colors.white,
-                        ),
+                      // Animated Creature Preview Image
+                      AnimatedBuilder(
+                        animation: _celebrationAnimation,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _celebrationAnimation.value * 0.8 + 0.2,
+                            child: Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF7DC6F), // Crafta yellow
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFF7DC6F).withOpacity(0.3),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.auto_awesome,
+                                size: 60,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 16),
                       
@@ -136,66 +217,107 @@ class CompleteScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Send to Minecraft Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: Implement mod export
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Mod exported! Check your downloads.'),
-                              backgroundColor: Color(0xFF98D8C8),
+                    // Animated Send to Minecraft Button
+                    AnimatedBuilder(
+                      animation: _bounceAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _bounceAnimation.value,
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // TODO: Implement mod export
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Mod exported! Check your downloads.'),
+                                    backgroundColor: Color(0xFF98D8C8),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF98D8C8), // Crafta mint
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(28),
+                                ),
+                                elevation: 8,
+                                shadowColor: const Color(0xFF98D8C8).withOpacity(0.3),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.download,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Send to Minecraft',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF98D8C8), // Crafta mint
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
                           ),
-                          elevation: 4,
-                        ),
-                        child: const Text(
-                          'Send to Minecraft',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 16),
                     
-                    // Make Another Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/creator',
-                            (route) => false,
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF98D8C8),
-                          side: const BorderSide(color: Color(0xFF98D8C8), width: 2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
+                    // Animated Make Another Button
+                    AnimatedBuilder(
+                      animation: _bounceAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _bounceAnimation.value * 0.9 + 0.1,
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: OutlinedButton(
+                              onPressed: () {
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  '/creator',
+                                  (route) => false,
+                                );
+                              },
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF98D8C8),
+                                side: const BorderSide(color: Color(0xFF98D8C8), width: 2),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                elevation: 4,
+                                shadowColor: const Color(0xFF98D8C8).withOpacity(0.2),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_circle_outline,
+                                    size: 20,
+                                    color: Color(0xFF98D8C8),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Make Another',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Make Another',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ),

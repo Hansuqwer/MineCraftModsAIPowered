@@ -41,6 +41,10 @@ dependencies:
   archive: ^4.0.7
   path_provider: ^2.1.5
   provider: ^6.1.5+1
+  # 3D Rendering
+  vector_math: ^2.1.4
+  # Animation and effects
+  rive: ^0.12.4
 
 dev_dependencies:
   flutter_test:

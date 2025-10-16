@@ -154,7 +154,7 @@ class _EnhancedCreaturePreviewState extends State<EnhancedCreaturePreview>
       case 'fire':
         return AnimationService.createFireAnimation(vsync: this);
       case 'ice':
-        return AnimationService.createIceAnimation(vsync: this);
+        return AnimationService.createShimmerAnimation(vsync: this);
       case 'lightning':
         return AnimationService.createLightningAnimation(vsync: this);
       case 'magic':

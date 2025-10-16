@@ -1,12 +1,57 @@
 import 'dart:convert';
+import 'dart:async';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'offline_ai_service.dart';
+import 'connectivity_service.dart';
+import 'local_storage_service.dart';
 
 class AIService {
-  static const String _apiKey = 'YOUR_OPENAI_API_KEY'; // Replace with actual key
+  /// Get API key from environment variables
+  static String get _apiKey => dotenv.env['OPENAI_API_KEY'] ?? '';
   static const String _baseUrl = 'https://api.openai.com/v1';
+
+  /// Offline AI service for when network is unavailable
+  final OfflineAIService _offlineService = OfflineAIService();
+
+  /// Connectivity service
+  final ConnectivityService _connectivityService = ConnectivityService();
+
+  /// Local storage service
+  final LocalStorageService _storageService = LocalStorageService();
+
+  /// Check if API key is configured
+  bool get isConfigured => _apiKey.isNotEmpty && _apiKey != 'YOUR_OPENAI_API_KEY';
   
-  /// Send a message to GPT-4o-mini and get Crafta's response
-  Future<String> getCraftaResponse(String userMessage) async {
+  /// Send a message to GPT-4o-mini and get Crafta's response with improved error handling
+  /// Supports offline mode with cached responses
+  Future<String> getCraftaResponse(String userMessage, {int age = 6}) async {
+    // First, check cache for recent response
+    final cachedResponse = await _storageService.getCachedAPIResponse(
+      userMessage,
+      maxAge: const Duration(hours: 1),
+    );
+
+    if (cachedResponse != null) {
+      print('✅ Using cached response');
+      return cachedResponse;
+    }
+
+    // Check connectivity
+    final isConnected = await _connectivityService.checkConnectivity();
+
+    if (!isConnected) {
+      print('📡 No internet - using offline mode');
+      return _offlineService.getOfflineResponse(userMessage, age: age);
+    }
+
+    // Check if API key is configured
+    if (!isConfigured) {
+      print('⚠️ API key not configured. Please set OPENAI_API_KEY in .env file');
+      return _offlineService.getOfflineResponse(userMessage, age: age);
+    }
+
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/chat/completions'),
@@ -29,19 +74,45 @@ class AIService {
           'max_tokens': 150,
           'temperature': 0.7,
         }),
-      );
+      ).timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['choices'][0]['message']['content'];
+        final aiResponse = data['choices'][0]['message']['content'] as String;
+
+        // Cache successful response
+        await _storageService.cacheAPIResponse(userMessage, aiResponse);
+
+        return aiResponse;
+      } else if (response.statusCode == 429) {
+        print('⚠️ Rate limit exceeded');
+        return 'Let\'s take a little break and try again soon!';
+      } else if (response.statusCode >= 500) {
+        print('⚠️ Server error: ${response.statusCode}');
+        return 'Our magic is taking a rest. Let\'s try again!';
       } else {
+        print('⚠️ API error: ${response.statusCode}');
         return 'Hmm, I didn\'t quite catch that. Can you tell me again?';
       }
+    } on SocketException {
+      print('📡 Network error - using offline mode');
+      return _offlineService.getOfflineResponse(userMessage, age: age);
+    } on TimeoutException {
+      print('⚠️ Request timeout - trying offline mode');
+      return _offlineService.getOfflineResponse(userMessage, age: age);
     } catch (e) {
-      print('AI Service Error: $e');
-      return 'Oops! Let\'s try that again - what would you like to create?';
+      print('❌ AI Service Error: $e - falling back to offline mode');
+      return _offlineService.getOfflineResponse(userMessage, age: age);
     }
   }
+
+  /// Check if currently online
+  Future<bool> isOnline() async {
+    return await _connectivityService.checkConnectivity();
+  }
+
+  /// Get offline service for direct access
+  OfflineAIService get offlineService => _offlineService;
 
   /// Get the system prompt that defines Crafta's personality
   String _getSystemPrompt() {
@@ -90,24 +161,30 @@ Keep it simple and fun - use words a 5-year-old understands. Max 2 sentences.
   /// Parse user input to extract creature attributes
   Map<String, dynamic> parseCreatureRequest(String userMessage) {
     final message = userMessage.toLowerCase();
-    
+
     // Determine creature/item type (expanded)
+    // Check in order from most specific to least specific
     String creatureType = 'cow'; // default
-    if (message.contains('pig')) creatureType = 'pig';
-    if (message.contains('chicken')) creatureType = 'chicken';
-    if (message.contains('sheep')) creatureType = 'sheep';
-    if (message.contains('horse')) creatureType = 'horse';
-    if (message.contains('cat')) creatureType = 'cat';
-    if (message.contains('dog')) creatureType = 'dog';
-    if (message.contains('dragon')) creatureType = 'dragon';
+
+    // Mythical creatures first (longer/more specific)
     if (message.contains('unicorn')) creatureType = 'unicorn';
     if (message.contains('phoenix')) creatureType = 'phoenix';
     if (message.contains('griffin')) creatureType = 'griffin';
-    
+    if (message.contains('dragon')) creatureType = 'dragon';
+
+    // Common animals (use word boundaries to avoid false matches like "rainbow" contains "bow")
+    if (RegExp(r'\bcow\b').hasMatch(message)) creatureType = 'cow';
+    if (RegExp(r'\bpig\b').hasMatch(message)) creatureType = 'pig';
+    if (message.contains('chicken')) creatureType = 'chicken';
+    if (message.contains('sheep')) creatureType = 'sheep';
+    if (message.contains('horse')) creatureType = 'horse';
+    if (RegExp(r'\bcat\b').hasMatch(message)) creatureType = 'cat';
+    if (RegExp(r'\bdog\b').hasMatch(message)) creatureType = 'dog';
+
     // Weapons and tools
     if (message.contains('sword')) creatureType = 'sword';
     if (message.contains('axe')) creatureType = 'axe';
-    if (message.contains('bow')) creatureType = 'bow';
+    if (RegExp(r'\bbow\b').hasMatch(message) && !message.contains('rainbow')) creatureType = 'bow';
     if (message.contains('shield')) creatureType = 'shield';
     if (message.contains('wand')) creatureType = 'wand';
     if (message.contains('staff')) creatureType = 'staff';
@@ -176,7 +253,7 @@ Keep it simple and fun - use words a 5-year-old understands. Max 2 sentences.
     List<String> effects = [];
     if (message.contains('sparkle')) effects.add('sparkles');
     if (message.contains('glow')) effects.add('glows');
-    if (message.contains('fly')) effects.add('flies');
+    if (RegExp(r'\bfly\b|\bflies\b|\bflying\b').hasMatch(message)) effects.add('flies');
     if (message.contains('magic')) effects.add('magic');
     if (message.contains('fire')) effects.add('fire');
     if (message.contains('ice')) effects.add('ice');

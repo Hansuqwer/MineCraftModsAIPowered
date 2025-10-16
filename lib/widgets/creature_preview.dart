@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'procedural_creature_renderer.dart';
 
 class CreaturePreview extends StatefulWidget {
   final Map<String, dynamic> creatureAttributes;
@@ -72,21 +73,14 @@ class _CreaturePreviewState extends State<CreaturePreview>
     return Container(
       width: widget.size,
       height: widget.size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Main creature body
-          _buildCreatureBody(),
-          
-          // Effects overlay
-          if (widget.creatureAttributes['effects'] != null)
-            _buildEffectsOverlay(),
-          
-          // Sparkles for magical creatures
-          if (widget.creatureAttributes['effects']?.contains('sparkles') == true ||
-              widget.creatureAttributes['effects']?.contains('magic') == true)
-            _buildSparkles(),
-        ],
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: ProceduralCreatureRenderer(
+        creatureAttributes: widget.creatureAttributes,
+        size: widget.size,
+        isAnimated: widget.isAnimated,
       ),
     );
   }

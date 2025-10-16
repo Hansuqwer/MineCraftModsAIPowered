@@ -49,6 +49,14 @@ dependencies:
   flutter_dotenv: ^5.1.0
   # Testing utilities
   mockito: ^5.4.4
+  # UUID generation for Minecraft manifests
+  uuid: ^4.5.1
+  # File sharing for exporting addons
+  share_plus: ^10.1.4
+  # Path manipulation (pinned by flutter_test)
+  path: ^1.9.0
+  # Image encoding for texture export
+  image: ^4.3.0
 
 dev_dependencies:
   flutter_test:

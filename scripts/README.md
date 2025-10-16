@@ -4,9 +4,9 @@ This directory contains automation scripts to streamline development, testing, a
 
 ## Available Scripts
 
-### `automate_improvements.sh`
+### `automate_improvements.sh` (Phase 1)
 
-**Purpose**: Automated testing, code quality checks, and build process
+**Purpose**: Automated testing, code quality checks, and build process (Phase 1: Security & Testing)
 
 **What it does**:
 1. ✅ Checks environment setup (.env file)
@@ -35,11 +35,43 @@ This directory contains automation scripts to streamline development, testing, a
 - Bash shell
 - Optional: `lcov` for HTML coverage reports
 
+### `phase3_automation.sh` (Phase 3)
+
+**Purpose**: Performance & Polish validation and testing (Phase 3)
+
+**What it does**:
+1. 📊 Runs all unit tests and counts results
+2. 🌐 Tests offline mode functionality
+3. 🔍 Analyzes code quality (errors, warnings, info)
+4. 📦 Checks codebase statistics (files, lines, services)
+5. 🦄 Counts offline creature responses
+6. ✅ Validates new Phase 3 features (performance monitor, memory optimizer, rendering optimizer, offline indicator)
+7. 📋 Generates PHASE3_RESULTS.txt summary report
+
+**Usage**:
+```bash
+# Run from project root
+./scripts/phase3_automation.sh
+```
+
+**Output Files**:
+- `phase3_test_report.txt` - Test execution results
+- `phase3_analysis.txt` - Code analysis output
+- `PHASE3_RESULTS.txt` - Complete Phase 3 summary
+
+**Requirements**:
+- Flutter SDK installed
+- Bash shell
+- bc (calculator) for statistics
+
 ### Quick Commands
 
 ```bash
-# Run automation script
+# Run Phase 1 automation script
 ./scripts/automate_improvements.sh
+
+# Run Phase 3 automation script
+./scripts/phase3_automation.sh
 
 # Run only tests
 flutter test

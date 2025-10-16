@@ -31,10 +31,10 @@
 - Text display + voice output (OpenAI TTS or local)
 
 **Limits for MVP:**
-- Only **3 creature types** supported: Cow, Pig, Chicken (familiar to kids)
+- Only **3 creature types** supported: Cow, Pig, Chicken (familiar to kids)//this has to change to EVERY NPC//
 - Only **5 attributes** to modify:
   - Color (rainbow, pink, blue, gold)
-  - Special effect (sparkles, glows, flies)
+  - Special effect (sparkles, glows, flies)//This needs to be alot bigger//
   - Size (tiny, normal, big)
   - Friendly/Neutral behavior
   - Sound (custom moo/oink/cluck variants)
@@ -48,14 +48,14 @@
 - Not a full 3D viewer - just a static or gently animated image
 
 **Technical:**
-- Pre-made art assets for the 3 base creatures
+- Pre-made art assets for the 3 base creatures//We got an AI here. Need to look into a free API or add your own to have AI create art and add to a database//
 - Color filters/overlays for variations
 - Sparkle/glow effects as image layers
 - SceneKit OR just SwiftUI with images (simpler!)
 
 **MVP Limit:**
 - **Static images only** with overlays
-- No interactive 3D rotation
+- No interactive 3D rotation 
 - Pre-rendered variations (not procedural)
 
 ---
@@ -73,7 +73,7 @@
 - Behavior pack only (no custom textures in MVP)
 
 **MVP Limit:**
-- Uses **vanilla Minecraft textures** with modifications
+- Uses **vanilla Minecraft textures** with modifications// we need to see if there is a free library,  database. we can get lä⁹9
 - No custom 3D models
 - Pre-built JSON templates with variable substitution
 

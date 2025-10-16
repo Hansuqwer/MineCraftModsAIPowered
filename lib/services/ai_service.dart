@@ -253,7 +253,7 @@ Keep it simple and fun - use words a 5-year-old understands. Max 2 sentences.
     List<String> effects = [];
     if (message.contains('sparkle')) effects.add('sparkles');
     if (message.contains('glow')) effects.add('glows');
-    if (message.contains('fly')) effects.add('flies');
+    if (RegExp(r'\bfly\b|\bflies\b|\bflying\b').hasMatch(message)) effects.add('flies');
     if (message.contains('magic')) effects.add('magic');
     if (message.contains('fire')) effects.add('fire');
     if (message.contains('ice')) effects.add('ice');

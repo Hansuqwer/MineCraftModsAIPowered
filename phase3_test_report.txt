@@ -1,0 +1,726 @@
+00:00 +0: loading /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart                                                                                                            00:01 +0: loading /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart                                                                                                            00:02 +0: loading /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart                                                                                                            test/widget_test.dart:16:35: Error: Couldn't find constructor 'MyApp'.
+    await tester.pumpWidget(const MyApp());
+                                  ^^^^^
+lib/widgets/enhanced_creature_preview.dart:157:33: Error: Member not found: 'AnimationService.createIceAnimation'.
+        return AnimationService.createIceAnimation(vsync: this);
+                                ^^^^^^^^^^^^^^^^^^
+00:02 +0 -1: loading /home/rickard/MineCraftModsAIPowered/crafta/test/widget_test.dart [E]                                                                                                             
+  Failed to load "/home/rickard/MineCraftModsAIPowered/crafta/test/widget_test.dart": Compilation failed for testPath=/home/rickard/MineCraftModsAIPowered/crafta/test/widget_test.dart
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/widget_test.dart -p vm --plain-name 'loading /home/rickard/MineCraftModsAIPowered/crafta/test/widget_test.dart'
+00:02 +0 -2: loading /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart [E]                                                                                                     
+  Error: the Dart compiler exited unexpectedly.
+  package:flutter_tools/src/base/common.dart 10:3  throwToolExit
+  package:flutter_tools/src/compile.dart 897:9     DefaultResidentCompiler._compile.<fn>
+  dart:async/zone.dart 1407:47                     _rootRunUnary
+  dart:async/zone.dart 1308:19                     _CustomZone.runUnary
+  dart:async/future_impl.dart 861:45               Future._propagateToListeners.handleValueCallback
+  dart:async/future_impl.dart 890:13               Future._propagateToListeners
+  dart:async/future_impl.dart 786:9                Future._propagateToListeners
+  dart:async/future_impl.dart 666:5                Future._completeWithValue
+  dart:async/future_impl.dart 736:7                Future._asyncCompleteWithValue.<fn>
+  dart:async/zone.dart 1399:13                     _rootRun
+  dart:async/zone.dart 1301:19                     _CustomZone.run
+  dart:async/zone.dart 1209:7                      _CustomZone.runGuarded
+  dart:async/zone.dart 1249:23                     _CustomZone.bindCallbackGuarded.<fn>
+  dart:async/schedule_microtask.dart 40:21         _microtaskLoop
+  dart:async/schedule_microtask.dart 49:5          _startMicrotaskLoop
+  dart:isolate-patch/isolate_patch.dart 118:13     _runPendingImmediateCallback
+  dart:isolate-patch/isolate_patch.dart 185:5      _RawReceivePort._handleMessage
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart -p vm --plain-name 'loading /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart'
+00:02 +0 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should initialize speech service                                                           00:02 +0 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should initialize speech service                                                           
+Speech recognition not available on desktop platforms
+00:02 +1 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should initialize speech service                                                           00:02 +1 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle platform detection correctly                                                 00:02 +1 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle platform detection correctly                                                 
+Speech recognition not available on desktop platforms
+00:02 +2 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle platform detection correctly                                                 00:02 +2 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should provide correct getters                                                             00:02 +3 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should provide correct getters                                                             00:02 +3 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle startListening on desktop platforms                                          00:02 +3 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle startListening on desktop platforms                                          
+Speech recognition not available on desktop platforms
+00:02 +4 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle startListening on desktop platforms                                          00:02 +4 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle stopListening gracefully                                                     00:02 +4 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle stopListening gracefully                                                     
+Speech recognition stopped
+00:02 +5 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle stopListening gracefully                                                     00:02 +5 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle cancelListening gracefully                                                   00:02 +5 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle cancelListening gracefully                                                   
+Speech recognition cancelled
+00:02 +6 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Tests should handle cancelListening gracefully                                                   00:02 +6 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Integration Tests should work with mock speech input                                             00:02 +6 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Integration Tests should work with mock speech input                                             
+Speech recognition not available on desktop platforms
+00:02 +7 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Integration Tests should work with mock speech input                                             00:02 +7 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Error Handling should handle initialization errors gracefully                                    00:02 +7 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Error Handling should handle initialization errors gracefully                                    
+Speech recognition not available on desktop platforms
+00:02 +8 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Error Handling should handle initialization errors gracefully                                    00:02 +8 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Error Handling should handle listening errors gracefully                                         00:02 +8 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Error Handling should handle listening errors gracefully                                         
+Speech recognition not available on desktop platforms
+00:02 +9 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Error Handling should handle listening errors gracefully                                         00:03 +9 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Error Handling should handle listening errors gracefully                                         00:04 +9 -2: /home/rickard/MineCraftModsAIPowered/crafta/test/speech_service_test.dart: SpeechService Error Handling should handle listening errors gracefully                                         test/screens/welcome_screen_test.dart:121:36: Error: Undefined name 'SemanticsAction'.
+        expect(semantics.hasAction(SemanticsAction.tap), isTrue);
+                                   ^^^^^^^^^^^^^^^
+test/screens/welcome_screen_test.dart:121:26: Error: The method 'hasAction' isn't defined for the class 'SemanticsNode'.
+ - 'SemanticsNode' is from 'package:flutter/src/semantics/semantics.dart' ('../../flutter/packages/flutter/lib/src/semantics/semantics.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'hasAction'.
+        expect(semantics.hasAction(SemanticsAction.tap), isTrue);
+                         ^^^^^^^^^
+00:04 +9 -3: loading /home/rickard/MineCraftModsAIPowered/crafta/test/screens/welcome_screen_test.dart [E]                                                                                             
+  Failed to load "/home/rickard/MineCraftModsAIPowered/crafta/test/screens/welcome_screen_test.dart": Compilation failed for testPath=/home/rickard/MineCraftModsAIPowered/crafta/test/screens/welcome_screen_test.dart
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/welcome_screen_test.dart -p vm --plain-name 'loading /home/rickard/MineCraftModsAIPowered/crafta/test/screens/welcome_screen_test.dart'
+00:04 +9 -3: loading /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart                                                                                                 00:04 +9 -3: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should display Crafta avatar or icon                                        00:05 +9 -3: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should display Crafta avatar or icon                                        00:05 +9 -3: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should display Crafta avatar or icon                                        
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+test/screens/complete_screen_test.dart:120:36: Error: Undefined name 'SemanticsAction'.
+        expect(semantics.hasAction(SemanticsAction.tap), isTrue);
+                                   ^^^^^^^^^^^^^^^
+test/screens/complete_screen_test.dart:120:26: Error: The method 'hasAction' isn't defined for the class 'SemanticsNode'.
+ - 'SemanticsNode' is from 'package:flutter/src/semantics/semantics.dart' ('../../flutter/packages/flutter/lib/src/semantics/semantics.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'hasAction'.
+        expect(semantics.hasAction(SemanticsAction.tap), isTrue);
+                         ^^^^^^^^^
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#40ab8 relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#5255b] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(47.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(211.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +9 -4: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should display Crafta avatar or icon [E]                                    
+  Test failed. See exception logs above.
+  The test description was: should display Crafta avatar or icon
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should display Crafta avatar or icon'
+00:05 +9 -4: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have microphone button                                               00:06 +9 -4: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have microphone button                                               00:06 +9 -5: loading /home/rickard/MineCraftModsAIPowered/crafta/test/screens/complete_screen_test.dart [E]                                                                                            
+  Failed to load "/home/rickard/MineCraftModsAIPowered/crafta/test/screens/complete_screen_test.dart": Compilation failed for testPath=/home/rickard/MineCraftModsAIPowered/crafta/test/screens/complete_screen_test.dart
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/complete_screen_test.dart -p vm --plain-name 'loading /home/rickard/MineCraftModsAIPowered/crafta/test/screens/complete_screen_test.dart'
+00:06 +9 -5: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have microphone button                                               
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#1f800 relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#d7c1d] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(47.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(211.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: at least one matching candidate
+  Actual: _IconWidgetFinder:<Found 0 widgets with icon "IconData(U+0E3E1)": []>
+   Which: means none were found but some were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure> (file:///home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart:31:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:189:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1032:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart line 31
+The test description was:
+  should have microphone button
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (2) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:06 +9 -6: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have microphone button [E]                                           
+  Test failed. See exception logs above.
+  The test description was: should have microphone button
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should have microphone button'
+00:06 +9 -6: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should display conversation area                                            00:06 +9 -6: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should display conversation area                                            
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#508d7 relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#03c18] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(47.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(211.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: true
+  Actual: <false>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure> (file:///home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart:42:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:189:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1032:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart line 42
+The test description was:
+  should display conversation area
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (2) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:06 +9 -7: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should display conversation area [E]                                        
+  Test failed. See exception logs above.
+  The test description was: should display conversation area
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should display conversation area'
+00:06 +9 -7: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have Scaffold with AppBar                                            00:06 +9 -7: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have Scaffold with AppBar                                            
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#e9f2b relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#bf8ca] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(47.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(211.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:06 +9 -8: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have Scaffold with AppBar [E]                                        
+  Test failed. See exception logs above.
+  The test description was: should have Scaffold with AppBar
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should have Scaffold with AppBar'
+00:06 +9 -8: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should show loading indicator when processing                               00:06 +9 -8: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should show loading indicator when processing                               
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#50547 relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#b04c2] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(47.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(211.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:06 +9 -9: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should show loading indicator when processing [E]                           
+  Test failed. See exception logs above.
+  The test description was: should show loading indicator when processing
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should show loading indicator when processing'
+00:06 +9 -9: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests microphone button should be tappable                                        00:06 +9 -9: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests microphone button should be tappable                                        
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#fa0eb relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#8fad2] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(47.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(211.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: at least one matching candidate
+  Actual: _IconWidgetFinder:<Found 0 widgets with icon "IconData(U+0E3E1)": []>
+   Which: means none were found but some were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure> (file:///home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart:79:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:189:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1032:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart line 79
+The test description was:
+  microphone button should be tappable
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (2) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:06 +9 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests microphone button should be tappable [E]                                   
+  Test failed. See exception logs above.
+  The test description was: microphone button should be tappable
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests microphone button should be tappable'
+00:06 +9 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                                00:06 +9 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                                
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+00:08 +10 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +11 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +12 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +13 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +14 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +15 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +16 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +17 -10: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +17 -11: /home/rickard/MineCraftModsAIPowered/crafta/test/services/ai_service_test.dart: AIService parseCreatureRequest should parse phoenix correctly [E]                                       
+  Expected: 'phoenix'
+    Actual: 'hoe'
+     Which: is different.
+            Expected: phoenix
+              Actual: hoe
+                      ^
+             Differ at offset 0
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 480:18  expect
+  test/services/ai_service_test.dart 75:9             main.<fn>.<fn>.<fn>
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/services/ai_service_test.dart -p vm --plain-name 'AIService parseCreatureRequest should parse phoenix correctly'
+00:08 +18 -11: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +19 -11: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +20 -11: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +21 -11: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +21 -12: /home/rickard/MineCraftModsAIPowered/crafta/test/services/ai_service_test.dart: AIService validateCreatureRequest should reject inappropriate content [E]                               
+  Expected: false
+    Actual: <true>
+  Should reject: A dragon that destroys everything
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 480:18  expect
+  test/services/ai_service_test.dart 111:11           main.<fn>.<fn>.<fn>
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/services/ai_service_test.dart -p vm --plain-name 'AIService validateCreatureRequest should reject inappropriate content'
+00:08 +22 -12: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +22 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/services/ai_service_test.dart: AIService validateCreatureRequest should reject violence words [E]                                      
+  Expected: false
+    Actual: <true>
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 480:18  expect
+  test/services/ai_service_test.dart 125:9            main.<fn>.<fn>.<fn>
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/services/ai_service_test.dart -p vm --plain-name 'AIService validateCreatureRequest should reject violence words'
+00:08 +23 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +24 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +25 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +26 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +27 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +28 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +29 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +30 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:08 +31 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +31 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +32 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +33 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +34 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +35 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +36 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +37 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +38 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +39 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +40 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +41 -13: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +42 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +43 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +43 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/services/ai_service_test.dart: AIService isConfigured should check if API key is configured [E]                                        
+  Instance of 'NotInitializedError'
+  package:flutter_dotenv/src/dotenv.dart 41:7    DotEnv.env
+  package:crafta/services/ai_service.dart 12:39  AIService._apiKey
+  package:crafta/services/ai_service.dart 25:28  AIService.isConfigured
+  test/services/ai_service_test.dart 240:40      main.<fn>.<fn>.<fn>
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/services/ai_service_test.dart -p vm --plain-name 'AIService isConfigured should check if API key is configured'
+00:09 +44 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +45 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +46 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +47 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +48 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +49 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +50 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +51 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +52 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +53 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +54 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +55 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +56 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:09 +57 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:10 +57 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:11 +57 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:12 +57 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:13 +57 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:14 +57 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               00:14 +57 -14: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation                                               
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 142 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#70f17 relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#5d48a] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(35.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(611.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+pumpAndSettle timed out
+
+When the exception was thrown, this was the stack:
+#0      WidgetTester.pumpAndSettle.<anonymous closure> (package:flutter_test/src/widget_tester.dart:724:11)
+<asynchronous suspension>
+#1      TestAsyncUtils.guard.<anonymous closure> (package:flutter_test/src/test_async_utils.dart:120:7)
+<asynchronous suspension>
+#2      main.<anonymous closure>.<anonymous closure> (file:///home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart:102:7)
+<asynchronous suspension>
+#3      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:189:15)
+<asynchronous suspension>
+#4      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1032:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  should have back navigation
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (2) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:14 +57 -15: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have back navigation [E]                                           
+  Test failed. See exception logs above.
+  The test description was: should have back navigation
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should have back navigation'
+00:14 +57 -15: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should handle orientation changes                                         00:14 +57 -15: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should handle orientation changes                                         
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#b0be0 relayoutBoundary=up4 NEEDS-PAINT OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#23720] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(35.4, 128.0); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=64.0)
+  size: Size(611.3, 64.0)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 71 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:330:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#04c1f relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#23720] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(0.0, 0.0); flex=2; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=128.0)
+  size: Size(682.0, 128.0)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (2) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:14 +57 -16: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should handle orientation changes [E]                                     
+  Test failed. See exception logs above.
+  The test description was: should handle orientation changes
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should handle orientation changes'
+00:14 +57 -16: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should be semantically accessible                                         00:14 +57 -16: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should be semantically accessible                                         
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#9e9a5 relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#79dde] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(47.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(211.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:14 +57 -17: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should be semantically accessible [E]                                     
+  Test failed. See exception logs above.
+  The test description was: should be semantically accessible
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should be semantically accessible'
+00:14 +57 -17: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should not crash on rapid button taps                                     00:14 +57 -17: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should not crash on rapid button taps                                     
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#2291a relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#35bfa] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(47.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(211.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: No element
+
+When the exception was thrown, this was the stack:
+#0      Iterable.first (dart:core/iterable.dart:644:7)
+#1      _FirstFinderMixin.filter (package:flutter_test/src/finders.dart:1205:28)
+#3      Iterable.isEmpty (dart:core/iterable.dart:541:33)
+#4      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:1891:18)
+#5      WidgetController.getCenter (package:flutter_test/src/controller.dart:1792:12)
+#6      WidgetController.tap (package:flutter_test/src/controller.dart:1040:18)
+#7      main.<anonymous closure>.<anonymous closure> (file:///home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart:162:22)
+<asynchronous suspension>
+#8      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:189:15)
+<asynchronous suspension>
+#9      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1032:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 2 frames from dart:async-patch and package:stack_trace)
+
+The test description was:
+  should not crash on rapid button taps
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (2) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:15 +57 -18: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should not crash on rapid button taps [E]                                 
+  Test failed. See exception logs above.
+  The test description was: should not crash on rapid button taps
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should not crash on rapid button taps'
+00:15 +57 -18: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have proper Material theme                                         00:15 +57 -18: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have proper Material theme                                         
+Speech recognition not available on desktop platforms
+TTS not available on desktop platforms
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 28 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column
+  Column:file:///home/rickard/MineCraftModsAIPowered/crafta/lib/screens/creator_screen.dart:412:24
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#a4605 relayoutBoundary=up4 OVERFLOWING:
+  creator: Column ← Expanded ← Column ← Padding ← MediaQuery ← Padding ← SafeArea ←
+    KeyedSubtree-[GlobalKey#0e6a4] ← _BodyBuilder ← MediaQuery ← LayoutId-[<_ScaffoldSlot.body>] ←
+    CustomMultiChildLayout ← ⋯
+  parentData: offset=Offset(47.4, 261.3); flex=1; fit=FlexFit.tight (can use size)
+  constraints: BoxConstraints(0.0<=w<=752.0, h=130.7)
+  size: Size(211.3, 130.7)
+  direction: vertical
+  mainAxisAlignment: center
+  mainAxisSize: max
+  crossAxisAlignment: center
+  verticalDirection: down
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:15 +57 -19: /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart: CreatorScreen Widget Tests should have proper Material theme [E]                                     
+  Test failed. See exception logs above.
+  The test description was: should have proper Material theme
+  
+
+To run this test again: /home/rickard/flutter/bin/cache/dart-sdk/bin/dart test /home/rickard/MineCraftModsAIPowered/crafta/test/screens/creator_screen_test.dart -p vm --plain-name 'CreatorScreen Widget Tests should have proper Material theme'
+00:15 +57 -19: Some tests failed.                                                                                                                                                                      

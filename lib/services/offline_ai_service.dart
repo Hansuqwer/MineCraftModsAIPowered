@@ -11,29 +11,78 @@ class OfflineAIService {
     'blue cow': 'A blue cow! That\'s so creative! What size should it be?',
     'tiny cow': 'A tiny cow! That will be adorable! What color would you like?',
     'big cow': 'A huge cow! That will be amazing! What color should it be?',
+    'golden cow': 'A golden cow! So shiny! Should it have any special effects?',
+    'purple cow': 'A purple cow! That\'s so unique! What should it do?',
 
     // Pigs
     'pink pig': 'A pink pig! That\'s perfect! Pigs love being pink!',
     'rainbow pig': 'A rainbow pig! How magical! Should it fly or have sparkles?',
     'sparkle pig': 'A pig with sparkles! That will shine so bright!',
     'flying pig': 'A flying pig! Now that\'s imaginative! What color?',
+    'golden pig': 'A golden pig! So special! Should it glow?',
+    'tiny pig': 'A tiny pig! How adorable! What color should it be?',
 
     // Chickens
     'blue chicken': 'A blue chicken! That\'s unique! Should it fly high?',
     'rainbow chicken': 'A rainbow chicken! So colorful! What effects should it have?',
     'tiny chicken': 'A tiny chicken! So cute and small! What color?',
     'golden chicken': 'A golden chicken! Like treasure! Should it sparkle?',
+    'red chicken': 'A red chicken! So bright! What effects would you like?',
+    'flying chicken': 'A flying chicken! How cool! What color should it be?',
+
+    // Sheep
+    'sheep': 'A sheep! Fluffy and fun! What color would you like?',
+    'rainbow sheep': 'A rainbow sheep! So colorful and fluffy!',
+    'pink sheep': 'A pink sheep! Super fluffy and pretty!',
+    'blue sheep': 'A blue sheep! Cool and fluffy!',
+    'purple sheep': 'A purple sheep! Magical and fluffy!',
+
+    // Horses
+    'horse': 'A horse! Strong and fast! What color?',
+    'rainbow horse': 'A rainbow horse! Colorful and majestic!',
+    'golden horse': 'A golden horse! Shiny and beautiful!',
+    'white horse': 'A white horse! Pure and elegant!',
+    'black horse': 'A black horse! Sleek and powerful!',
 
     // Dragons
     'dragon': 'A dragon! So exciting! What color dragon would you like?',
     'rainbow dragon': 'A rainbow dragon! Amazing! Should it breathe fire or sparkles?',
     'fire dragon': 'A fire dragon! Powerful! What color should the flames be?',
     'ice dragon': 'An ice dragon! Cool! Should it have frosty breath?',
+    'lightning dragon': 'A lightning dragon! Electric! So powerful!',
+    'purple dragon': 'A purple dragon! Majestic! What powers should it have?',
+    'tiny dragon': 'A tiny dragon! Adorable! What should it breathe?',
 
     // Unicorns
     'unicorn': 'A unicorn! How magical! What color would you like?',
     'rainbow unicorn': 'A rainbow unicorn! So magical and colorful!',
     'sparkle unicorn': 'A unicorn with sparkles! That will be so shiny!',
+    'pink unicorn': 'A pink unicorn! Sweet and magical!',
+    'golden unicorn': 'A golden unicorn! Shiny and magical!',
+    'flying unicorn': 'A flying unicorn! Double magical!',
+
+    // Phoenix
+    'phoenix': 'A phoenix! A bird of fire! What colors?',
+    'fire phoenix': 'A fire phoenix! Rising from flames! Amazing!',
+    'rainbow phoenix': 'A rainbow phoenix! Colorful and fiery!',
+    'golden phoenix': 'A golden phoenix! Shining bright!',
+
+    // Griffins
+    'griffin': 'A griffin! Half eagle, half lion! So cool!',
+    'golden griffin': 'A golden griffin! Majestic and powerful!',
+    'white griffin': 'A white griffin! Noble and strong!',
+
+    // Cats
+    'cat': 'A cat! Purr-fect! What color cat?',
+    'rainbow cat': 'A rainbow cat! Colorful and cute!',
+    'black cat': 'A black cat! Mysterious and cool!',
+    'golden cat': 'A golden cat! Shiny and special!',
+
+    // Dogs
+    'dog': 'A dog! Best friend! What kind?',
+    'rainbow dog': 'A rainbow dog! Colorful and loyal!',
+    'golden dog': 'A golden dog! Shiny and friendly!',
+    'big dog': 'A big dog! Strong and protective!',
 
     // General
     'creature': 'What kind of creature would you like to create?',

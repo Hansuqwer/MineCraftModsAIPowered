@@ -1,0 +1,208 @@
+Analyzing lib...                                                
+
+   info • Don't invoke 'print' in production code • lib/main.dart:19:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/main.dart:21:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/main.dart:22:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/main.dart:47:17 • avoid_print
+   info • Use 'const' with the constructor to improve performance • lib/screens/creation_history_screen.dart:226:25 • prefer_const_constructors
+   info • The private field _currentCreatureType could be 'final' • lib/screens/creator_screen.dart:24:10 • prefer_final_fields
+warning • The value of the field '_currentCreatureType' isn't used • lib/screens/creator_screen.dart:24:10 • unused_field
+   info • The private field _userAge could be 'final' • lib/screens/creator_screen.dart:26:7 • prefer_final_fields
+   info • Don't use 'BuildContext's across async gaps • lib/screens/creator_screen.dart:83:28 • use_build_context_synchronously
+   info • Use 'const' for final variables initialized to a constant value • lib/screens/creator_screen.dart:92:5 • prefer_const_declarations
+   info • Use 'const' with the constructor to improve performance • lib/screens/creator_screen.dart:127:11 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/creator_screen.dart:128:22 • prefer_const_constructors
+   info • Use 'const' for final variables initialized to a constant value • lib/screens/creator_screen.dart:176:9 • prefer_const_declarations
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:189:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:211:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:215:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:223:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:235:9 • avoid_print
+   info • Use 'const' for final variables initialized to a constant value • lib/screens/creator_screen.dart:238:7 • prefer_const_declarations
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:267:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:271:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:282:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:294:9 • avoid_print
+   info • Use 'const' for final variables initialized to a constant value • lib/screens/creator_screen.dart:297:7 • prefer_const_declarations
+   info • Don't invoke 'print' in production code • lib/screens/creator_screen.dart:566:19 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/creature_preview_screen.dart:36:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/creature_preview_screen.dart:37:5 • avoid_print
+   info • Use a 'SizedBox' to add whitespace to a layout • lib/screens/creature_preview_screen.dart:120:17 • sized_box_for_whitespace
+   info • The 'children' argument should be last in widget constructor invocations • lib/screens/creature_preview_screen.dart:184:25 • sort_child_properties_last
+   info • Use a 'SizedBox' to add whitespace to a layout • lib/screens/creature_preview_screen.dart:199:17 • sized_box_for_whitespace
+   info • Use a 'SizedBox' to add whitespace to a layout • lib/screens/creature_preview_screen.dart:283:17 • sized_box_for_whitespace
+   info • Use 'const' with the constructor to improve performance • lib/screens/export_management_screen.dart:222:25 • prefer_const_constructors
+   info • The private field _historyEnabled could be 'final' • lib/screens/parent_settings_screen.dart:21:8 • prefer_final_fields
+warning • The value of the field '_historyEnabled' isn't used • lib/screens/parent_settings_screen.dart:21:8 • unused_field
+   info • The file name '3d_renderer_service.dart' isn't a lower_case_with_underscores identifier • lib/services/3d_renderer_service.dart:1:1 • file_names
+warning • The value of the field '_animationSpeed' isn't used • lib/services/3d_renderer_service.dart:9:23 • unused_field
+warning • The value of the local variable 'model' isn't used • lib/services/3d_renderer_service.dart:445:11 • unused_local_variable
+   info • Don't invoke 'print' in production code • lib/services/ai_service.dart:37:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/ai_service.dart:45:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/ai_service.dart:51:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/ai_service.dart:88:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/ai_service.dart:91:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/ai_service.dart:94:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/ai_service.dart:98:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/ai_service.dart:101:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/ai_service.dart:104:7 • avoid_print
+warning • Unused import: 'dart:math' • lib/services/animation_service.dart:2:8 • unused_import
+warning • The value of the field '_defaultCurve' isn't used • lib/services/animation_service.dart:8:22 • unused_field
+   info • Don't invoke 'print' in production code • lib/services/connectivity_service.dart:42:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:36:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:53:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:69:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:95:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:112:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:126:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:142:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:163:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:180:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:211:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:235:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:265:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:279:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:296:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/local_storage_service.dart:320:7 • avoid_print
+warning • Unused import: 'package:flutter/material.dart' • lib/services/monitoring_service.dart:1:8 • unused_import
+warning • Unused import: 'dart:io' • lib/services/monitoring_service.dart:2:8 • unused_import
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:27:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:37:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:47:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:57:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:67:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:77:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:87:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:97:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:136:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:143:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:150:5 • avoid_print
+   info • Unnecessary braces in a string interpolation • lib/services/monitoring_service.dart:193:1 • unnecessary_brace_in_string_interps
+   info • Don't invoke 'print' in production code • lib/services/monitoring_service.dart:213:5 • avoid_print
+   info • Unnecessary escape in string literal • lib/services/offline_ai_service.dart:199:2 • unnecessary_string_escapes
+   info • Unnecessary escape in string literal • lib/services/offline_ai_service.dart:206:22 • unnecessary_string_escapes
+   info • The private field _lastMemoryCheck could be 'final' • lib/services/performance_monitor.dart:16:7 • prefer_final_fields
+warning • The value of the field '_lastMemoryCheck' isn't used • lib/services/performance_monitor.dart:16:7 • unused_field
+   info • Don't invoke 'print' in production code • lib/services/performance_monitor.dart:27:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/performance_monitor.dart:42:7 • avoid_print
+warning • Unused import: 'package:flutter/material.dart' • lib/services/performance_service.dart:1:8 • unused_import
+warning • Unused import: 'dart:io' • lib/services/performance_service.dart:2:8 • unused_import
+   info • Don't invoke 'print' in production code • lib/services/performance_service.dart:24:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/performance_service.dart:58:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/performance_service.dart:68:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/performance_service.dart:79:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/performance_service.dart:86:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/performance_service.dart:93:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/performance_service.dart:100:5 • avoid_print
+warning • Unused import: 'package:flutter/material.dart' • lib/services/production_service.dart:1:8 • unused_import
+warning • Unused import: 'dart:io' • lib/services/production_service.dart:2:8 • unused_import
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:25:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:30:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:39:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:41:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:89:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:97:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:103:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:108:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:114:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:119:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:125:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:130:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:136:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:141:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:147:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:155:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:161:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:168:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:174:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:182:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:188:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:193:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:199:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:204:5 • avoid_print
+   info • Unnecessary braces in a string interpolation • lib/services/production_service.dart:224:21 • unnecessary_brace_in_string_interps
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:231:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:235:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/production_service.dart:240:5 • avoid_print
+warning • Unused import: 'package:flutter/material.dart' • lib/services/security_service.dart:1:8 • unused_import
+warning • Unused import: 'dart:io' • lib/services/security_service.dart:2:8 • unused_import
+   info • Don't invoke 'print' in production code • lib/services/security_service.dart:24:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/security_service.dart:165:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/security_service.dart:171:7 • avoid_print
+warning • The value of the local variable 'encryptedValue' isn't used • lib/services/security_service.dart:183:11 • unused_local_variable
+   info • Don't invoke 'print' in production code • lib/services/security_service.dart:188:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/security_service.dart:201:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:18:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:25:29 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:26:31 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:28:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:31:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:49:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:53:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:56:13 • avoid_print
+   info • 'partialResults' is deprecated and shouldn't be used. Use SpeechListenOptions.partialResults instead • lib/services/speech_service.dart:63:9 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:66:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:70:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:80:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:82:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:91:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/speech_service.dart:93:7 • avoid_print
+warning • Unused import: 'package:flutter/material.dart' • lib/services/support_service.dart:1:8 • unused_import
+warning • Unused import: 'dart:io' • lib/services/support_service.dart:2:8 • unused_import
+   info • Don't invoke 'print' in production code • lib/services/support_service.dart:25:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/support_service.dart:35:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/support_service.dart:45:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/support_service.dart:55:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/support_service.dart:71:5 • avoid_print
+   info • Unnecessary braces in a string interpolation • lib/services/support_service.dart:181:46 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/services/support_service.dart:183:60 • unnecessary_brace_in_string_interps
+   info • Don't invoke 'print' in production code • lib/services/support_service.dart:205:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/support_service.dart:212:5 • avoid_print
+   info • Unnecessary braces in a string interpolation • lib/services/support_service.dart:238:1 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/services/support_service.dart:240:1 • unnecessary_brace_in_string_interps
+   info • Don't invoke 'print' in production code • lib/services/support_service.dart:258:5 • avoid_print
+warning • The value of the field '_celebrationSound' isn't used • lib/services/tts_service.dart:9:23 • unused_field
+warning • The value of the field '_sparkleSound' isn't used • lib/services/tts_service.dart:10:23 • unused_field
+warning • The value of the field '_magicSound' isn't used • lib/services/tts_service.dart:11:23 • unused_field
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:17:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:33:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:41:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:48:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:70:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:82:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:94:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:106:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:118:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:130:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:142:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:154:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:166:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:248:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/tts_service.dart:260:7 • avoid_print
+   info • The constant name 'MAX_CONVERSATION_MESSAGES' isn't a lowerCamelCase identifier • lib/utils/memory_optimizer.dart:11:20 • constant_identifier_names
+   info • The constant name 'MAX_CACHE_SIZE' isn't a lowerCamelCase identifier • lib/utils/memory_optimizer.dart:14:20 • constant_identifier_names
+   info • The constant name 'CACHE_CLEANUP_INTERVAL' isn't a lowerCamelCase identifier • lib/utils/memory_optimizer.dart:15:25 • constant_identifier_names
+   info • Don't invoke 'print' in production code • lib/utils/memory_optimizer.dart:39:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/memory_optimizer.dart:47:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/memory_optimizer.dart:63:5 • avoid_print
+   info • Unnecessary constructor invocation • lib/utils/memory_optimizer.dart:97:18 • prefer_collection_literals
+   info • Don't invoke 'print' in production code • lib/utils/memory_optimizer.dart:177:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/memory_optimizer.dart:286:5 • avoid_print
+   info • The constant name 'MAX_FRAME_SAMPLES' isn't a lowerCamelCase identifier • lib/utils/rendering_optimizer.dart:12:20 • constant_identifier_names
+   info • The constant name 'HIGH_DETAIL_DISTANCE' isn't a lowerCamelCase identifier • lib/utils/rendering_optimizer.dart:15:23 • constant_identifier_names
+   info • The constant name 'MEDIUM_DETAIL_DISTANCE' isn't a lowerCamelCase identifier • lib/utils/rendering_optimizer.dart:16:23 • constant_identifier_names
+   info • The constant name 'LOW_DETAIL_DISTANCE' isn't a lowerCamelCase identifier • lib/utils/rendering_optimizer.dart:17:23 • constant_identifier_names
+   info • The constant name 'MAX_PARTICLES' isn't a lowerCamelCase identifier • lib/utils/rendering_optimizer.dart:20:20 • constant_identifier_names
+warning • The value of the field '_renderer' isn't used • lib/widgets/creature_3d_preview.dart:41:27 • unused_field
+warning • The value of the local variable 'size' isn't used • lib/widgets/creature_3d_preview.dart:179:11 • unused_local_variable
+   info • Use 'const' with the constructor to improve performance • lib/widgets/creature_3d_preview.dart:405:26 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/creature_3d_preview.dart:621:26 • prefer_const_constructors
+   info • Use a 'SizedBox' to add whitespace to a layout • lib/widgets/creature_preview.dart:72:12 • sized_box_for_whitespace
+   info • The private field _effectControllers could be 'final' • lib/widgets/enhanced_creature_preview.dart:41:29 • prefer_final_fields
+  error • The method 'createIceAnimation' isn't defined for the type 'AnimationService' • lib/widgets/enhanced_creature_preview.dart:157:33 • undefined_method
+warning • The value of the local variable 'size' isn't used • lib/widgets/enhanced_creature_preview.dart:286:11 • unused_local_variable
+   info • Use 'const' with the constructor to improve performance • lib/widgets/enhanced_creature_preview.dart:441:26 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/enhanced_creature_preview.dart:657:26 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/offline_indicator.dart:157:14 • prefer_const_constructors
+
+204 issues found. (ran in 3.5s)

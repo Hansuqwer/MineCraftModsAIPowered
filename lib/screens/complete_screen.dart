@@ -1,4 +1,14 @@
 import 'package:flutter/material.dart';
+import '../widgets/procedural_creature_renderer.dart';
+import '../widgets/furniture_renderer.dart';
+import '../services/ai_service.dart';
+import '../utils/screen_utils.dart';
+import '../services/minecraft/minecraft_export_service.dart';
+import '../models/minecraft/addon_metadata.dart';
+import '../models/minecraft/addon_package.dart';
+import '../models/minecraft/behavior_pack.dart';
+import '../models/minecraft/resource_pack.dart';
+import '../models/minecraft/addon_file.dart';
 
 class CompleteScreen extends StatefulWidget {
   const CompleteScreen({super.key});
@@ -11,12 +21,43 @@ class _CompleteScreenState extends State<CompleteScreen>
     with TickerProviderStateMixin {
   late AnimationController _celebrationController;
   late AnimationController _bounceController;
+  late AnimationController _sparkleController;
+  late AnimationController _pulseController;
   late Animation<double> _celebrationAnimation;
   late Animation<double> _bounceAnimation;
+  late Animation<double> _sparkleAnimation;
+  late Animation<double> _pulseAnimation;
+  
+  // Current suggestion state
+  String _currentSuggestion = '';
+  final AIService _aiService = AIService();
+  bool _isSuggestionTapped = false;
+  
+  // Enhanced visual states
+  bool _showSuccessAnimation = false;
+  bool _showExportAnimation = false;
+  bool _isExporting = false;
+  
+  // Creature data
+  String creatureName = 'Rainbow Cow';
+  String creatureType = 'Cow';
+  Map<String, dynamic> creatureAttributes = {};
 
   @override
   void initState() {
     super.initState();
+    
+    // Initialize creature data from arguments
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (args != null) {
+        setState(() {
+          creatureName = args['creatureName'] ?? 'Rainbow Cow';
+          creatureType = args['creatureType'] ?? 'Cow';
+          creatureAttributes = args['creatureAttributes'] ?? {};
+        });
+      }
+    });
     
     // Celebration animation for success
     _celebrationController = AnimationController(
@@ -45,13 +86,233 @@ class _CompleteScreenState extends State<CompleteScreen>
       parent: _bounceController,
       curve: Curves.elasticInOut,
     ));
+    
+    // Sparkle animation for success
+    _sparkleController = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    )..repeat();
+    
+    _sparkleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _sparkleController,
+      curve: Curves.easeInOut,
+    ));
+    
+    // Pulse animation for export
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    
+    _pulseAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+    
+    // Start success animation
+    _showSuccessAnimation = true;
+    _sparkleController.forward();
   }
 
   @override
   void dispose() {
     _celebrationController.dispose();
     _bounceController.dispose();
+    _sparkleController.dispose();
+    _pulseController.dispose();
     super.dispose();
+  }
+
+  /// Check if the creature type is furniture
+  bool _isFurniture(String creatureType) {
+    const furnitureTypes = [
+      'couch', 'sofa', 'chair', 'table', 'bed', 'desk', 'bookshelf',
+      'lamp', 'floor_lamp', 'table_lamp', 'cabinet', 'dresser', 'wardrobe',
+      'shelf', 'stool', 'bench', 'ottoman', 'armchair', 'recliner',
+      'rocking_chair', 'dining_table', 'coffee_table', 'nightstand',
+      'chest', 'trunk', 'mirror', 'rug', 'carpet', 'curtain', 'blinds',
+      'plant', 'flower_pot', 'vase', 'clock', 'picture', 'frame'
+    ];
+    return furnitureTypes.contains(creatureType.toLowerCase());
+  }
+
+  /// Get AI suggestion for the created item
+  String _getAISuggestion() {
+    if (_currentSuggestion.isEmpty) {
+      _currentSuggestion = _aiService.generateCreationSuggestions(creatureAttributes);
+    }
+    return _currentSuggestion;
+  }
+
+  /// Handle suggestion tap - navigate back to creator with the suggestion
+  void _handleSuggestionTap() {
+    setState(() {
+      _isSuggestionTapped = true;
+    });
+    
+    // Show enhanced feedback
+    _showSuccessFeedback('Great idea! Let\'s create that!');
+    
+    // Navigate back to creator with the suggestion
+    Future.delayed(const Duration(milliseconds: 500), () {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/creator',
+        (route) => false,
+        arguments: {
+          'suggestion': _currentSuggestion,
+          'fromSuggestion': true,
+        },
+      );
+    });
+  }
+
+  /// Show success feedback with animation
+  void _showSuccessFeedback(String message) {
+    setState(() {
+      _showSuccessAnimation = true;
+    });
+    
+    _bounceController.forward().then((_) {
+      _bounceController.reverse();
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: const Color(0xFF4CAF50),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+    
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      if (mounted) {
+        setState(() {
+          _showSuccessAnimation = false;
+        });
+      }
+    });
+  }
+
+  /// Show error feedback with animation
+  void _showErrorFeedback(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: const Color(0xFFFF6B6B),
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+  }
+
+  /// Show world creation dialog
+  Future<void> _showWorldCreationDialog() async {
+    setState(() {
+      _isExporting = true;
+      _showExportAnimation = true;
+    });
+    
+    // Start export animation
+    _pulseController.repeat(reverse: true);
+    
+    // Create a mock addon package for the dialog
+    final metadata = AddonMetadata(
+      name: creatureName,
+      description: 'A $creatureType created with Crafta',
+      author: 'Crafta User',
+      version: '1.0.0',
+      namespace: 'crafta',
+      generateSpawnEggs: true,
+      includeScriptAPI: true,
+    );
+
+    // Create mock behavior and resource packs for the dialog
+    final mockManifest = AddonFile.json('manifest.json', '{}');
+    
+    final mockBehaviorPack = BehaviorPack(
+      uuid: 'mock-uuid',
+      moduleUuid: 'mock-module-uuid',
+      manifest: mockManifest,
+      entities: [],
+      scripts: [],
+      texts: [],
+    );
+    
+    final mockResourcePack = ResourcePack(
+      uuid: 'mock-uuid',
+      moduleUuid: 'mock-module-uuid',
+      manifest: mockManifest,
+      entityClients: [],
+      renderControllers: [],
+      animationControllers: [],
+      animations: [],
+      textures: [],
+      models: [],
+      texts: [],
+      packIcon: null,
+    );
+
+    final addon = AddonPackage(
+      metadata: metadata,
+      behaviorPack: mockBehaviorPack,
+      resourcePack: mockResourcePack,
+      createdAt: DateTime.now(),
+    );
+
+    try {
+      // Actually export the creature
+      print('🚀 Exporting creature: $creatureName');
+      final exportedAddon = await MinecraftExportService.exportCreature(
+        creatureAttributes: creatureAttributes,
+        metadata: metadata,
+      );
+      
+      print('✅ Creature exported successfully');
+      
+      // Show world creation dialog with real addon
+      await MinecraftExportService.showWorldCreationDialog(context, exportedAddon);
+      
+      // Show success feedback
+      _showSuccessFeedback('Export completed successfully!');
+    } catch (e) {
+      print('❌ Export error: $e');
+      // Show error feedback
+      _showErrorFeedback('Export failed: $e');
+    } finally {
+      setState(() {
+        _isExporting = false;
+        _showExportAnimation = false;
+      });
+      
+      // Stop export animation
+      _pulseController.stop();
+    }
   }
 
   @override
@@ -61,6 +322,12 @@ class _CompleteScreenState extends State<CompleteScreen>
     final creatureName = args?['creatureName'] ?? 'Rainbow Cow';
     final creatureType = args?['creatureType'] ?? 'Cow';
     final creatureAttributes = args?['creatureAttributes'] ?? 'rainbow colors and sparkles';
+    
+    // Responsive design
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isTablet = screenWidth > 600;
+    final isFoldable = screenWidth > 800;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF9F0), // Crafta cream background
       appBar: AppBar(
@@ -76,7 +343,7 @@ class _CompleteScreenState extends State<CompleteScreen>
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(isTablet ? 32.0 : 24.0),
           child: Column(
             children: [
               // Success Animation/Icon
@@ -164,23 +431,32 @@ class _CompleteScreenState extends State<CompleteScreen>
                           return Transform.scale(
                             scale: _celebrationAnimation.value * 0.8 + 0.2,
                             child: Container(
-                              width: 120,
-                              height: 120,
+                              width: 200,
+                              height: 200,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF7DC6F), // Crafta yellow
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFF7DC6F).withOpacity(0.3),
+                                    color: Colors.black.withOpacity(0.1),
                                     blurRadius: 15,
                                     offset: const Offset(0, 5),
                                   ),
                                 ],
                               ),
-                              child: const Icon(
-                                Icons.auto_awesome,
-                                size: 60,
-                                color: Colors.white,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: _isFurniture(creatureType)
+                                  ? FurnitureRenderer(
+                                      furnitureAttributes: creatureAttributes,
+                                      size: 200,
+                                      isAnimated: true,
+                                    )
+                                  : ProceduralCreatureRenderer(
+                                      creatureAttributes: creatureAttributes,
+                                      size: 200,
+                                      isAnimated: true,
+                                    ),
                               ),
                             ),
                           );
@@ -206,6 +482,65 @@ class _CompleteScreenState extends State<CompleteScreen>
                         ),
                         textAlign: TextAlign.center,
                       ),
+                      const SizedBox(height: 16),
+                      
+                      // AI Suggestions
+                      GestureDetector(
+                        onTap: () => _handleSuggestionTap(),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: _isSuggestionTapped 
+                              ? const Color(0xFFE8F5E8) 
+                              : const Color(0xFFF0F8FF),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: _isSuggestionTapped 
+                                ? const Color(0xFF4CAF50) 
+                                : const Color(0xFF98D8C8),
+                              width: _isSuggestionTapped ? 2 : 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (_isSuggestionTapped 
+                                  ? const Color(0xFF4CAF50) 
+                                  : const Color(0xFF98D8C8)).withOpacity(0.3),
+                                blurRadius: _isSuggestionTapped ? 12 : 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                _isSuggestionTapped ? Icons.check_circle : Icons.lightbulb_outline,
+                                color: _isSuggestionTapped ? const Color(0xFF4CAF50) : const Color(0xFF98D8C8),
+                                size: 24,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _getAISuggestion(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: _isSuggestionTapped ? const Color(0xFF2E7D32) : const Color(0xFF333333),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _isSuggestionTapped ? 'Creating...' : 'Tap to create!',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: _isSuggestionTapped ? const Color(0xFF4CAF50) : const Color(0xFF98D8C8),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -217,7 +552,7 @@ class _CompleteScreenState extends State<CompleteScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Animated Send to Minecraft Button
+                    // Animated Share Button
                     AnimatedBuilder(
                       animation: _bounceAnimation,
                       builder: (context, child) {
@@ -228,35 +563,101 @@ class _CompleteScreenState extends State<CompleteScreen>
                             height: 56,
                             child: ElevatedButton(
                               onPressed: () {
-                                // TODO: Implement mod export
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Mod exported! Check your downloads.'),
-                                    backgroundColor: Color(0xFF98D8C8),
-                                  ),
+                                // Navigate to creature sharing screen
+                                Navigator.pushNamed(
+                                  context,
+                                  '/creature-sharing',
+                                  arguments: {
+                                    'creatureAttributes': args ?? {},
+                                    'creatureName': creatureName,
+                                  },
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF98D8C8), // Crafta mint
+                                backgroundColor: Colors.orange.shade600,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(28),
                                 ),
                                 elevation: 8,
-                                shadowColor: const Color(0xFF98D8C8).withOpacity(0.3),
+                                shadowColor: Colors.orange.withOpacity(0.3),
                               ),
                               child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
-                                    Icons.download,
+                                    Icons.share,
                                     size: 24,
                                     color: Colors.white,
                                   ),
                                   SizedBox(width: 8),
                                   Text(
-                                    'Send to Minecraft',
+                                    'Share Creature',
                                     style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // Enhanced Send to Minecraft Button
+                    AnimatedBuilder(
+                      animation: Listenable.merge([_bounceAnimation, _pulseAnimation]),
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _isExporting 
+                            ? _pulseAnimation.value
+                            : _bounceAnimation.value * 0.9 + 0.1,
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: ElevatedButton(
+                              onPressed: _isExporting ? null : () async {
+                                // Show world creation dialog
+                                await _showWorldCreationDialog();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _isExporting
+                                  ? const Color(0xFFFF6B9D)
+                                  : _showSuccessAnimation
+                                    ? const Color(0xFF4CAF50)
+                                    : const Color(0xFF98D8C8),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(28),
+                                ),
+                                elevation: _isExporting ? 12 : 8,
+                                shadowColor: (_isExporting
+                                  ? const Color(0xFFFF6B9D)
+                                  : _showSuccessAnimation
+                                    ? const Color(0xFF4CAF50)
+                                    : const Color(0xFF98D8C8)).withOpacity(0.4),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    _isExporting
+                                      ? Icons.hourglass_empty
+                                      : _showSuccessAnimation
+                                        ? Icons.check_circle
+                                        : Icons.download,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _isExporting
+                                      ? 'Exporting...'
+                                      : 'Send to Minecraft',
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600,
                                     ),

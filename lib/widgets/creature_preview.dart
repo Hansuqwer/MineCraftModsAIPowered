@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'procedural_creature_renderer.dart';
+import 'furniture_renderer.dart';
 
 class CreaturePreview extends StatefulWidget {
   final Map<String, dynamic> creatureAttributes;
@@ -77,12 +78,35 @@ class _CreaturePreviewState extends State<CreaturePreview>
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: ProceduralCreatureRenderer(
+      child: _buildRenderer(),
+    );
+  }
+
+  Widget _buildRenderer() {
+    final itemType = widget.creatureAttributes['creatureType'] ?? 'cow';
+    
+    // Check if it's furniture or a creature
+    final furnitureTypes = [
+      'couch', 'sofa', 'chair', 'table', 'bed', 'desk', 'bookshelf', 'lamp',
+      'cabinet', 'dresser', 'wardrobe', 'shelf', 'stool', 'bench', 'ottoman',
+      'armchair', 'recliner', 'rocking_chair', 'dining_table', 'coffee_table',
+      'nightstand', 'chest', 'trunk', 'mirror', 'rug', 'carpet', 'curtain',
+      'blinds', 'plant', 'flower_pot', 'vase', 'clock', 'picture', 'frame'
+    ];
+    
+    if (furnitureTypes.contains(itemType)) {
+      return FurnitureRenderer(
+        furnitureAttributes: widget.creatureAttributes,
+        size: widget.size,
+        isAnimated: widget.isAnimated,
+      );
+    } else {
+      return ProceduralCreatureRenderer(
         creatureAttributes: widget.creatureAttributes,
         size: widget.size,
         isAnimated: widget.isAnimated,
-      ),
-    );
+      );
+    }
   }
 
   Widget _buildCreatureBody() {

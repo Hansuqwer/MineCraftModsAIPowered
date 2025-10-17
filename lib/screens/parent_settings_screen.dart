@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/language_selector.dart';
 
 class ParentSettingsScreen extends StatefulWidget {
   const ParentSettingsScreen({super.key});
@@ -211,7 +212,7 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                     DropdownMenuItem(value: '7-8', child: Text('Ages 7-8')),
                     DropdownMenuItem(value: '9-10', child: Text('Ages 9-10')),
                   ],
-                  onChanged: (value) => setState(() => _selectedAgeGroup = value!),
+                  onChanged: (value) => setState(() => _selectedAgeGroup = value ?? '4-6'),
                 ),
               ),
               const SizedBox(height: 32),
@@ -244,7 +245,7 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                     DropdownMenuItem(value: 'Medium', child: Text('Medium Safety')),
                     DropdownMenuItem(value: 'Low', child: Text('Low Safety')),
                   ],
-                  onChanged: (value) => setState(() => _selectedSafetyLevel = value!),
+                  onChanged: (value) => setState(() => _selectedSafetyLevel = value ?? 'High'),
                 ),
               ),
               const SizedBox(height: 32),
@@ -298,15 +299,7 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: () {
-                                // TODO: Navigate to creation history
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Creation history coming soon!'),
-                                    backgroundColor: Color(0xFFF7DC6F),
-                                  ),
-                                );
-                              },
+                              onPressed: () => _showHistoryDialog(),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 foregroundColor: const Color(0xFFF7DC6F),
@@ -379,15 +372,7 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: Navigate to export management
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Export management coming soon!'),
-                              backgroundColor: Color(0xFF98D8C8),
-                            ),
-                          );
-                        },
+                        onPressed: () => _showManageExportsDialog(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF98D8C8),
                           foregroundColor: Colors.white,
@@ -408,6 +393,40 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                 ),
               ),
               const SizedBox(height: 32),
+
+              // Language Settings
+              const LanguageSelector(),
+              
+              const SizedBox(height: 32),
+
+              // Legal Settings Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/legal-settings');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange.shade600,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    elevation: 8,
+                    shadowColor: Colors.orange.withOpacity(0.3),
+                  ),
+                  child: const Text(
+                    'Legal & Privacy Settings',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 16),
 
               // Save Settings Button
               SizedBox(
@@ -498,6 +517,428 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
           ),
         ],
       ),
+    );
+  }
+
+  /// Show creation history dialog
+  void _showHistoryDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.history,
+                color: Color(0xFF98D8C8),
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Creation History',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 400,
+            child: _buildHistoryList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Close',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF98D8C8),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Build history list widget
+  Widget _buildHistoryList() {
+    // Mock history data - in real app, this would come from storage
+    final historyData = [
+      {
+        'creature': 'Rainbow Dragon',
+        'timestamp': '2024-01-15 14:30',
+        'type': 'creature',
+        'status': 'exported',
+      },
+      {
+        'creature': 'Blue Couch',
+        'timestamp': '2024-01-15 13:45',
+        'type': 'furniture',
+        'status': 'exported',
+      },
+      {
+        'creature': 'Sparkly Unicorn',
+        'timestamp': '2024-01-15 12:20',
+        'type': 'creature',
+        'status': 'created',
+      },
+      {
+        'creature': 'Green Chair',
+        'timestamp': '2024-01-15 11:15',
+        'type': 'furniture',
+        'status': 'created',
+      },
+      {
+        'creature': 'Purple Cat with Wings',
+        'timestamp': '2024-01-15 10:30',
+        'type': 'creature',
+        'status': 'exported',
+      },
+    ];
+
+    return ListView.builder(
+      itemCount: historyData.length,
+      itemBuilder: (context, index) {
+        final item = historyData[index];
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8F9FA),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE0E0E0)),
+          ),
+          child: Row(
+            children: [
+              // Icon based on type
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: item['type'] == 'creature' 
+                    ? const Color(0xFF98D8C8).withOpacity(0.2)
+                    : const Color(0xFFF7DC6F).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  item['type'] == 'creature' ? Icons.pets : Icons.chair,
+                  color: item['type'] == 'creature' 
+                    ? const Color(0xFF98D8C8)
+                    : const Color(0xFFF7DC6F),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              
+              // Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['creature'] as String,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      item['timestamp'] as String,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF666666),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Status badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: item['status'] == 'exported' 
+                    ? const Color(0xFF4CAF50).withOpacity(0.1)
+                    : const Color(0xFFF7DC6F).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  item['status'] == 'exported' ? 'Exported' : 'Created',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: item['status'] == 'exported' 
+                      ? const Color(0xFF4CAF50)
+                      : const Color(0xFFF7DC6F),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Show manage exports dialog
+  void _showManageExportsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.file_download,
+                color: Color(0xFF98D8C8),
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Manage Exports',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 400,
+            child: _buildExportsList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Close',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF98D8C8),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Build exports list widget
+  Widget _buildExportsList() {
+    // Mock exports data - in real app, this would come from storage
+    final exportsData = [
+      {
+        'name': 'Rainbow_Dragon.mcpack',
+        'size': '2.3 MB',
+        'date': '2024-01-15 14:30',
+        'creature': 'Rainbow Dragon',
+        'status': 'ready',
+      },
+      {
+        'name': 'Blue_Couch.mcpack',
+        'size': '1.8 MB',
+        'date': '2024-01-15 13:45',
+        'creature': 'Blue Couch',
+        'status': 'ready',
+      },
+      {
+        'name': 'Purple_Cat_with_Wings.mcpack',
+        'size': '2.1 MB',
+        'date': '2024-01-15 10:30',
+        'creature': 'Purple Cat with Wings',
+        'status': 'ready',
+      },
+      {
+        'name': 'Green_Chair.mcpack',
+        'size': '1.5 MB',
+        'date': '2024-01-15 11:15',
+        'creature': 'Green Chair',
+        'status': 'ready',
+      },
+    ];
+
+    return ListView.builder(
+      itemCount: exportsData.length,
+      itemBuilder: (context, index) {
+        final item = exportsData[index];
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8F9FA),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE0E0E0)),
+          ),
+          child: Row(
+            children: [
+              // File icon
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF98D8C8).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.file_download,
+                  color: Color(0xFF98D8C8),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              
+              // Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['creature'] as String,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${item['name']} • ${item['size']} • ${item['date']}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF666666),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Action buttons
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Re-export button
+                  IconButton(
+                    onPressed: () => _reExportFile(item['name'] as String),
+                    icon: const Icon(
+                      Icons.refresh,
+                      color: Color(0xFF98D8C8),
+                      size: 20,
+                    ),
+                    tooltip: 'Re-export',
+                  ),
+                  
+                  // Delete button
+                  IconButton(
+                    onPressed: () => _deleteExportFile(item['name'] as String),
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Color(0xFFFF6B6B),
+                      size: 20,
+                    ),
+                    tooltip: 'Delete',
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Re-export a file
+  void _reExportFile(String fileName) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Re-exporting $fileName...'),
+        backgroundColor: const Color(0xFF98D8C8),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  /// Delete an export file
+  void _deleteExportFile(String fileName) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            'Delete Export',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF333333),
+            ),
+          ),
+          content: Text(
+            'Are you sure you want to delete $fileName?',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Color(0xFF666666),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF666666),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('$fileName deleted'),
+                    backgroundColor: const Color(0xFF4CAF50),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFFFF6B6B),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

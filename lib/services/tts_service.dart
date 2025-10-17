@@ -1,5 +1,6 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:io';
+import 'language_service.dart';
 
 class TTSService {
   FlutterTts? _flutterTts;
@@ -22,8 +23,18 @@ class TTSService {
     _flutterTts = FlutterTts();
     
     try {
-      await _flutterTts!.setLanguage('en-US');
-      await _flutterTts!.setSpeechRate(0.8); // Slightly slower for kids
+      // Get current language from settings
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      // Set language based on current locale
+      if (languageCode == 'sv') {
+        await _flutterTts!.setLanguage('sv-SE'); // Swedish
+      } else {
+        await _flutterTts!.setLanguage('en-US'); // English (default)
+      }
+      
+      await _flutterTts!.setSpeechRate(0.5); // Much slower for kids
       await _flutterTts!.setVolume(1.0);
       await _flutterTts!.setPitch(1.1); // Slightly higher pitch for friendly voice
       
@@ -64,8 +75,12 @@ class TTSService {
     if (!_isInitialized) return;
     
     try {
-      // Play celebration sound with TTS
-      await _flutterTts!.speak('🎉 Amazing! 🎉');
+      // Get current language
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      String sound = languageCode == 'sv' ? '🎉 Fantastiskt! Så bra gjort! 🎉' : '🎉 Amazing! 🎉';
+      await _flutterTts!.speak(sound);
     } catch (e) {
       print('Celebration sound error: $e');
     }
@@ -100,8 +115,12 @@ class TTSService {
     if (!_isInitialized) return;
     
     try {
-      // Play welcome sound with TTS
-      await _flutterTts!.speak('🌈 Welcome to Crafta! 🌈');
+      // Get current language
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      String sound = languageCode == 'sv' ? '🌈 Välkommen till Crafta! 🌈' : '🌈 Welcome to Crafta! 🌈';
+      await _flutterTts!.speak(sound);
     } catch (e) {
       print('Welcome sound error: $e');
     }
@@ -112,8 +131,12 @@ class TTSService {
     if (!_isInitialized) return;
 
     try {
-      // Play creation complete sound with TTS
-      await _flutterTts!.speak('🎨 Your creation is ready! 🎨');
+      // Get current language
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      String sound = languageCode == 'sv' ? '🎨 Din skapelse är klar! 🎨' : '🎨 Your creation is ready! 🎨';
+      await _flutterTts!.speak(sound);
     } catch (e) {
       print('Creation complete sound error: $e');
     }
@@ -124,8 +147,12 @@ class TTSService {
     if (!_isInitialized) return;
 
     try {
-      // Play thinking sound with TTS
-      await _flutterTts!.speak('🤔 Let me think... 🤔');
+      // Get current language
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      String sound = languageCode == 'sv' ? '🤔 Låt mig tänka... 🤔' : '🤔 Let me think... 🤔';
+      await _flutterTts!.speak(sound);
     } catch (e) {
       print('Thinking sound error: $e');
     }
@@ -136,8 +163,12 @@ class TTSService {
     if (!_isInitialized) return;
 
     try {
-      // Play success sound with TTS
-      await _flutterTts!.speak('🎉 Success! 🎉');
+      // Get current language
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      String sound = languageCode == 'sv' ? '🎉 Framgång! 🎉' : '🎉 Success! 🎉';
+      await _flutterTts!.speak(sound);
     } catch (e) {
       print('Success sound error: $e');
     }
@@ -148,8 +179,12 @@ class TTSService {
     if (!_isInitialized) return;
 
     try {
-      // Play error sound with TTS
-      await _flutterTts!.speak('😅 Oops, let\'s try again! 😅');
+      // Get current language
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      String sound = languageCode == 'sv' ? '😅 Hoppsan, låt oss försöka igen! 😅' : '😅 Oops, let\'s try again! 😅';
+      await _flutterTts!.speak(sound);
     } catch (e) {
       print('Error sound error: $e');
     }
@@ -160,8 +195,12 @@ class TTSService {
     if (!_isInitialized) return;
 
     try {
-      // Play loading sound with TTS
-      await _flutterTts!.speak('⏳ Creating your creature... ⏳');
+      // Get current language
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      String sound = languageCode == 'sv' ? '⏳ Skapar din varelse... ⏳' : '⏳ Creating your creature... ⏳';
+      await _flutterTts!.speak(sound);
     } catch (e) {
       print('Loading sound error: $e');
     }
@@ -172,14 +211,21 @@ class TTSService {
     if (!_isInitialized) return;
 
     try {
+      // Get current language
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      final isSwedish = languageCode == 'sv';
+      
       String sound = '';
       switch (creatureType.toLowerCase()) {
         // Creatures
         case 'dragon':
-          sound = '🐉 Rawr! I\'m a friendly dragon! 🐉';
+        case 'drake':
+          sound = isSwedish ? '🐉 Rååå! Jag är en vänlig drake! 🐉' : '🐉 Rawr! I\'m a friendly dragon! 🐉';
           break;
         case 'unicorn':
-          sound = '🦄 Neigh! I\'m a magical unicorn! 🦄';
+        case 'enhörning':
+          sound = isSwedish ? '🦄 Gnägg! Jag är en magisk enhörning! 🦄' : '🦄 Neigh! I\'m a magical unicorn! 🦄';
           break;
         case 'phoenix':
           sound = '🔥 Squawk! I\'m a phoenix! 🔥';
@@ -188,10 +234,12 @@ class TTSService {
           sound = '🦅 Screech! I\'m a griffin! 🦅';
           break;
         case 'cat':
-          sound = '🐱 Meow! I\'m a magical cat! 🐱';
+        case 'katt':
+          sound = isSwedish ? '🐱 Mjau! Jag är en magisk katt! 🐱' : '🐱 Meow! I\'m a magical cat! 🐱';
           break;
         case 'dog':
-          sound = '🐶 Woof! I\'m a magical dog! 🐶';
+        case 'hund':
+          sound = isSwedish ? '🐶 Voff! Jag är en magisk hund! 🐶' : '🐶 Woof! I\'m a magical dog! 🐶';
           break;
         case 'horse':
           sound = '🐴 Neigh! I\'m a magical horse! 🐴';
@@ -206,7 +254,20 @@ class TTSService {
           sound = '🐔 Cluck! I\'m a magical chicken! 🐔';
           break;
         case 'cow':
-          sound = '🐄 Moo! I\'m a magical cow! 🐄';
+        case 'ko':
+          sound = isSwedish ? '🐄 Mu! Jag är en magisk ko! 🐄' : '🐄 Moo! I\'m a magical cow! 🐄';
+          break;
+        case 'pig':
+        case 'gris':
+          sound = isSwedish ? '🐷 Nöff! Jag är en magisk gris! 🐷' : '🐷 Oink! I\'m a magical pig! 🐷';
+          break;
+        case 'sheep':
+        case 'får':
+          sound = isSwedish ? '🐑 Bä! Jag är ett magiskt får! 🐑' : '🐑 Baa! I\'m a magical sheep! 🐑';
+          break;
+        case 'chicken':
+        case 'höna':
+          sound = isSwedish ? '🐔 Kuckeliku! Jag är en magisk höna! 🐔' : '🐔 Cluck! I\'m a magical chicken! 🐔';
           break;
         // Weapons and items
         case 'sword':
@@ -254,8 +315,12 @@ class TTSService {
     if (!_isInitialized) return;
 
     try {
-      // Play ambient sound with TTS
-      await _flutterTts!.speak('🌟 Welcome to the magical world of Crafta! 🌟');
+      // Get current language
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      String sound = languageCode == 'sv' ? '🌟 Välkommen till Craftas magiska värld! 🌟' : '🌟 Welcome to the magical world of Crafta! 🌟';
+      await _flutterTts!.speak(sound);
     } catch (e) {
       print('Ambient sound error: $e');
     }

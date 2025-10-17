@@ -1,6 +1,7 @@
 import 'dart:convert';
 import '../../models/minecraft/addon_file.dart';
 import '../../models/minecraft/addon_metadata.dart';
+import '../behavior_mapping_service.dart';
 
 /// Generates Minecraft entity behavior files from Crafta creature data
 class EntityBehaviorGenerator {
@@ -28,59 +29,7 @@ class EntityBehaviorGenerator {
           'is_spawnable': metadata.generateSpawnEggs,
           'is_experimental': false,
         },
-        'components': {
-          // Core stats
-          'minecraft:type_family': {
-            'family': ['${metadata.namespace}_creature', creatureType]
-          },
-          'minecraft:health': {
-            'value': _calculateHealth(sizeAttr, creatureType),
-            'max': _calculateHealth(sizeAttr, creatureType),
-          },
-          'minecraft:movement': {
-            'value': _calculateSpeed(sizeAttr, creatureType, abilities),
-          },
-          'minecraft:collision_box': _getCollisionBox(sizeAttr),
-
-          // Physics and navigation
-          'minecraft:physics': {},
-          'minecraft:jump.static': {},
-
-          // Movement type based on abilities
-          ..._getMovementComponents(abilities, creatureType),
-
-          // Navigation
-          'minecraft:navigation.walk': {
-            'can_walk': true,
-            'can_pass_doors': true,
-            'can_open_doors': false,
-          },
-
-          // Behaviors
-          'minecraft:behavior.random_stroll': {
-            'priority': 6,
-            'speed_multiplier': 1.0,
-          },
-          'minecraft:behavior.random_look_around': {
-            'priority': 7,
-          },
-          'minecraft:behavior.look_at_player': {
-            'priority': 7,
-            'look_distance': 6.0,
-            'probability': 0.02,
-          },
-
-          // Special abilities
-          ..._getAbilityComponents(abilities, effects),
-
-          // Scale based on size
-          if (sizeAttr != 'normal') 'minecraft:scale': _getSizeScale(sizeAttr),
-
-          // Loot table (optional - drops nothing by default)
-          // 'minecraft:loot': {
-          //   'table': 'loot_tables/entities/$creatureType.json',
-          // },
-        }
+        'components': BehaviorMappingService.mapToMinecraftComponents(creatureAttributes),
       }
     };
 

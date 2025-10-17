@@ -28,14 +28,22 @@ class TextureGenerator {
     parts.add(creatureType);
     final identifier = parts.join('_');
 
-    // For MVP: Generate a simple colored texture
-    // TODO: Export from ProceduralCreatureRenderer
-    final textureData = await _generateSimpleTexture(
-      color: _getColorFromName(colorName),
-      size: 64, // Standard Minecraft texture size
-    );
-
-    return AddonFile.png('textures/entity/$identifier.png', textureData);
+    // Generate texture from procedural renderer
+    try {
+      final textureData = await generateTextureFromRenderer(
+        creatureAttributes: creatureAttributes,
+        size: 64, // Standard Minecraft texture size
+      );
+      return AddonFile.png('textures/entity/$identifier.png', textureData);
+    } catch (e) {
+      // Fallback to simple texture if renderer fails
+      print('Warning: Procedural renderer failed, using simple texture: $e');
+      final textureData = await _generateSimpleTexture(
+        color: _getColorFromName(colorName),
+        size: 64,
+      );
+      return AddonFile.png('textures/entity/$identifier.png', textureData);
+    }
   }
 
   /// Generate a simple solid color texture (MVP version)
@@ -78,7 +86,7 @@ class TextureGenerator {
   }
 
   /// Export texture from ProceduralCreatureRenderer (Advanced version)
-  /// This would capture the actual rendered creature
+  /// This captures the actual rendered creature
   static Future<Uint8List> generateTextureFromRenderer({
     required Map<String, dynamic> creatureAttributes,
     required int size,

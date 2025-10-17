@@ -1,0 +1,107 @@
+{
+  "@@locale": "en",
+  "appTitle": "Crafta",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "welcomeMessage": "Welcome to Crafta! I'm here to help you create amazing creatures and furniture for Minecraft!",
+  "@welcomeMessage": {
+    "description": "Welcome message shown to users"
+  },
+  "creatorTitle": "Crafta Creator",
+  "@creatorTitle": {
+    "description": "Title of the creator screen"
+  },
+  "holdToSpeak": "Hold to speak",
+  "@holdToSpeak": {
+    "description": "Instruction for voice input"
+  },
+  "listening": "Listening... Speak now!",
+  "@listening": {
+    "description": "Text shown when listening for voice input"
+  },
+  "typeToCreate": "Type what you want to create...",
+  "@typeToCreate": {
+    "description": "Placeholder text for text input"
+  },
+  "send": "Send",
+  "@send": {
+    "description": "Send button text"
+  },
+  "creating": "Creating your creature...",
+  "@creating": {
+    "description": "Loading message when creating"
+  },
+  "thisMightTakeMoment": "This might take a moment...",
+  "@thisMightTakeMoment": {
+    "description": "Additional loading message"
+  },
+  "greatCreating": "Great! Creating your {creatureType}...",
+  "@greatCreating": {
+    "description": "Success message when creating creature",
+    "placeholders": {
+      "creatureType": {
+        "type": "String",
+        "description": "The type of creature being created"
+      }
+    }
+  },
+  "gotItTellMeMore": "Got it! Tell me more about your creature...",
+  "@gotItTellMeMore": {
+    "description": "Message when more information is needed"
+  },
+  "somethingWentWrong": "Something went wrong. Please try again!",
+  "@somethingWentWrong": {
+    "description": "Error message"
+  },
+  "suggestionLoaded": "Suggestion loaded: {suggestion}",
+  "@suggestionLoaded": {
+    "description": "Message when suggestion is loaded",
+    "placeholders": {
+      "suggestion": {
+        "type": "String",
+        "description": "The suggestion text"
+      }
+    }
+  },
+  "greatIdeaLetsCreate": "Great idea! Let's create that!",
+  "@greatIdeaLetsCreate": {
+    "description": "Message when suggestion is tapped"
+  },
+  "sendToMinecraft": "Send to Minecraft",
+  "@sendToMinecraft": {
+    "description": "Button text for sending to Minecraft"
+  },
+  "exporting": "Exporting...",
+  "@exporting": {
+    "description": "Text shown when exporting"
+  },
+  "exportCompleted": "Export completed successfully!",
+  "@exportCompleted": {
+    "description": "Success message for export"
+  },
+  "exportFailed": "Export failed. Please try again.",
+  "@exportFailed": {
+    "description": "Error message for export"
+  },
+  "makeAnother": "Make Another",
+  "@makeAnother": {
+    "description": "Button text for creating another"
+  },
+  "tapToCreate": "Tap to create!",
+  "@tapToCreate": {
+    "description": "Instruction for suggestion tap"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language setting label"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "swedish": "Svenska",
+  "@swedish": {
+    "description": "Swedish language option"
+  }
+}

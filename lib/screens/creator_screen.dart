@@ -3,6 +3,7 @@ import 'dart:io';
 import '../services/speech_service.dart';
 import '../services/ai_service.dart';
 import '../services/tts_service.dart';
+import '../utils/screen_utils.dart';
 import '../models/conversation.dart';
 
 class CreatorScreen extends StatefulWidget {
@@ -25,16 +26,33 @@ class _CreatorScreenState extends State<CreatorScreen>
   List<String> _creatureSuggestions = [];
   int _userAge = 6; // Default age for suggestions
   
-  late AnimationController _micController;
+  // Text input controller
+  final TextEditingController _textController = TextEditingController();
+  
+  // Enhanced animations
+  late AnimationController _pulseController;
+  late AnimationController _bounceController;
   late AnimationController _sparkleController;
-  late Animation<double> _micAnimation;
+  late Animation<double> _pulseAnimation;
+  late Animation<double> _bounceAnimation;
   late Animation<double> _sparkleAnimation;
+  
+  // Visual feedback states
+  bool _showSuccessAnimation = false;
+  bool _showErrorAnimation = false;
+  bool _showLoadingOverlay = false;
+  String _loadingMessage = 'Creating your creature...';
+  
+  late AnimationController _micController;
+  late Animation<double> _micAnimation;
 
   @override
   void initState() {
     super.initState();
     _initializeAnimations();
+    _initializeEnhancedAnimations();
     _initializeSpeech();
+    _handleSuggestionFromComplete();
   }
 
   void _initializeAnimations() {
@@ -67,10 +85,41 @@ class _CreatorScreenState extends State<CreatorScreen>
     ));
   }
 
+  void _initializeEnhancedAnimations() {
+    // Pulse animation for listening state
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _pulseAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Bounce animation for success
+    _bounceController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _bounceAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.3,
+    ).animate(CurvedAnimation(
+      parent: _bounceController,
+      curve: Curves.elasticOut,
+    ));
+  }
+
   @override
   void dispose() {
     _micController.dispose();
     _sparkleController.dispose();
+    _pulseController.dispose();
+    _bounceController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
@@ -152,8 +201,8 @@ class _CreatorScreenState extends State<CreatorScreen>
         // Speak Crafta's response
         _ttsService.speak(aiResponse);
         
-        // Check if we have enough info to create the creature
-        final attributes = _aiService.parseCreatureRequest(_recognizedText);
+      // Check if we have enough info to create the creature
+      final attributes = await _aiService.parseCreatureRequest(_recognizedText);
         if (attributes['creatureType'] != null && attributes['color'] != null) {
           _conversation = _conversation.markComplete(attributes);
           
@@ -207,7 +256,7 @@ class _CreatorScreenState extends State<CreatorScreen>
       _ttsService.speak(aiResponse);
       
       // Check if we have enough info to create the creature
-      final attributes = _aiService.parseCreatureRequest(testPhrase);
+      final attributes = await _aiService.parseCreatureRequest(testPhrase);
       print('DEBUG: Parsed attributes: $attributes');
       
       // Validate content for age
@@ -217,16 +266,17 @@ class _CreatorScreenState extends State<CreatorScreen>
       if (attributes['creatureType'] != null && attributes['color'] != null && isAgeAppropriate) {
         _conversation = _conversation.markComplete(attributes);
         
-        // Show visual preview first
-        Future.delayed(const Duration(seconds: 1), () {
+        // Navigate to complete screen after a short delay
+        Future.delayed(const Duration(seconds: 2), () {
           if (mounted) {
-            print('DEBUG: Navigating to creature preview with: $attributes');
+            print('DEBUG: Navigating to complete screen with: $attributes');
             Navigator.pushNamed(
               context,
-              '/creature-preview',
+              '/complete',
               arguments: {
-                'creatureAttributes': attributes,
                 'creatureName': '${attributes['color']} ${attributes['creatureType']}',
+                'creatureType': attributes['creatureType'],
+                'creatureAttributes': attributes,
               },
             );
           }
@@ -263,7 +313,7 @@ class _CreatorScreenState extends State<CreatorScreen>
       _ttsService.speak(aiResponse);
       
       // Check if we have enough info to create the creature
-      final attributes = _aiService.parseCreatureRequest(suggestion);
+      final attributes = await _aiService.parseCreatureRequest(suggestion);
       print('DEBUG: Suggestion parsed attributes: $attributes');
       
       // Validate content for age
@@ -304,8 +354,295 @@ class _CreatorScreenState extends State<CreatorScreen>
     });
   }
 
+  Widget _buildFoldableLayout() {
+    return Row(
+      children: [
+        // Left side - Crafta Avatar and Conversation
+        Expanded(
+          flex: 1,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                // Crafta Avatar
+                AnimatedBuilder(
+                  animation: _sparkleAnimation,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _sparkleAnimation.value,
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF98D8C8),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF98D8C8).withOpacity(0.4),
+                              blurRadius: 20,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.auto_awesome,
+                          size: 60,
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+                
+                // Conversation
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        if (_conversation.lastCraftaMessage.isNotEmpty)
+                          Text(
+                            _conversation.lastCraftaMessage,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF333333),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        // Right side - Input Controls
+        Expanded(
+          flex: 1,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Voice Input Button with Enhanced Animations
+                AnimatedBuilder(
+                  animation: Listenable.merge([_micAnimation, _pulseAnimation]),
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _isListening 
+                        ? _micAnimation.value * (_isListening ? _pulseAnimation.value : 1.0)
+                        : 1.0,
+                      child: GestureDetector(
+                        onTapDown: (_) {
+                          _startListening();
+                          _micController.repeat(reverse: true);
+                          _pulseController.repeat(reverse: true);
+                        },
+                        onTapUp: (_) {
+                          _stopListening();
+                          _micController.stop();
+                          _pulseController.stop();
+                        },
+                        onTapCancel: () {
+                          _stopListening();
+                          _micController.stop();
+                          _pulseController.stop();
+                        },
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: _isListening 
+                              ? const Color(0xFFFF6B9D)
+                              : _showSuccessAnimation
+                                ? const Color(0xFF4CAF50)
+                                : _showErrorAnimation
+                                  ? const Color(0xFFFF6B6B)
+                                  : const Color(0xFF98D8C8),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: (_isListening 
+                                  ? const Color(0xFFFF6B9D)
+                                  : _showSuccessAnimation
+                                    ? const Color(0xFF4CAF50)
+                                    : _showErrorAnimation
+                                      ? const Color(0xFFFF6B6B)
+                                      : const Color(0xFF98D8C8)).withOpacity(0.4),
+                                blurRadius: _isListening ? 25 : _showSuccessAnimation ? 20 : 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            _isListening 
+                              ? Icons.mic 
+                              : _showSuccessAnimation
+                                ? Icons.check_circle
+                                : _showErrorAnimation
+                                  ? Icons.error_outline
+                                  : Icons.mic_none,
+                            size: 48,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                
+                // Instructions
+                Text(
+                  _isListening 
+                    ? 'Listening... Speak now!'
+                    : 'Hold to speak',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: _isListening 
+                      ? const Color(0xFFFF6B9D)
+                      : const Color(0xFF666666),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                
+                // Text Input with Enhanced Animations
+                const SizedBox(height: 24),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _isProcessing 
+                        ? const Color(0xFF98D8C8)
+                        : _showSuccessAnimation
+                          ? const Color(0xFF4CAF50)
+                          : _showErrorAnimation
+                            ? const Color(0xFFFF6B6B)
+                            : const Color(0xFFE0E0E0),
+                      width: _isProcessing ? 2 : 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (_isProcessing 
+                          ? const Color(0xFF98D8C8)
+                          : _showSuccessAnimation
+                            ? const Color(0xFF4CAF50)
+                            : _showErrorAnimation
+                              ? const Color(0xFFFF6B6B)
+                              : Colors.black).withOpacity(0.1),
+                        blurRadius: _isProcessing ? 12 : 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _textController,
+                          onSubmitted: (text) => _processTextInput(text),
+                          decoration: const InputDecoration(
+                            hintText: 'Type what you want to create...',
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              color: Color(0xFF999999),
+                              fontSize: 16,
+                            ),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF333333),
+                          ),
+                          maxLines: 1,
+                          textInputAction: TextInputAction.send,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      AnimatedBuilder(
+                        animation: _bounceAnimation,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _isProcessing ? _bounceAnimation.value : 1.0,
+                            child: GestureDetector(
+                              onTap: () => _processTextInput(_getCurrentText()),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: _isProcessing 
+                                    ? const Color(0xFFFF6B9D)
+                                    : _showSuccessAnimation
+                                      ? const Color(0xFF4CAF50)
+                                      : _showErrorAnimation
+                                        ? const Color(0xFFFF6B6B)
+                                        : const Color(0xFF98D8C8),
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: (_isProcessing 
+                                        ? const Color(0xFFFF6B9D)
+                                        : _showSuccessAnimation
+                                          ? const Color(0xFF4CAF50)
+                                          : _showErrorAnimation
+                                            ? const Color(0xFFFF6B6B)
+                                            : const Color(0xFF98D8C8)).withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  _isProcessing 
+                                    ? Icons.hourglass_empty
+                                    : _showSuccessAnimation
+                                      ? Icons.check
+                                      : _showErrorAnimation
+                                        ? Icons.error_outline
+                                        : Icons.send,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isTablet = screenWidth > 600;
+    final isFoldable = screenWidth > 800;
+    
     return Scaffold(
       backgroundColor: const Color(0xFFFFF9F0), // Crafta cream background
       appBar: AppBar(
@@ -320,9 +657,11 @@ class _CreatorScreenState extends State<CreatorScreen>
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
+        child: isFoldable 
+          ? _buildFoldableLayout()
+          : Padding(
+              padding: EdgeInsets.all(isTablet ? 32.0 : 24.0),
+              child: Column(
             children: [
               // Crafta Avatar and Speech Bubble
               Expanded(
@@ -475,6 +814,64 @@ class _CreatorScreenState extends State<CreatorScreen>
                       ),
                     ),
                     
+                    // Text Input Option
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE0E0E0)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _textController,
+                              onSubmitted: (text) => _processTextInput(text),
+                              decoration: const InputDecoration(
+                                hintText: 'Type what you want to create...',
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(
+                                  color: Color(0xFF999999),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF333333),
+                              ),
+                              maxLines: 1,
+                              textInputAction: TextInputAction.send,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => _processTextInput(_getCurrentText()),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF98D8C8),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.send,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
                     // Recognized Text
                     if (_recognizedText.isNotEmpty) ...[
                       const SizedBox(height: 16),
@@ -579,5 +976,232 @@ class _CreatorScreenState extends State<CreatorScreen>
         ),
       ),
     );
+  }
+
+  /// Build loading overlay
+  Widget _buildLoadingOverlay() {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF98D8C8)),
+                strokeWidth: 4,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                _loadingMessage,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF333333),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'This might take a moment...',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF666666),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Process text input from keyboard
+  Future<void> _processTextInput(String text) async {
+    if (text.trim().isEmpty) return;
+    
+    setState(() {
+      _recognizedText = text;
+      _isProcessing = true;
+      _showLoadingOverlay = true;
+      _loadingMessage = 'Creating your creature...';
+    });
+    
+    // Start processing animation
+    _bounceController.repeat(reverse: true);
+    
+    // Clear text field
+    _textController.clear();
+    
+    // Add user message to conversation
+    _conversation = _conversation.addMessage(text, true);
+    
+    // Get AI response
+    try {
+      final aiResponse = await _aiService.getCraftaResponse(text);
+      _conversation = _conversation.addMessage(aiResponse, false);
+      
+      // Speak Crafta's response
+      _ttsService.speak(aiResponse);
+      
+      // Check if we have enough info to create the creature
+      final attributes = await _aiService.parseCreatureRequest(text);
+      if (attributes['creatureType'] != null && attributes['color'] != null) {
+        _conversation = _conversation.markComplete(attributes);
+        
+        // Show success feedback
+        _showSuccessFeedback('Great! Creating your ${attributes['creatureType']}...');
+        
+        // Navigate to complete screen after a short delay
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted) {
+            Navigator.pushNamed(
+              context,
+              '/complete',
+              arguments: {
+                'creatureName': '${attributes['color']} ${attributes['creatureType']}',
+                'creatureType': attributes['creatureType'],
+                'creatureAttributes': attributes,
+              },
+            );
+          }
+        });
+      } else {
+        // Show processing feedback
+        _showSuccessFeedback('Got it! Tell me more about your creature...');
+      }
+    } catch (e) {
+      final errorMessage = 'Oops! Let\'s try that again - what would you like to create?';
+      _conversation = _conversation.addMessage(errorMessage, false);
+      _ttsService.speak(errorMessage);
+      _showErrorFeedback('Something went wrong. Please try again!');
+    }
+    
+    setState(() {
+      _isProcessing = false;
+      _showLoadingOverlay = false;
+    });
+    
+    // Stop processing animation
+    _bounceController.stop();
+  }
+
+  /// Get current text from controller
+  String _getCurrentText() {
+    return _textController.text;
+  }
+
+  /// Check if the creature type is furniture
+  bool _isFurniture(String creatureType) {
+    const furnitureTypes = [
+      'couch', 'sofa', 'chair', 'table', 'bed', 'desk', 'bookshelf',
+      'lamp', 'floor_lamp', 'table_lamp', 'cabinet', 'dresser', 'wardrobe',
+      'shelf', 'stool', 'bench', 'ottoman', 'armchair', 'recliner',
+      'rocking_chair', 'dining_table', 'coffee_table', 'nightstand',
+      'chest', 'trunk', 'mirror', 'rug', 'carpet', 'curtain', 'blinds',
+      'plant', 'flower_pot', 'vase', 'clock', 'picture', 'frame'
+    ];
+    return furnitureTypes.contains(creatureType.toLowerCase());
+  }
+
+  /// Handle suggestion from complete screen
+  void _handleSuggestionFromComplete() {
+    // Check if we came from a suggestion tap
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (args != null && args['fromSuggestion'] == true) {
+        final suggestion = args['suggestion'] as String?;
+        if (suggestion != null && suggestion.isNotEmpty) {
+          // Pre-fill the text field with the suggestion
+          _textController.text = suggestion;
+
+          // Show enhanced feedback with animation
+          _showSuccessFeedback('Suggestion loaded: $suggestion');
+        }
+      }
+    });
+  }
+
+  /// Show success feedback with animation
+  void _showSuccessFeedback(String message) {
+    setState(() {
+      _showSuccessAnimation = true;
+    });
+    
+    _bounceController.forward().then((_) {
+      _bounceController.reverse();
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: const Color(0xFF4CAF50),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+    
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      if (mounted) {
+        setState(() {
+          _showSuccessAnimation = false;
+        });
+      }
+    });
+  }
+
+  /// Show error feedback with animation
+  void _showErrorFeedback(String message) {
+    setState(() {
+      _showErrorAnimation = true;
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: const Color(0xFFFF6B6B),
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+    
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      if (mounted) {
+        setState(() {
+          _showErrorAnimation = false;
+        });
+      }
+    });
   }
 }

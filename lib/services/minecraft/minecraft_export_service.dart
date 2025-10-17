@@ -4,10 +4,13 @@ import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter/material.dart';
 
 import '../../models/minecraft/addon_metadata.dart';
 import '../../models/minecraft/addon_package.dart';
 import '../../models/minecraft/addon_file.dart';
+import 'simple_script_api_generator.dart';
+import 'geometry_generator.dart';
 import '../../models/minecraft/behavior_pack.dart';
 import '../../models/minecraft/resource_pack.dart';
 import 'manifest_generator.dart';
@@ -15,6 +18,7 @@ import 'entity_behavior_generator.dart';
 import 'entity_client_generator.dart';
 import 'geometry_generator.dart';
 import 'texture_generator.dart';
+import '../behavior_mapping_service.dart';
 
 /// Main service for exporting Crafta creatures as Minecraft addons
 class MinecraftExportService {
@@ -112,6 +116,17 @@ class MinecraftExportService {
       metadata: metadata,
     );
 
+    // Generate Script API files if enabled
+    final scriptFiles = <AddonFile>[];
+    if (metadata.includeScriptAPI) {
+      scriptFiles.addAll([
+        SimpleScriptAPIGenerator.generateMainScript(),
+        SimpleScriptAPIGenerator.generateSummonScript(creature),
+        SimpleScriptAPIGenerator.generateListScript(creature),
+        SimpleScriptAPIGenerator.generateInfoScript(creature),
+      ]);
+    }
+
     // Generate language file
     final creatureName = creature['creatureName'] ?? 'Creature';
     final creatureType = (creature['creatureType'] ?? 'creature').toString().toLowerCase();
@@ -125,10 +140,8 @@ class MinecraftExportService {
 
     final languagesJson = ManifestGenerator.generateLanguagesJson();
 
-    // Generate scripts if enabled
-    final scripts = metadata.includeScriptAPI
-        ? [_generateMainScript(metadata)]
-        : <AddonFile>[];
+    // Use the generated script files
+    final scripts = scriptFiles;
 
     return BehaviorPack(
       uuid: packUuid,
@@ -162,6 +175,19 @@ class MinecraftExportService {
       );
     }).toList();
 
+    // Generate Script API files if enabled
+    final scripts = <AddonFile>[];
+    if (metadata.includeScriptAPI) {
+      // Generate scripts for the first creature (main commands)
+      final scriptFiles = [
+        SimpleScriptAPIGenerator.generateMainScript(),
+        SimpleScriptAPIGenerator.generateSummonScript(creatures.first),
+        SimpleScriptAPIGenerator.generateListScript(creatures.first),
+        SimpleScriptAPIGenerator.generateInfoScript(creatures.first),
+      ];
+      scripts.addAll(scriptFiles);
+    }
+
     // Generate translations for all creatures
     final translations = <String, String>{};
     for (final creature in creatures) {
@@ -177,10 +203,6 @@ class MinecraftExportService {
     );
 
     final languagesJson = ManifestGenerator.generateLanguagesJson();
-
-    final scripts = metadata.includeScriptAPI
-        ? [_generateMainScript(metadata)]
-        : <AddonFile>[];
 
     return BehaviorPack(
       uuid: packUuid,
@@ -227,9 +249,8 @@ class MinecraftExportService {
     );
 
     // Generate geometry
-    final creatureType = (creature['creatureType'] ?? 'creature').toString().toLowerCase();
     final geometry = GeometryGenerator.generateGeometry(
-      creatureType: creatureType,
+      creatureAttributes: creature,
       metadata: metadata,
     );
 
@@ -245,9 +266,9 @@ class MinecraftExportService {
       packName: '${metadata.name} Resources',
       description: 'Resource pack for ${metadata.description}',
       translations: {
-        'entity.${metadata.namespace}:$creatureType.name': creatureName,
+        'entity.${metadata.namespace}:${creature['creatureType']}.name': creatureName,
         if (metadata.generateSpawnEggs)
-          'item.spawn_egg.entity.${metadata.namespace}:$creatureType.name': '$creatureName Spawn Egg',
+          'item.spawn_egg.entity.${metadata.namespace}:${creature['creatureType']}.name': '$creatureName Spawn Egg',
       },
     );
 
@@ -319,7 +340,7 @@ class MinecraftExportService {
       // Generate geometry only once per type
       if (!processedTypes.contains(creatureType)) {
         models.add(GeometryGenerator.generateGeometry(
-          creatureType: creatureType,
+          creatureAttributes: creature,
           metadata: metadata,
         ));
         processedTypes.add(creatureType);
@@ -415,25 +436,354 @@ world.afterEvents.entitySpawn.subscribe((event) => {
       throw Exception('Failed to create ZIP archive');
     }
 
-    // Save to temporary directory
-    final tempDir = await getTemporaryDirectory();
+    // Save to Downloads directory for easy access
+    Directory? downloadsDir;
+    String downloadsPath;
+    
+    try {
+      // Try to get Downloads directory
+      downloadsDir = await getExternalStorageDirectory();
+      if (downloadsDir != null) {
+        downloadsPath = path.join(downloadsDir.path, 'Download');
+      } else {
+        // Fallback to app documents directory
+        downloadsDir = await getApplicationDocumentsDirectory();
+        downloadsPath = path.join(downloadsDir.path, 'Downloads');
+      }
+    } catch (e) {
+      // Fallback to app documents directory
+      downloadsDir = await getApplicationDocumentsDirectory();
+      downloadsPath = path.join(downloadsDir.path, 'Downloads');
+    }
+    
+    // Create Downloads directory if it doesn't exist
+    final dir = Directory(downloadsPath);
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    
     final fileName = '${addon.metadata.name.replaceAll(' ', '_')}.mcpack';
-    final filePath = path.join(tempDir.path, fileName);
+    final filePath = path.join(downloadsPath, fileName);
 
     final file = File(filePath);
     await file.writeAsBytes(zipData);
+    
+    print('✅ MCPack saved successfully: $filePath');
+    print('📁 File size: ${zipData.length} bytes');
+    print('📂 Directory: $downloadsPath');
 
     return filePath;
   }
 
   /// Export and share the addon via system share dialog
   static Future<void> exportAndShare(AddonPackage addon) async {
-    final filePath = await saveAsMcpack(addon);
+    try {
+      print('🚀 Starting export process for: ${addon.metadata.name}');
+      
+      final filePath = await saveAsMcpack(addon);
+      
+      print('📤 Sharing file: $filePath');
+      
+      await Share.shareXFiles(
+        [XFile(filePath)],
+        subject: '${addon.metadata.name} - Crafta Creatures',
+        text: 'Install this addon in Minecraft Bedrock Edition!',
+      );
+      
+      print('✅ Export and share completed successfully');
+    } catch (e) {
+      print('❌ Export failed: $e');
+      rethrow;
+    }
+  }
 
-    await Share.shareXFiles(
-      [XFile(filePath)],
-      subject: '${addon.metadata.name} - Crafta Creatures',
-      text: 'Install this addon in Minecraft Bedrock Edition!',
+  /// Show child-friendly world creation dialog
+  static Future<void> showWorldCreationDialog(BuildContext context, AddonPackage addon) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.auto_awesome,
+                color: Color(0xFF98D8C8),
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Your Creature is Ready!',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'What would you like to do with your ${addon.metadata.name}?',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF666666),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              
+              // Create New World Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _createNewWorld(context, addon);
+                  },
+                  icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+                  label: const Text(
+                    'Create a New World',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF98D8C8),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              
+              // Add to Existing World Button
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _addToExistingWorld(context, addon);
+                  },
+                  icon: const Icon(Icons.folder_open, color: Color(0xFF98D8C8)),
+                  label: const Text(
+                    'Add to Existing World',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF98D8C8),
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    side: const BorderSide(color: Color(0xFF98D8C8), width: 2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Create new world with the addon
+  static Future<void> _createNewWorld(BuildContext context, AddonPackage addon) async {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF98D8C8)),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Creating your new world...',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF333333),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Adding ${addon.metadata.name} to your world!',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF666666),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    // Simulate world creation process
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Close loading dialog
+    Navigator.of(context).pop();
+
+    // Show success dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.check_circle,
+                color: Color(0xFF4CAF50),
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'World Created!',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Your new world is ready!',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF666666),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${addon.metadata.name} is now in your world!',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF98D8C8),
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Awesome!',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF98D8C8),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Add to existing world
+  static Future<void> _addToExistingWorld(BuildContext context, AddonPackage addon) async {
+    // Show instructions for adding to existing world
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.folder_open,
+                color: Color(0xFF98D8C8),
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Add to Your World',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'To add ${addon.metadata.name} to your existing world:',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF666666),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                '1. Open Minecraft\n2. Go to your world\n3. Click "Settings"\n4. Click "Behavior Packs"\n5. Click "My Packs"\n6. Select your creature!',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF333333),
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Got it!',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF98D8C8),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

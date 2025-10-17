@@ -1,0 +1,275 @@
+import 'package:flutter/material.dart';
+
+/// Legal disclaimer widget for Minecraft EULA compliance
+class LegalDisclaimer extends StatelessWidget {
+  final bool isCompact;
+  final bool showFullDisclaimer;
+
+  const LegalDisclaimer({
+    super.key,
+    this.isCompact = false,
+    this.showFullDisclaimer = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isCompact) {
+      return _buildCompactDisclaimer();
+    } else if (showFullDisclaimer) {
+      return _buildFullDisclaimer();
+    } else {
+      return _buildStandardDisclaimer();
+    }
+  }
+
+  /// Compact disclaimer for small spaces
+  Widget _buildCompactDisclaimer() {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.orange.shade200),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.warning, color: Colors.orange.shade600, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Not affiliated with Mojang Studios. Content is original and user-owned.',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.orange.shade800,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Standard disclaimer for export screens
+  Widget _buildStandardDisclaimer() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.orange.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.warning, color: Colors.orange.shade600),
+              const SizedBox(width: 8),
+              Text(
+                'Legal Notice',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange.shade800,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildDisclaimerText(),
+        ],
+      ),
+    );
+  }
+
+  /// Full disclaimer for legal pages
+  Widget _buildFullDisclaimer() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.orange.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.warning, color: Colors.orange.shade600),
+              const SizedBox(width: 8),
+              Text(
+                'Legal Disclaimer',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange.shade800,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildFullDisclaimerText(),
+        ],
+      ),
+    );
+  }
+
+  /// Standard disclaimer text
+  Widget _buildDisclaimerText() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDisclaimerItem(
+          '• This tool is not affiliated with Mojang Studios',
+          Icons.info_outline,
+        ),
+        const SizedBox(height: 8),
+        _buildDisclaimerItem(
+          '• Generated content is original and user-owned',
+          Icons.copyright,
+        ),
+        const SizedBox(height: 8),
+        _buildDisclaimerItem(
+          '• No Mojang assets or code are included',
+          Icons.security,
+        ),
+        const SizedBox(height: 8),
+        _buildDisclaimerItem(
+          '• Content must comply with Minecraft Community Standards',
+          Icons.rule,
+        ),
+        const SizedBox(height: 8),
+        _buildDisclaimerItem(
+          '• Users are responsible for their creations',
+          Icons.person,
+        ),
+      ],
+    );
+  }
+
+  /// Full disclaimer text
+  Widget _buildFullDisclaimerText() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDisclaimerSection(
+          'Affiliation',
+          'This application is not affiliated with, endorsed by, or sponsored by Mojang Studios, Microsoft Corporation, or any of their affiliates. All trademarks and copyrights belong to their respective owners.',
+        ),
+        const SizedBox(height: 16),
+        _buildDisclaimerSection(
+          'Content Ownership',
+          'All content generated by this application is original and belongs to the user. No Mojang Studios assets, code, or copyrighted material is included in generated content.',
+        ),
+        const SizedBox(height: 16),
+        _buildDisclaimerSection(
+          'Community Standards',
+          'All generated content must comply with Minecraft Community Standards. Users are responsible for ensuring their content is appropriate and does not violate any community guidelines.',
+        ),
+        const SizedBox(height: 16),
+        _buildDisclaimerSection(
+          'User Responsibility',
+          'Users are solely responsible for their creations and any consequences that may arise from their use. This application is provided as-is without any warranties.',
+        ),
+        const SizedBox(height: 16),
+        _buildDisclaimerSection(
+          'Educational Purpose',
+          'This application is designed for educational and creative purposes. It is not intended for commercial use of generated content in ways that violate Minecraft\'s End-User License Agreement.',
+        ),
+      ],
+    );
+  }
+
+  /// Individual disclaimer item
+  Widget _buildDisclaimerItem(String text, IconData icon) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 16, color: Colors.orange.shade600),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.orange.shade800,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Disclaimer section for full disclaimer
+  Widget _buildDisclaimerSection(String title, String content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.orange.shade800,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          content,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.orange.shade700,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Legal disclaimer for export screens
+class ExportLegalDisclaimer extends StatelessWidget {
+  const ExportLegalDisclaimer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: const LegalDisclaimer(
+        isCompact: false,
+        showFullDisclaimer: false,
+      ),
+    );
+  }
+}
+
+/// Compact legal disclaimer for small spaces
+class CompactLegalDisclaimer extends StatelessWidget {
+  const CompactLegalDisclaimer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const LegalDisclaimer(
+      isCompact: true,
+      showFullDisclaimer: false,
+    );
+  }
+}
+
+/// Full legal disclaimer for legal pages
+class FullLegalDisclaimer extends StatelessWidget {
+  const FullLegalDisclaimer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const LegalDisclaimer(
+      isCompact: false,
+      showFullDisclaimer: true,
+    );
+  }
+}
+
+

@@ -57,6 +57,14 @@ dependencies:
   path: ^1.9.0
   # Image encoding for texture export
   image: ^4.3.0
+  shared_preferences: ^2.5.3
+  # Internationalization
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
+  # App updater
+  package_info_plus: ^8.0.0
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -76,6 +84,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

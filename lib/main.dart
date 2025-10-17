@@ -6,6 +6,7 @@ import 'services/language_service.dart';
 import 'services/debug_service.dart';
 import 'services/responsive_service.dart';
 import 'services/updater_service.dart';
+import 'services/startup_service.dart';
 import 'widgets/update_dialog.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/creator_screen.dart';

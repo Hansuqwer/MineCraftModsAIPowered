@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/startup_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -17,6 +18,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   void initState() {
     super.initState();
+    
+    // Initialize startup services
+    _initializeStartup();
     
     // Sparkle animation for the rainbow emoji
     _sparkleController = AnimationController(
@@ -45,6 +49,15 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       parent: _bounceController,
       curve: Curves.elasticInOut,
     ));
+  }
+
+  /// Initialize startup services
+  Future<void> _initializeStartup() async {
+    try {
+      await StartupService.initialize(context);
+    } catch (e) {
+      print('❌ Startup initialization failed: $e');
+    }
   }
 
   @override

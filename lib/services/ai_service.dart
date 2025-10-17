@@ -189,7 +189,8 @@ class AIService {
   
   /// Get OpenAI response (separate method)
   Future<String> _getOpenAIResponse(String userMessage, int age) async {
-
+    const String _baseUrl = 'https://api.openai.com/v1';
+    
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/chat/completions'),

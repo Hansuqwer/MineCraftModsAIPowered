@@ -5,6 +5,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'services/language_service.dart';
 import 'services/debug_service.dart';
 import 'services/responsive_service.dart';
+import 'services/updater_service.dart';
+import 'widgets/update_dialog.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/creator_screen.dart';
 import 'screens/complete_screen.dart';
@@ -35,6 +37,9 @@ Future<void> main() async {
 
   // Initialize debug service
   await DebugService.initialize();
+
+  // Initialize responsive service
+  ResponsiveService.init();
 
   runApp(const CraftaApp());
 }

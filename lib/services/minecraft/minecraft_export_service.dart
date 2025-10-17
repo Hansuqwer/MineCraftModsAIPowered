@@ -642,11 +642,28 @@ world.afterEvents.entitySpawn.subscribe((event) => {
       },
     );
 
-    // Simulate world creation process
-    await Future.delayed(const Duration(seconds: 2));
-
-    // Close loading dialog
-    Navigator.of(context).pop();
+    try {
+      // Actually save the addon to Downloads folder
+      print('💾 Saving addon to Downloads folder...');
+      final savedPath = await saveAsMcpack(addon);
+      print('✅ Addon saved to: $savedPath');
+      
+      // Simulate world creation process (this would normally create a world file)
+      await Future.delayed(const Duration(seconds: 2));
+      
+      // Close loading dialog
+      Navigator.of(context).pop();
+      
+    } catch (e) {
+      print('❌ Error creating world: $e');
+      
+      // Close loading dialog
+      Navigator.of(context).pop();
+      
+      // Show error dialog
+      _showErrorDialog(context, 'Failed to create world: $e');
+      return;
+    }
 
     // Show success dialog
     showDialog(
@@ -804,5 +821,60 @@ world.afterEvents.entitySpawn.subscribe((event) => {
       'namespace': addon.metadata.namespace,
       'created_at': addon.createdAt.toIso8601String(),
     };
+  }
+
+  /// Show error dialog
+  static void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.error,
+                color: Color(0xFFE57373),
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Oops!',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            message,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Color(0xFF666666),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Try Again',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF98D8C8),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

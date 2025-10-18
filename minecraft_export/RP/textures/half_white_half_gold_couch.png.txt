@@ -1,0 +1,9 @@
+# Half White Half Gold Couch Texture
+# This is a placeholder for the actual texture file
+# In a real implementation, you would create a proper PNG texture
+
+The couch should be:
+- Left half: White color
+- Right half: Gold/Amber color
+- Minecraft-style pixelated texture
+- 16x16 or 32x32 pixels

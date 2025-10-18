@@ -489,6 +489,15 @@ Keep responses short and engaging (2-3 sentences max).''';
       // Extract materials and colors - realistic Minecraft materials
       final materials = ['wood', 'stone', 'iron', 'gold', 'diamond', 'netherite', 'leather', 'chain', 'turtle'];
       final colors = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'orange', 'black', 'white', 'rainbow', 'golden', 'gold'];
+      
+      // Minecraft material types for AI understanding
+      final materialTypes = {
+        'entity': 'basic opaque material',
+        'entity_alphatest': 'supports transparent pixels',
+        'entity_alphablend': 'supports translucent pixels', 
+        'entity_emissive': 'solid, alpha channel used as emissive',
+        'entity_emissive_alpha': 'alpha channel for emissiveness'
+      };
       final foundMaterials = <String>[];
       final foundColors = <String>[];
       
@@ -506,15 +515,24 @@ Keep responses short and engaging (2-3 sentences max).''';
         }
       }
       
-      // Handle specific material combinations
+      // Handle specific material combinations based on Bedrock Wiki
       if (lowerMessage.contains('shiny') || lowerMessage.contains('shinny')) {
         itemData['material'] = 'polished';
+        itemData['material_type'] = 'entity_emissive'; // Glowing material
       }
       if (lowerMessage.contains('inlaid') || lowerMessage.contains('inlay')) {
         itemData['decoration'] = 'inlaid';
+        itemData['decoration_type'] = 'entity_alphatest'; // Transparent decorations
       }
       if (lowerMessage.contains('diamond')) {
         itemData['decoration_material'] = 'diamond';
+        itemData['decoration_glow'] = true;
+      }
+      if (lowerMessage.contains('transparent') || lowerMessage.contains('glass')) {
+        itemData['material_type'] = 'entity_alphablend'; // Translucent material
+      }
+      if (lowerMessage.contains('glow') || lowerMessage.contains('glowing')) {
+        itemData['material_type'] = 'entity_emissive_alpha'; // Emissive with alpha
       }
       
       if (foundMaterials.isNotEmpty) {

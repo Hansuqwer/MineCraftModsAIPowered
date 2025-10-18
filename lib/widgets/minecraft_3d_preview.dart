@@ -181,14 +181,19 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
         function createMinecraftSword(color, hasFlames, hasGlow, size) {
             // Create Minecraft-accurate sword with proper proportions
             const scale = size === 'giant' ? 2.0 : size === 'tiny' ? 0.5 : 1.0;
-            
+
             // Create sword blade (Minecraft sword proportions)
             const blade = BABYLON.MeshBuilder.CreateBox('blade', {
-                width: 0.15 * scale, 
-                height: 1.8 * scale, 
+                width: 0.15 * scale,
+                height: 1.8 * scale,
                 depth: 0.08 * scale
             }, scene);
             const bladeMaterial = new BABYLON.StandardMaterial('bladeMaterial', scene);
+            
+            // Apply Bedrock material types based on properties
+            if (hasGlow) {
+                bladeMaterial.emissiveTexture = new BABYLON.Texture('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', scene);
+            }
             
             // Minecraft-accurate colors
             if (color === 'golden' || color === 'gold') {

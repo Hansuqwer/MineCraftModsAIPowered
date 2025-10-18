@@ -74,26 +74,26 @@ class _AISetupScreenState extends State<AISetupScreen> {
                   ),
                 ],
               ),
-              child: Column(
+              child: const Column(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.psychology,
                     size: 48,
                     color: Color(0xFF98D8C8),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'Set Up AI Services',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF333333),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Choose which AI services you want to use. You can start with just one!',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Color(0xFF666666),
                     ),

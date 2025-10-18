@@ -210,7 +210,7 @@ class _DragonCouchTestScreenState extends State<DragonCouchTestScreen> {
 
     try {
       // Test AI parsing
-      final attributes = _aiService.parseCreatureRequest(input);
+      final attributes = await _aiService.parseCreatureRequest(input);
       
       setState(() {
         _testResult += '✅ AI Parsing Results:\n';

@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'services/language_service.dart';
 import 'services/debug_service.dart';
-import 'services/responsive_service.dart';
-import 'services/updater_service.dart';
-import 'services/startup_service.dart';
-import 'widgets/update_dialog.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/creator_screen_simple.dart';
 import 'screens/complete_screen.dart';

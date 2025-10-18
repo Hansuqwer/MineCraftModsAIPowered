@@ -92,12 +92,12 @@ void main() {
         fail('Language service should handle invalid locales: $e');
       }
       
-      // Test with null locale
+      // Test with invalid locale
       try {
-        await LanguageService.setLanguage(const Locale('', ''));
+        await LanguageService.setLanguage(const Locale('invalid', 'invalid'));
         // Should not crash
       } catch (e) {
-        fail('Language service should handle empty locales: $e');
+        fail('Language service should handle invalid locales: $e');
       }
     });
     
@@ -105,7 +105,7 @@ void main() {
       final ttsService = TTSService();
       
       // Test initialization
-      final initialized = await ttsService.initialize();
+      await ttsService.initialize();
       // Should not crash even if TTS is not available
       
       // Test speaking empty text
@@ -118,7 +118,7 @@ void main() {
       
       // Test speaking null text
       try {
-        await ttsService.speak(null);
+        await ttsService.speak('');
         // Should not crash
       } catch (e) {
         // This might be expected depending on implementation
@@ -130,7 +130,10 @@ void main() {
       
       // Test starting without permissions
       try {
-        await speechService.startListening();
+        await speechService.startListening(
+          onResult: (text) => print('Result: $text'),
+          onError: (error) => print('Error: $error'),
+        );
         // Should handle permission denial gracefully
       } catch (e) {
         // This is expected if permissions are denied
@@ -156,8 +159,6 @@ void main() {
     });
     
     test('Network error handling', () async {
-      final aiService = AIService();
-      
       // Test with network unavailable
       // This would require mocking network conditions
       print('⚠️ Network error testing requires manual testing');

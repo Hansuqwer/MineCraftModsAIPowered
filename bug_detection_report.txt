@@ -1,0 +1,1131 @@
+🔍 COMPREHENSIVE BUG DETECTION REPORT
+Generated: lör 18 okt 2025 01:26:49 CEST
+
+📊 SUMMARY:
+- Static Analysis: FAIL
+- Dependencies: PASS
+- Build Test: PASS
+- Test Suite: FAIL
+- Code Quality: FAIL
+
+🐛 ISSUES FOUND:
+Memory Leaks:
+lib/widgets/creature_3d_preview.dart:  late AnimationController _rotationController;
+lib/widgets/creature_3d_preview.dart:  late AnimationController _floatingController;
+lib/widgets/creature_3d_preview.dart:  late AnimationController _pulseController;
+lib/widgets/creature_3d_preview.dart:  late AnimationController _interactionController;
+lib/widgets/creature_3d_preview.dart:    _rotationController = AnimationController(
+lib/widgets/creature_3d_preview.dart:    _floatingController = AnimationController(
+lib/widgets/creature_3d_preview.dart:    _pulseController = AnimationController(
+lib/widgets/creature_3d_preview.dart:    _interactionController = AnimationController(
+lib/widgets/procedural_creature_renderer.dart:  late AnimationController _animationController;
+lib/widgets/procedural_creature_renderer.dart:    _animationController = AnimationController(
+lib/widgets/update_dialog.dart:  late AnimationController _slideController;
+lib/widgets/update_dialog.dart:  late AnimationController _pulseController;
+lib/widgets/update_dialog.dart:    _slideController = AnimationController(
+lib/widgets/update_dialog.dart:    _pulseController = AnimationController(
+lib/widgets/creature_preview.dart:  late AnimationController _animationController;
+lib/widgets/creature_preview.dart:  late AnimationController _sparkleController;
+lib/widgets/creature_preview.dart:    _animationController = AnimationController(
+lib/widgets/creature_preview.dart:    _sparkleController = AnimationController(
+lib/widgets/enhanced_creature_preview.dart:  late AnimationController _rotationController;
+lib/widgets/enhanced_creature_preview.dart:  late AnimationController _floatingController;
+lib/widgets/enhanced_creature_preview.dart:  late AnimationController _pulseController;
+lib/widgets/enhanced_creature_preview.dart:  late AnimationController _interactionController;
+lib/widgets/enhanced_creature_preview.dart:  late AnimationController _celebrationController;
+lib/widgets/enhanced_creature_preview.dart:  List<AnimationController> _effectControllers = [];
+lib/widgets/enhanced_creature_preview.dart:      final controller = _createAnimationController(animationType, i);
+lib/widgets/enhanced_creature_preview.dart:  AnimationController _createAnimationController(String animationType, int index) {
+lib/widgets/offline_indicator.dart:  late AnimationController _controller;
+lib/widgets/offline_indicator.dart:    _controller = AnimationController(
+lib/widgets/furniture_renderer.dart:  late AnimationController _animationController;
+lib/widgets/furniture_renderer.dart:    _animationController = AnimationController(
+lib/screens/creature_preview_screen.dart:  late AnimationController _celebrationController;
+lib/screens/creature_preview_screen.dart:  late AnimationController _sparkleController;
+lib/screens/creature_preview_screen.dart:    _celebrationController = AnimationController(
+lib/screens/creature_preview_screen.dart:    _sparkleController = AnimationController(
+lib/screens/parent_settings_screen.dart:  late AnimationController _securityController;
+lib/screens/parent_settings_screen.dart:  late AnimationController _historyController;
+lib/screens/parent_settings_screen.dart:    _securityController = AnimationController(
+lib/screens/parent_settings_screen.dart:    _historyController = AnimationController(
+lib/screens/welcome_screen.dart:  late AnimationController _sparkleController;
+lib/screens/welcome_screen.dart:  late AnimationController _bounceController;
+lib/screens/welcome_screen.dart:    _sparkleController = AnimationController(
+lib/screens/welcome_screen.dart:    _bounceController = AnimationController(
+lib/screens/creation_history_screen.dart:  late AnimationController _sparkleController;
+lib/screens/creation_history_screen.dart:    _sparkleController = AnimationController(
+lib/screens/export_management_screen.dart:  late AnimationController _downloadController;
+lib/screens/export_management_screen.dart:    _downloadController = AnimationController(
+lib/screens/creator_screen.dart:  late AnimationController _pulseController;
+lib/screens/creator_screen.dart:  late AnimationController _bounceController;
+lib/screens/creator_screen.dart:  late AnimationController _sparkleController;
+lib/screens/creator_screen.dart:  late AnimationController _micController;
+lib/screens/creator_screen.dart:    _micController = AnimationController(
+lib/screens/creator_screen.dart:    _sparkleController = AnimationController(
+lib/screens/creator_screen.dart:    _pulseController = AnimationController(
+lib/screens/creator_screen.dart:    _bounceController = AnimationController(
+lib/screens/complete_screen.dart:  late AnimationController _celebrationController;
+lib/screens/complete_screen.dart:  late AnimationController _bounceController;
+lib/screens/complete_screen.dart:  late AnimationController _sparkleController;
+lib/screens/complete_screen.dart:  late AnimationController _pulseController;
+lib/screens/complete_screen.dart:    _celebrationController = AnimationController(
+lib/screens/complete_screen.dart:    _bounceController = AnimationController(
+lib/screens/complete_screen.dart:    _sparkleController = AnimationController(
+lib/screens/complete_screen.dart:    _pulseController = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createRotationAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createFloatingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createPulseAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createBounceAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createSparkleAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createFireAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createLightningAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createMagicAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createRainbowAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createGlowAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createShimmerAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createGlitterAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createInteractionAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createCelebrationAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static List<AnimationController> createAnimationSequence({
+lib/services/animation_service.dart:    final controllers = <AnimationController>[];
+lib/services/animation_service.dart:      final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createStaggeredAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createWaveAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createSpiralAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createOrbitAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createBreathingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createHeartbeatAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createExplosionAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createImplosionAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createMorphingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createTeleportationAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createTransformationAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createLevitationAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createHoveringAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createFlyingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createSwimmingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createRunningAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createJumpingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createClimbingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createDiggingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createSingingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createDancingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createTeleportingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/animation_service.dart:  static AnimationController createTransformingAnimation({
+lib/services/animation_service.dart:    final controller = AnimationController(
+lib/services/minecraft/entity_client_generator.dart:  static AddonFile generateAnimationController({
+lib/services/minecraft/minecraft_export_service.dart:    final animationController = EntityClientGenerator.generateAnimationController(
+lib/services/minecraft/minecraft_export_service.dart:      animationControllers.add(EntityClientGenerator.generateAnimationController(
+lib/services/3d_renderer_service.dart:  late AnimationController _rotationController;
+lib/services/3d_renderer_service.dart:  late AnimationController _floatingController;
+lib/services/3d_renderer_service.dart:  late AnimationController _pulseController;
+lib/services/3d_renderer_service.dart:    _rotationController = AnimationController(
+lib/services/3d_renderer_service.dart:    _floatingController = AnimationController(
+lib/services/3d_renderer_service.dart:    _pulseController = AnimationController(
+Null Safety Issues:
+lib/core/result.dart:    if (isSuccess && data != null) {
+lib/core/result.dart:      return error(errorType!, errorMessage!);
+lib/core/result.dart:    if (isSuccess && data != null) {
+lib/core/result.dart:    if (!isSuccess) {
+lib/core/result.dart:      callback(errorType!, errorMessage!);
+lib/core/result.dart:    if (isSuccess && data != null) {
+lib/core/result.dart:      return Result.error(errorType!, errorMessage!);
+lib/core/result.dart:        return "Let's check if we're connected to the internet!";
+lib/core/result.dart:        return "That took too long! Let's try something quicker!";
+lib/core/result.dart:        return "Let's take a little break and try again soon!";
+lib/core/result.dart:        return "Our magic is taking a rest. Let's try again!";
+lib/core/result.dart:        return "Let's try that in a different way!";
+lib/core/result.dart:        return "We need to set up the magic key first!";
+lib/core/result.dart:        return "We need permission to use that. Let's ask a grown-up!";
+lib/core/result.dart:        return "That feature isn't ready yet, but let's try something else!";
+lib/core/result.dart:        return "Something magical went wrong. Let's try again!";
+lib/models/minecraft/resource_pack.dart:      if (packIcon != null) packIcon!,
+lib/models/minecraft/behavior_pack.dart:      if (packIcon != null) packIcon!,
+lib/models/conversation.dart:    final craftaMessages = messages.where((m) => !m.isFromUser).toList();
+lib/utils/rendering_optimizer.dart:      if (!batches.containsKey(key)) {
+lib/utils/rendering_optimizer.dart:      batches[key]!.calls.add(call);
+lib/utils/rendering_optimizer.dart:      if (!particle.isAlive) {
+lib/utils/memory_optimizer.dart:    if (!_caches.containsKey(name)) {
+lib/utils/memory_optimizer.dart:    if (!_cache.containsKey(key)) {
+lib/utils/memory_optimizer.dart:    final entry = _cache.remove(key)!;
+lib/utils/memory_optimizer.dart:    if (!_cache.containsKey(key)) {
+lib/utils/memory_optimizer.dart:    final entry = _cache[key]!;
+lib/utils/memory_optimizer.dart:    return !entry.isExpired;
+lib/utils/memory_optimizer.dart:    return DateTime.now().difference(createdAt) > ttl!;
+lib/l10n/app_en.arb:  "welcomeMessage": "Welcome to Crafta! I'm here to help you create amazing creatures and furniture for Minecraft!",
+lib/l10n/app_en.arb:  "listening": "Listening... Speak now!",
+lib/l10n/app_en.arb:  "greatCreating": "Great! Creating your {creatureType}...",
+lib/l10n/app_en.arb:  "gotItTellMeMore": "Got it! Tell me more about your creature...",
+lib/l10n/app_en.arb:  "somethingWentWrong": "Something went wrong. Please try again!",
+lib/l10n/app_en.arb:  "greatIdeaLetsCreate": "Great idea! Let's create that!",
+lib/l10n/app_en.arb:  "exportCompleted": "Export completed successfully!",
+lib/l10n/app_en.arb:  "tapToCreate": "Tap to create!",
+lib/l10n/app_sv.arb:  "welcomeMessage": "Välkommen till Crafta! Jag är här för att hjälpa dig skapa fantastiska varelser och möbler för Minecraft!",
+lib/l10n/app_sv.arb:  "listening": "Lyssnar... Prata nu!",
+lib/l10n/app_sv.arb:  "greatCreating": "Bra! Skapar din {creatureType}...",
+lib/l10n/app_sv.arb:  "gotItTellMeMore": "Jag förstår! Berätta mer om din varelse...",
+lib/l10n/app_sv.arb:  "somethingWentWrong": "Något gick fel. Försök igen!",
+lib/l10n/app_sv.arb:  "greatIdeaLetsCreate": "Bra idé! Låt oss skapa det!",
+lib/l10n/app_sv.arb:  "exportCompleted": "Export slutförd framgångsrikt!",
+lib/l10n/app_sv.arb:  "tapToCreate": "Tryck för att skapa!",
+lib/widgets/creature_3d_preview.dart:    if (!widget.enableInteraction) return;
+lib/widgets/procedural_creature_renderer.dart:        )!;
+lib/widgets/procedural_creature_renderer.dart:    return Color.lerp(primary, Colors.white, 0.3)!;
+lib/widgets/procedural_creature_renderer.dart:    return oldDelegate.animationValue != animationValue ||
+lib/widgets/procedural_creature_renderer.dart:           oldDelegate.creatureAttributes != creatureAttributes;
+lib/widgets/update_dialog.dart:                      'Update Available!',
+lib/widgets/update_dialog.dart:                    if (widget.updateInfo.releaseNotes != null) ...[
+lib/widgets/update_dialog.dart:                          if (widget.onSkip != null) widget.onSkip!();
+lib/widgets/update_dialog.dart:                          if (widget.onLater != null) widget.onLater!();
+lib/widgets/update_dialog.dart:      await UpdaterService.downloadUpdate(widget.updateInfo.downloadUrl!);
+lib/widgets/creature_preview.dart:                  Colors.grey[800]!.withOpacity(_sparkleAnimation.value * 0.6),
+lib/widgets/creature_preview.dart:                  Colors.grey[600]!.withOpacity(_sparkleAnimation.value * 0.4),
+lib/widgets/enhanced_creature_preview.dart:    if (!widget.enableAdvancedEffects) return;
+lib/widgets/enhanced_creature_preview.dart:    if (!widget.enableInteraction) return;
+lib/widgets/offline_indicator.dart:        if (!isOnline) {
+lib/widgets/offline_indicator.dart:    if (_isOnline && !widget.showWhenOnline) {
+lib/widgets/offline_indicator.dart:                  ? 'Back online!'
+lib/widgets/offline_indicator.dart:        return Colors.yellow[700]!;
+lib/widgets/offline_indicator.dart:        return Colors.orange[700]!;
+lib/widgets/furniture_renderer.dart:        )!;
+lib/widgets/furniture_renderer.dart:    return Color.lerp(primary, Colors.white, 0.3)!;
+lib/widgets/furniture_renderer.dart:    return oldDelegate.animationValue != animationValue ||
+lib/widgets/furniture_renderer.dart:           oldDelegate.furnitureAttributes != furnitureAttributes;
+lib/widgets/qr_code_generator.dart:    return oldDelegate.data != data ||
+lib/widgets/qr_code_generator.dart:           oldDelegate.foregroundColor != foregroundColor ||
+lib/widgets/qr_code_generator.dart:           oldDelegate.backgroundColor != backgroundColor;
+lib/widgets/qr_code_generator.dart:                        const SnackBar(content: Text('Share code copied!')),
+lib/screens/creature_preview_screen.dart:          'Your Creation!',
+lib/screens/creature_preview_screen.dart:                        'Amazing! Your ${widget.creatureName} is ready!',
+lib/screens/creature_preview_screen.dart:                        'Look at what you created!',
+lib/screens/creature_preview_screen.dart:                        isSelected: [!_is3DView && !_isEnhancedView, _is3DView, _isEnhancedView],
+lib/screens/creature_preview_screen.dart:                      if (widget.creatureAttributes['effects'] != null && 
+lib/screens/creature_preview_screen.dart:                      if (widget.creatureAttributes['behavior'] != null)
+lib/screens/creature_preview_screen.dart:                      if (widget.creatureAttributes['abilities'] != null && 
+lib/screens/parent_settings_screen.dart:                        content: Text('Settings saved successfully!'),
+lib/screens/welcome_screen.dart:                'Welcome to Crafta!',
+lib/screens/welcome_screen.dart:                'Tell me what you want to create, and I\'ll help you make it!',
+lib/screens/welcome_screen.dart:                              'Start Creating!',
+lib/screens/minecraft_settings_screen.dart:                      if (!RegExp(r'^[a-z_]+$').hasMatch(value)) {
+lib/screens/minecraft_settings_screen.dart:                      if (!RegExp(r'^\d+\.\d+\.\d+$').hasMatch(value)) {
+lib/screens/minecraft_settings_screen.dart:    if (_formKey.currentState!.validate()) {
+lib/screens/minecraft_settings_screen.dart:          content: const Text('Settings saved successfully!'),
+lib/screens/minecraft_settings_screen.dart:        content: Text('Export all creatures feature coming soon!'),
+lib/screens/minecraft_settings_screen.dart:        content: Text('Export history feature coming soon!'),
+lib/screens/minecraft_settings_screen.dart:              Text('6. Your creatures will appear in the game!'),
+lib/screens/minecraft_settings_screen.dart:            child: const Text('Got it!'),
+lib/screens/creation_history_screen.dart:                          'See all the amazing creatures they\'ve created!',
+lib/screens/creature_sharing_screen.dart:              creatureAttributes: widget.creatureAttributes!,
+lib/screens/creature_sharing_screen.dart:        creatureAttributes: widget.creatureAttributes!,
+lib/screens/creature_sharing_screen.dart:            title: const Text('Creature Shared!'),
+lib/screens/creature_sharing_screen.dart:                const Text('Your creature has been shared successfully!'),
+lib/screens/creature_sharing_screen.dart:                            const SnackBar(content: Text('Share code copied!')),
+lib/screens/creator_screen.dart:    if (!speechSuccess && (Platform.isAndroid || Platform.isIOS)) {
+lib/screens/creator_screen.dart:          content: Text('I can\'t hear you right now. Let\'s check your microphone!'),
+lib/screens/creator_screen.dart:    final welcomeMessage = 'Hi! What would you like to create today?';
+lib/screens/creator_screen.dart:            content: Text('Oops! Let\'s try that again. What would you like to create?'),
+lib/screens/creator_screen.dart:        if (attributes['creatureType'] != null && attributes['color'] != null) {
+lib/screens/creator_screen.dart:        final errorMessage = 'Oops! Let\'s try that again - what would you like to create?';
+lib/screens/creator_screen.dart:    print('DEBUG: Mock speech test button pressed!');
+lib/screens/creator_screen.dart:      if (attributes['creatureType'] != null && attributes['color'] != null && isAgeAppropriate) {
+lib/screens/creator_screen.dart:      final errorMessage = 'Oops! Let\'s try that again - what would you like to create?';
+lib/screens/creator_screen.dart:      if (attributes['creatureType'] != null && attributes['color'] != null && isAgeAppropriate) {
+lib/screens/creator_screen.dart:      final errorMessage = 'Oops! Let\'s try that again - what would you like to create?';
+lib/screens/creator_screen.dart:                    ? 'Listening... Speak now!'
+lib/screens/creator_screen.dart:                        ? 'Listening... Speak now!'
+lib/screens/creator_screen.dart:                  print('DEBUG: Mock speech button tapped!');
+lib/screens/creator_screen.dart:      if (attributes['creatureType'] != null && attributes['color'] != null) {
+lib/screens/creator_screen.dart:        _showSuccessFeedback('Great! Creating your ${attributes['creatureType']}...');
+lib/screens/creator_screen.dart:        _showSuccessFeedback('Got it! Tell me more about your creature...');
+lib/screens/creator_screen.dart:      final errorMessage = 'Oops! Let\'s try that again - what would you like to create?';
+lib/screens/creator_screen.dart:      _showErrorFeedback('Something went wrong. Please try again!');
+lib/screens/creator_screen.dart:      if (args != null && args['fromSuggestion'] == true) {
+lib/screens/creator_screen.dart:        if (suggestion != null && suggestion.isNotEmpty) {
+lib/screens/ai_setup_screen.dart:                    'Choose which AI services you want to use. You can start with just one!',
+lib/screens/ai_setup_screen.dart:              'Fast and free! 14,400 requests per day',
+lib/screens/ai_setup_screen.dart:          if (!isSetup && service != 'ollama') ...[
+lib/screens/ai_setup_screen.dart:        content: Text('$service API key saved!'),
+lib/screens/complete_screen.dart:      if (args != null) {
+lib/screens/complete_screen.dart:    _showSuccessFeedback('Great idea! Let\'s create that!');
+lib/screens/complete_screen.dart:      _showSuccessFeedback('Export completed successfully!');
+lib/screens/complete_screen.dart:          'Your Creation is Ready!',
+lib/screens/complete_screen.dart:                      'Amazing!',
+lib/screens/complete_screen.dart:                      'Your creation is ready to go to Minecraft!',
+lib/screens/complete_screen.dart:                                _isSuggestionTapped ? 'Creating...' : 'Tap to create!',
+lib/screens/export_minecraft_screen.dart:            if (_generatedAddon != null) _buildExportResults(),
+lib/screens/export_minecraft_screen.dart:            if (_exportError != null) _buildErrorDisplay(),
+lib/screens/export_minecraft_screen.dart:        if (attributes['abilities'] != null && (attributes['abilities'] as List).isNotEmpty)
+lib/screens/export_minecraft_screen.dart:        if (attributes['effects'] != null && (attributes['effects'] as List).isNotEmpty)
+lib/screens/export_minecraft_screen.dart:    final preview = MinecraftExportService.getExportPreview(_generatedAddon!);
+lib/screens/export_minecraft_screen.dart:                'Export Successful!',
+lib/screens/export_minecraft_screen.dart:                  onPressed: () => _shareAddon(_generatedAddon!),
+lib/screens/export_minecraft_screen.dart:                  onPressed: () => _downloadAddon(_generatedAddon!),
+lib/screens/export_minecraft_screen.dart:              _exportError!,
+lib/screens/export_minecraft_screen.dart:          content: const Text('Minecraft addon generated successfully!'),
+lib/screens/export_minecraft_screen.dart:          content: Text('Addon shared successfully!'),
+lib/services/support_service.dart:    if (!_isSupportActive) return;
+lib/services/support_service.dart:    if (!_isSupportActive) return;
+lib/services/support_service.dart:    if (!_isSupportActive) return;
+lib/services/support_service.dart:    if (!_isSupportActive) return;
+lib/services/support_service.dart:        'answer': 'Simply tap the microphone button and tell Crafta what creature you want to create!'
+lib/services/support_service.dart:        'answer': 'Yes! Crafta is designed with child safety in mind, with parental controls and safe AI responses.'
+lib/services/support_service.dart:        'answer': 'Yes! Parents can view creation history and manage exports in the Parent Settings.'
+lib/services/support_service.dart:        'answer': 'After creating your creature, you can export it as a Minecraft mod file!'
+lib/services/support_service.dart:        'content': 'Learn how to create your first creature with Crafta!',
+lib/services/support_service.dart:    if (!_isSupportActive) return;
+lib/services/support_service.dart:    if (!_isSupportActive) return;
+lib/services/support_service.dart:    if (!_isSupportActive) return '';
+lib/services/ai_service.dart:  String toString() => 'AIServiceException${service != null ? ' ($service)' : ''}: $message';
+lib/services/ai_service.dart:  bool get isConfigured => _apiKey.isNotEmpty && _apiKey != 'YOUR_OPENAI_API_KEY';
+lib/services/ai_service.dart:    return !hasAnyKeys;
+lib/services/ai_service.dart:      if (cachedResponse != null) {
+lib/services/ai_service.dart:    if (!isConnected) {
+lib/services/ai_service.dart:      if (groqResponse.isNotEmpty && !groqResponse.contains('offline')) {
+lib/services/ai_service.dart:      if (hfResponse.isNotEmpty && !hfResponse.contains('offline')) {
+lib/services/ai_service.dart:      if (ollamaResponse.isNotEmpty && !ollamaResponse.contains('offline')) {
+lib/services/ai_service.dart:        return 'I can\'t help with that request. Let\'s try creating something else!';
+lib/services/ai_service.dart:        return 'Let\'s take a little break and try again soon!';
+lib/services/ai_service.dart:        return 'Our magic is taking a rest. Let\'s try again!';
+lib/services/ai_service.dart:- Replace "That's wrong" with "Let's try a different way!"
+lib/services/ai_service.dart:- "That's a cool idea! Should your rainbow dragon breathe fire or sparkles?"
+lib/services/ai_service.dart:- "Wow, a rainbow cow sounds amazing! Should it be tiny or huge?"
+lib/services/ai_service.dart:- "I love sparkles! What color should your pig be?"
+lib/services/ai_service.dart:    if (!(await ContentModerationService.validateUserInput(userMessage))) {
+lib/services/ai_service.dart:    if (RegExp(r'\bbow\b').hasMatch(message) && !message.contains('rainbow')) creatureType = 'bow';
+lib/services/ai_service.dart:    if (dragonTheme != null) {
+lib/services/ai_service.dart:      'That sounds amazing! I love your creativity!',
+lib/services/ai_service.dart:      'Wow, what a cool idea! Let\'s make it together!',
+lib/services/ai_service.dart:      'That\'s so imaginative! I can\'t wait to see it!',
+lib/services/ai_service.dart:      'Fantastic! You have such great ideas!',
+lib/services/ai_service.dart:      'Brilliant! That will be so much fun to create!',
+lib/services/ai_service.dart:      'Awesome! Your imagination is wonderful!',
+lib/services/ai_service.dart:      'Excellent! I love how creative you are!',
+lib/services/ai_service.dart:      'Perfect! That sounds like it will be amazing!',
+lib/services/ai_service.dart:      'Wonderful! You have such great ideas!',
+lib/services/ai_service.dart:      'Fantastic! I\'m so excited to help you create this!'
+lib/services/tts_service.dart:      await _flutterTts!.setVolume(1.0);
+lib/services/tts_service.dart:    if (!_isInitialized) {
+lib/services/tts_service.dart:      await _flutterTts!.speak(text);
+lib/services/tts_service.dart:      await _flutterTts!.stop();
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      String sound = languageCode == 'sv' ? '🎉 Fantastiskt! Så bra gjort! 🎉' : '🎉 Amazing! 🎉';
+lib/services/tts_service.dart:      await _flutterTts!.speak(sound);
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      await _flutterTts!.speak('✨ Sparkles! ✨');
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      await _flutterTts!.speak('🌟 Magic! 🌟');
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      String sound = languageCode == 'sv' ? '🌈 Välkommen till Crafta! 🌈' : '🌈 Welcome to Crafta! 🌈';
+lib/services/tts_service.dart:      await _flutterTts!.speak(sound);
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      String sound = languageCode == 'sv' ? '🎨 Din skapelse är klar! 🎨' : '🎨 Your creation is ready! 🎨';
+lib/services/tts_service.dart:      await _flutterTts!.speak(sound);
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      await _flutterTts!.speak(sound);
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      String sound = languageCode == 'sv' ? '🎉 Framgång! 🎉' : '🎉 Success! 🎉';
+lib/services/tts_service.dart:      await _flutterTts!.speak(sound);
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      String sound = languageCode == 'sv' ? '😅 Hoppsan, låt oss försöka igen! 😅' : '😅 Oops, let\'s try again! 😅';
+lib/services/tts_service.dart:      await _flutterTts!.speak(sound);
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      await _flutterTts!.speak(sound);
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:          sound = isSwedish ? '🐉 Rååå! Jag är en vänlig drake! 🐉' : '🐉 Rawr! I\'m a friendly dragon! 🐉';
+lib/services/tts_service.dart:          sound = isSwedish ? '🦄 Gnägg! Jag är en magisk enhörning! 🦄' : '🦄 Neigh! I\'m a magical unicorn! 🦄';
+lib/services/tts_service.dart:          sound = '🔥 Squawk! I\'m a phoenix! 🔥';
+lib/services/tts_service.dart:          sound = '🦅 Screech! I\'m a griffin! 🦅';
+lib/services/tts_service.dart:          sound = isSwedish ? '🐱 Mjau! Jag är en magisk katt! 🐱' : '🐱 Meow! I\'m a magical cat! 🐱';
+lib/services/tts_service.dart:          sound = isSwedish ? '🐶 Voff! Jag är en magisk hund! 🐶' : '🐶 Woof! I\'m a magical dog! 🐶';
+lib/services/tts_service.dart:          sound = '🐴 Neigh! I\'m a magical horse! 🐴';
+lib/services/tts_service.dart:          sound = '🐑 Baa! I\'m a magical sheep! 🐑';
+lib/services/tts_service.dart:          sound = '🐷 Oink! I\'m a magical pig! 🐷';
+lib/services/tts_service.dart:          sound = '🐔 Cluck! I\'m a magical chicken! 🐔';
+lib/services/tts_service.dart:          sound = isSwedish ? '🐄 Mu! Jag är en magisk ko! 🐄' : '🐄 Moo! I\'m a magical cow! 🐄';
+lib/services/tts_service.dart:          sound = isSwedish ? '🐷 Nöff! Jag är en magisk gris! 🐷' : '🐷 Oink! I\'m a magical pig! 🐷';
+lib/services/tts_service.dart:          sound = isSwedish ? '🐑 Bä! Jag är ett magiskt får! 🐑' : '🐑 Baa! I\'m a magical sheep! 🐑';
+lib/services/tts_service.dart:          sound = isSwedish ? '🐔 Kuckeliku! Jag är en magisk höna! 🐔' : '🐔 Cluck! I\'m a magical chicken! 🐔';
+lib/services/tts_service.dart:          sound = '⚔️ Clang! I\'m a magical sword! ⚔️';
+lib/services/tts_service.dart:          sound = '🪓 Chop! I\'m a powerful axe! 🪓';
+lib/services/tts_service.dart:          sound = '🏹 Twang! I\'m a magical bow! 🏹';
+lib/services/tts_service.dart:          sound = '🛡️ Clang! I\'m a protective shield! 🛡️';
+lib/services/tts_service.dart:          sound = '🪄 Zap! I\'m a magic wand! 🪄';
+lib/services/tts_service.dart:          sound = '🪄 Whoosh! I\'m a magical staff! 🪄';
+lib/services/tts_service.dart:          sound = '🔨 Bang! I\'m a mighty hammer! 🔨';
+lib/services/tts_service.dart:          sound = '🗡️ Thrust! I\'m a sharp spear! 🗡️';
+lib/services/tts_service.dart:          sound = '🗡️ Slice! I\'m a quick dagger! 🗡️';
+lib/services/tts_service.dart:          sound = '🔨 Smash! I\'m a heavy mace! 🔨';
+lib/services/tts_service.dart:          sound = '🌟 Hello! I\'m your magical creation! 🌟';
+lib/services/tts_service.dart:      await _flutterTts!.speak(sound);
+lib/services/tts_service.dart:    if (!_isInitialized) return;
+lib/services/tts_service.dart:      String sound = languageCode == 'sv' ? '🌟 Välkommen till Craftas magiska värld! 🌟' : '🌟 Welcome to the magical world of Crafta! 🌟';
+lib/services/tts_service.dart:      await _flutterTts!.speak(sound);
+lib/services/debug_service.dart:    if (!_isEnabled) return;
+lib/services/debug_service.dart:    if (!_isEnabled) return;
+lib/services/debug_service.dart:    if (!_isEnabled || _logBuffer.isEmpty) return;
+lib/services/content_moderation_service.dart:    if (!await validateUserInput(creatureType)) {
+lib/services/content_moderation_service.dart:      if (!await validateUserInput(effect.toString())) {
+lib/services/content_moderation_service.dart:      if (!await validateUserInput(ability.toString())) {
+lib/services/content_moderation_service.dart:    if (!(await validateUserInput(content))) {
+lib/services/production_service.dart:      print('✅ Production is READY for deployment!');
+lib/services/production_service.dart:    if (!_isProductionReady) {
+lib/services/production_service.dart:    print('✅ Successfully deployed to production!');
+lib/services/production_service.dart:Ready for deployment! 🚀
+lib/services/connectivity_service.dart:        return 'Great internet connection!';
+lib/services/performance_monitor.dart:    if (!_startTimes.containsKey(operationName)) {
+lib/services/performance_monitor.dart:    final duration = DateTime.now().difference(_startTimes[operationName]!);
+lib/services/performance_monitor.dart:    if (!_metrics.containsKey(operationName)) {
+lib/services/performance_monitor.dart:    _metrics[operationName]!.add(duration);
+lib/services/performance_monitor.dart:    if (!_metrics.containsKey(operationName) || _metrics[operationName]!.isEmpty) {
+lib/services/performance_monitor.dart:    final durations = _metrics[operationName]!;
+lib/services/performance_monitor.dart:    if (!_metrics.containsKey(operationName) || _metrics[operationName]!.isEmpty) {
+lib/services/performance_monitor.dart:    return _metrics[operationName]!.reduce((a, b) => a < b ? a : b);
+lib/services/performance_monitor.dart:    if (!_metrics.containsKey(operationName) || _metrics[operationName]!.isEmpty) {
+lib/services/performance_monitor.dart:    return _metrics[operationName]!.reduce((a, b) => a > b ? a : b);
+lib/services/performance_monitor.dart:    if (!_metrics.containsKey(operationName) || _metrics[operationName]!.isEmpty) {
+lib/services/performance_monitor.dart:    final durations = List<Duration>.from(_metrics[operationName]!);
+lib/services/performance_monitor.dart:    if (!_metrics.containsKey(operationName) || _metrics[operationName]!.isEmpty) {
+lib/services/performance_monitor.dart:      'count': _metrics[operationName]!.length,
+lib/services/performance_monitor.dart:      if (stats['average'] != null && stats['average'] > 1000) {
+lib/services/performance_monitor.dart:      if (stats['p95'] != null && stats['p95'] > 2000) {
+lib/services/performance_monitor.dart:    if (!hasWarnings) {
+lib/services/performance_monitor.dart:    return avg != null && avg.inMilliseconds > thresholdMs;
+lib/services/local_storage_service.dart:      if (!await file.exists()) {
+lib/services/local_storage_service.dart:      if (data == null || !data.containsKey('creatures')) {
+lib/services/local_storage_service.dart:      if (data == null || !data.containsKey('conversations')) {
+lib/services/local_storage_service.dart:      if (!cache.containsKey(key)) {
+lib/services/performance_service.dart:    if (!_isMonitoring) return;
+lib/services/performance_service.dart:    if (!_isMonitoring) return;
+lib/services/performance_service.dart:    if (!_isMonitoring) return;
+lib/services/performance_service.dart:    if (!_isMonitoring) return;
+lib/services/swedish_ai_service.dart:    'regnbågsko': 'Wow! En regnbågsko låter fantastiskt! Det kommer att vara så färgglatt och roligt!',
+lib/services/swedish_ai_service.dart:    'rosa ko': 'En rosa ko! Så söt! Ska den ha glitter eller glöda?',
+lib/services/swedish_ai_service.dart:    'blå ko': 'En blå ko! Så kreativt! Vilken storlek ska den vara?',
+lib/services/swedish_ai_service.dart:    'liten ko': 'En liten ko! Det kommer att vara så gulligt! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'stor ko': 'En enorm ko! Det kommer att vara fantastiskt! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'gul ko': 'En gul ko! Så glittrande! Ska den ha några speciella effekter?',
+lib/services/swedish_ai_service.dart:    'lila ko': 'En lila ko! Så unik! Vad ska den göra?',
+lib/services/swedish_ai_service.dart:    'rosa gris': 'En rosa gris! Det är perfekt! Grisar älskar att vara rosa!',
+lib/services/swedish_ai_service.dart:    'regnbågsgris': 'En regnbågsgris! Så magiskt! Ska den flyga eller ha glitter?',
+lib/services/swedish_ai_service.dart:    'glittrig gris': 'En gris med glitter! Den kommer att lysa så starkt!',
+lib/services/swedish_ai_service.dart:    'flygande gris': 'En flygande gris! Nu är det fantasifullt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'gul gris': 'En gul gris! Så speciell! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'liten gris': 'En liten gris! Så gulligt! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'drake': 'En drake! Så spännande! Vilken färg drake skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsdrake': 'En regnbågsdrake! Fantastiskt! Ska den andas eld eller glitter?',
+lib/services/swedish_ai_service.dart:    'eldrake': 'En eldrake! Kraftfull! Vilken färg ska lågorna vara?',
+lib/services/swedish_ai_service.dart:    'rosa drake': 'En rosa drake! Så söt och magisk! Ska den ha vingar?',
+lib/services/swedish_ai_service.dart:    'blå drake': 'En blå drake! Cool och mystisk! Vilka effekter ska den ha?',
+lib/services/swedish_ai_service.dart:    'gul drake': 'En gul drake! Så glittrande och speciell! Ska den glittra?',
+lib/services/swedish_ai_service.dart:    'liten drake': 'En liten drake! Så gulligt! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'stor drake': 'En enorm drake! Det kommer att vara fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'flygande drake': 'En flygande drake! Så coolt! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'draksoffa': 'En draksoffa! Det låter fantastiskt! Ska den ha drakskal?',
+lib/services/swedish_ai_service.dart:    'drakstol': 'En drakstol! Så coolt! Ska den ha drakvingar?',
+lib/services/swedish_ai_service.dart:    'drakbord': 'Ett drakbord! Så unikt! Ska det ha en drakhuvud?',
+lib/services/swedish_ai_service.dart:    'drakbädd': 'En drakbädd! Perfekt för att sova! Ska den ha drakskal?',
+lib/services/swedish_ai_service.dart:    'enhörning': 'En enhörning! Så magisk! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsenhörning': 'En regnbågsenhörning! Så vacker! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'rosa enhörning': 'En rosa enhörning! Så söt och magisk!',
+lib/services/swedish_ai_service.dart:    'gul enhörning': 'En gul enhörning! Så glittrande och speciell!',
+lib/services/swedish_ai_service.dart:    'flygande enhörning': 'En flygande enhörning! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'liten enhörning': 'En liten enhörning! Så gulligt! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'katt': 'En katt! Så söt! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågskatt': 'En regnbågskatt! Så färgglad! Ska den ha vingar?',
+lib/services/swedish_ai_service.dart:    'flygande katt': 'En flygande katt! Så coolt! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'rosa katt': 'En rosa katt! Så söt! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'gul katt': 'En gul katt! Så glittrande! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'katt med vingar': 'En katt med vingar! Så magiskt! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'hund': 'En hund! Så vänlig! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågshund': 'En regnbågshund! Så färgglad! Ska den ha vingar?',
+lib/services/swedish_ai_service.dart:    'flygande hund': 'En flygande hund! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'rosa hund': 'En rosa hund! Så söt! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'gul hund': 'En gul hund! Så glittrande! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'fågel': 'En fågel! Så fri! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsfågel': 'En regnbågsfågel! Så färgglad! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'gul fågel': 'En gul fågel! Så glittrande! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'liten fågel': 'En liten fågel! Så söt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'stor fågel': 'En stor fågel! Så imponerande! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'fisk': 'En fisk! Så graciös! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsfisk': 'En regnbågsfisk! Så färgglad! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'gul fisk': 'En gul fisk! Så glittrande! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'liten fisk': 'En liten fisk! Så söt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'stor fisk': 'En stor fisk! Så imponerande! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'räv': 'En räv! Så slug och söt! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsräv': 'En regnbågsräv! Så magiskt! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'arktisk räv': 'En arktisk räv! Så fluffig och vit! Perfekt för snö!',
+lib/services/swedish_ai_service.dart:    'röd räv': 'En röd räv! Klassisk och vacker! Vilka effekter ska den ha?',
+lib/services/swedish_ai_service.dart:    'silverräv': 'En silverräv! Så elegant och mystisk! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'flygande räv': 'En flygande räv! Så fantastiskt! Vilken färg ska den vara?',
+lib/services/swedish_ai_service.dart:    'magisk räv': 'En magisk räv! Så förtrollande! Vilka krafter ska den ha?',
+lib/services/swedish_ai_service.dart:    'varg': 'En varg! Stark och lojal! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsvarg': 'En regnbågsvarg! Så unik! Ska den ha vingar?',
+lib/services/swedish_ai_service.dart:    'vit varg': 'En vit varg! Så majestätisk! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'svart varg': 'En svart varg! Mysterisk och kraftfull!',
+lib/services/swedish_ai_service.dart:    'björn': 'En björn! Stor och kramig! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsbjörn': 'En regnbågsbjörn! Så färgglad! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'isbjörn': 'En isbjörn! Vit och fluffig! Perfekt för is!',
+lib/services/swedish_ai_service.dart:    'brun björn': 'En brun björn! Klassisk och stark!',
+lib/services/swedish_ai_service.dart:    'kanin': 'En kanin! Så söt och hoppig! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågskanin': 'En regnbågskanin! Så magiskt! Ska den ha vingar?',
+lib/services/swedish_ai_service.dart:    'vit kanin': 'En vit kanin! Ren och fluffig!',
+lib/services/swedish_ai_service.dart:    'brun kanin': 'En brun kanin! Naturlig och söt!',
+lib/services/swedish_ai_service.dart:    'ekorre': 'En ekorre! Så snabb och slug! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsekorre': 'En regnbågsekorre! Så unik! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'röd ekorre': 'En röd ekorre! Klassisk och söt!',
+lib/services/swedish_ai_service.dart:    'grå ekorre': 'En grå ekorre! Naturlig och smart!',
+lib/services/swedish_ai_service.dart:    'hjort': 'En hjort! Så graciös och elegant! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågshjort': 'En regnbågshjort! Så magiskt! Ska den ha horn?',
+lib/services/swedish_ai_service.dart:    'vit hjort': 'En vit hjort! Ren och mystisk!',
+lib/services/swedish_ai_service.dart:    'brun hjort': 'En brun hjort! Naturlig och vacker!',
+lib/services/swedish_ai_service.dart:    'flygande hjort': 'En flygande hjort! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'magisk hjort': 'En magisk hjort! Så förtrollande! Vilka krafter?',
+lib/services/swedish_ai_service.dart:    'älg': 'En älg! Så majestätisk och stor! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsälg': 'En regnbågsälg! Så unik! Ska den ha horn?',
+lib/services/swedish_ai_service.dart:    'flygande älg': 'En flygande älg! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'magisk älg': 'En magisk älg! Så förtrollande! Vilka krafter?',
+lib/services/swedish_ai_service.dart:    'igelkott': 'En igelkott! Så söt och taggig! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsigelkott': 'En regnbågsigelkott! Så färgglad! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'flygande igelkott': 'En flygande igelkott! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'magisk igelkott': 'En magisk igelkott! Så förtrollande! Vilka krafter?',
+lib/services/swedish_ai_service.dart:    'mård': 'En mård! Så slug och rörlig! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsmård': 'En regnbågsmård! Så färgglad! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'flygande mård': 'En flygande mård! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'magisk mård': 'En magisk mård! Så förtrollande! Vilka krafter?',
+lib/services/swedish_ai_service.dart:    'röd': 'Röd! Så vacker och varm! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'blå': 'Blå! Så cool och lugn! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'gul': 'Gul! Så glittrande och glad! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'grön': 'Grön! Så naturlig och frisk! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'lila': 'Lila! Så mystisk och magisk! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'rosa': 'Rosa! Så söt och charmig! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'orange': 'Orange! Så energisk och livlig! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'vit': 'Vit! Så ren och elegant! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'svart': 'Svart! Så mystisk och kraftfull! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'silver': 'Silver! Så elegant och glittrande! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'guld': 'Guld! Så värdefull och glittrande! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'glittrande': 'Glittrande! Så magiskt och vackert! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'glödande': 'Glödande! Så varmt och magiskt! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'flygande': 'Flygande! Så fantastiskt och fritt! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'svävande': 'Svävande! Så mystiskt och magiskt! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'magisk': 'Magisk! Så förtrollande och mystisk! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'regnbågs': 'Regnbågs! Så färgglad och vacker! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'kristall': 'Kristall! Så transparent och vacker! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'eld': 'Eld! Så varmt och kraftfullt! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'is': 'Is! Så kallt och kristallklart! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'ljus': 'Ljus! Så strålande och vackert! Vilken typ av varelse ska den vara?',
+lib/services/swedish_ai_service.dart:    'tron': 'En tron! Så kunglig och majestätisk! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågstron': 'En regnbågstron! Så magiskt! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'gul tron': 'En gul tron! Så glittrande och speciell!',
+lib/services/swedish_ai_service.dart:    'draktron': 'En draktron! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'bokhylla': 'En bokhylla! Perfekt för att förvara böcker! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsbokhylla': 'En regnbågsbokhylla! Så färgglad! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'magisk bokhylla': 'En magisk bokhylla! Så förtrollande!',
+lib/services/swedish_ai_service.dart:    'svävande bokhylla': 'En svävande bokhylla! Så coolt!',
+lib/services/swedish_ai_service.dart:    'lampa': 'En lampa! Perfekt för belysning! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågslampa': 'En regnbågslampa! Så färgglad! Ska den byta färger?',
+lib/services/swedish_ai_service.dart:    'magisk lampa': 'En magisk lampa! Så förtrollande!',
+lib/services/swedish_ai_service.dart:    'svävande lampa': 'En svävande lampa! Så fantastiskt!',
+lib/services/swedish_ai_service.dart:    'kista': 'En kista! Perfekt för att förvara skatter! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågskista': 'En regnbågskista! Så magiskt! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'gul kista': 'En gul kista! Så värdefull!',
+lib/services/swedish_ai_service.dart:    'magisk kista': 'En magisk kista! Så förtrollande!',
+lib/services/swedish_ai_service.dart:    'tunna': 'En tunna! Perfekt för förvaring! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågstunna': 'En regnbågstunna! Så färgglad!',
+lib/services/swedish_ai_service.dart:    'trätunna': 'En trätunna! Klassisk och robust!',
+lib/services/swedish_ai_service.dart:    'metalltunna': 'En metalltunna! Stark och hållbar!',
+lib/services/swedish_ai_service.dart:    'hylla': 'En hylla! Perfekt för att visa föremål! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågshylla': 'En regnbågshylla! Så färgglad!',
+lib/services/swedish_ai_service.dart:    'svävande hylla': 'En svävande hylla! Så coolt!',
+lib/services/swedish_ai_service.dart:    'magisk hylla': 'En magisk hylla! Så förtrollande!',
+lib/services/swedish_ai_service.dart:    'soffa': 'En soffa! Perfekt för att sitta och vila! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsoffa': 'En regnbågsoffa! Så färgglad! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'draksoffa': 'En draksoffa! Så coolt! Ska den ha drakskal?',
+lib/services/swedish_ai_service.dart:    'flygande soffa': 'En flygande soffa! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'magisk soffa': 'En magisk soffa! Så förtrollande! Vilka krafter?',
+lib/services/swedish_ai_service.dart:    'stol': 'En stol! Perfekt för att sitta! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsstol': 'En regnbågsstol! Så färgglad! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'drakstol': 'En drakstol! Så coolt! Ska den ha drakvingar?',
+lib/services/swedish_ai_service.dart:    'flygande stol': 'En flygande stol! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'magisk stol': 'En magisk stol! Så förtrollande! Vilka krafter?',
+lib/services/swedish_ai_service.dart:    'bord': 'Ett bord! Perfekt för att äta och arbeta! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsbord': 'Ett regnbågsbord! Så färgglad! Ska det ha glitter?',
+lib/services/swedish_ai_service.dart:    'drakbord': 'Ett drakbord! Så coolt! Ska det ha en drakhuvud?',
+lib/services/swedish_ai_service.dart:    'flygande bord': 'Ett flygande bord! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'magiskt bord': 'Ett magiskt bord! Så förtrollande! Vilka krafter?',
+lib/services/swedish_ai_service.dart:    'säng': 'En säng! Perfekt för att sova! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågssäng': 'En regnbågssäng! Så färgglad! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'draksäng': 'En draksäng! Så coolt! Ska den ha drakskal?',
+lib/services/swedish_ai_service.dart:    'flygande säng': 'En flygande säng! Så fantastiskt! Vilken färg?',
+lib/services/swedish_ai_service.dart:    'magisk säng': 'En magisk säng! Så förtrollande! Vilka krafter?',
+lib/services/swedish_ai_service.dart:    'svärd': 'Ett svärd! Perfekt för äventyr! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågssvärd': 'Ett regnbågssvärd! Så magiskt! Ska det glöda?',
+lib/services/swedish_ai_service.dart:    'draksvärd': 'Ett draksvärd! Kraftfullt och magiskt!',
+lib/services/swedish_ai_service.dart:    'gul svärd': 'Ett gul svärd! Så glittrande och speciell!',
+lib/services/swedish_ai_service.dart:    'magiskt svärd': 'Ett magiskt svärd! Så förtrollande!',
+lib/services/swedish_ai_service.dart:    'båge': 'En båge! Perfekt för bågskytte! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsbåge': 'En regnbågsbåge! Så magiskt! Ska den ha glitter?',
+lib/services/swedish_ai_service.dart:    'magisk båge': 'En magisk båge! Så förtrollande!',
+lib/services/swedish_ai_service.dart:    'gul båge': 'En gul båge! Så glittrande och speciell!',
+lib/services/swedish_ai_service.dart:    'stav': 'En stav! Perfekt för magi! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsstav': 'En regnbågsstav! Så magiskt! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'magisk stav': 'En magisk stav! Så förtrollande!',
+lib/services/swedish_ai_service.dart:    'kristallstav': 'En kristallstav! Så vacker och kraftfull!',
+lib/services/swedish_ai_service.dart:    'hjälm': 'En hjälm! Perfekt för skydd! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågshjälm': 'En regnbågshjälm! Så magiskt! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'drakhjälm': 'En drakhjälm! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'gul hjälm': 'En gul hjälm! Så glittrande och speciell!',
+lib/services/swedish_ai_service.dart:    'rustning': 'Rustning! Perfekt för skydd! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsrustning': 'Regnbågsrustning! Så magiskt! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'drakrustning': 'Drakrustning! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'gul rustning': 'Gul rustning! Så glittrande och speciell!',
+lib/services/swedish_ai_service.dart:    'sköld': 'En sköld! Perfekt för försvar! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågssköld': 'En regnbågssköld! Så magiskt! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'draksköld': 'En draksköld! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'magisk sköld': 'En magisk sköld! Så förtrollande!',
+lib/services/swedish_ai_service.dart:    'kristall': 'En kristall! Så vacker och magisk! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågskristall': 'En regnbågskristall! Så magiskt! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'drakkristall': 'En drakkristall! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'svävande kristall': 'En svävande kristall! Så fantastiskt!',
+lib/services/swedish_ai_service.dart:    'juvel': 'En juvel! Så dyrbar och vacker! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsjuvel': 'En regnbågsjuvel! Så magiskt! Ska den glittra?',
+lib/services/swedish_ai_service.dart:    'drakjuvel': 'En drakjuvel! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'svävande juvel': 'En svävande juvel! Så fantastiskt!',
+lib/services/swedish_ai_service.dart:    'kula': 'En kula! Så mystisk och magisk! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågskula': 'En regnbågskula! Så magiskt! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'drakkula': 'En drakkula! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'svävande kula': 'En svävande kula! Så fantastiskt!',
+lib/services/swedish_ai_service.dart:    'båt': 'En båt! Perfekt för segling! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsbåt': 'En regnbågsbåt! Så magiskt! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'drakbåt': 'En drakbåt! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'flygande båt': 'En flygande båt! Så fantastiskt!',
+lib/services/swedish_ai_service.dart:    'bil': 'En bil! Perfekt för körning! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsbil': 'En regnbågsbil! Så magiskt! Ska den glöda?',
+lib/services/swedish_ai_service.dart:    'drakbil': 'En drakbil! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'flygande bil': 'En flygande bil! Så fantastiskt!',
+lib/services/swedish_ai_service.dart:    'flygplan': 'Ett flygplan! Perfekt för flygning! Vilken färg skulle du vilja ha?',
+lib/services/swedish_ai_service.dart:    'regnbågsflygplan': 'Ett regnbågsflygplan! Så magiskt! Ska det glöda?',
+lib/services/swedish_ai_service.dart:    'drakflygplan': 'Ett drakflygplan! Kraftfull och magisk!',
+lib/services/swedish_ai_service.dart:    'magiskt flygplan': 'Ett magiskt flygplan! Så förtrollande!',
+lib/services/swedish_ai_service.dart:      return _swedishResponses[message]!;
+lib/services/swedish_ai_service.dart:    return 'Vilken fantastisk idé! Berätta mer om vad du vill skapa så kan jag hjälpa dig!';
+lib/services/swedish_ai_service.dart:- "Jag vill ha en drake" → "Wow! En drake låter fantastiskt! Vilken färg ska den vara?"
+lib/services/swedish_ai_service.dart:- "Jag vill ha en soffa" → "Bra idé! En soffa för ditt Minecraft-hus! Vilken färg skulle du vilja ha?"
+lib/services/swedish_ai_service.dart:- "Jag vill ha en regnbågsenhörning" → "En regnbågsenhörning! Det är så magiskt! Låt mig skapa det åt dig!"
+lib/services/minecraft/simple_script_api_generator.dart:  console.log('Crafta Script API loaded successfully!');
+lib/services/minecraft/simple_script_api_generator.dart:    final creatureName = creatureAttributes['color'] != null 
+lib/services/minecraft/simple_script_api_generator.dart:    player.sendMessage(`§aSummoned $creatureName!`);
+lib/services/minecraft/texture_generator.dart:    if (colorName != 'normal' && colorName != 'rainbow') {
+lib/services/minecraft/texture_generator.dart:    if (sizeAttr != 'normal') {
+lib/services/minecraft/texture_generator.dart:        return Colors.grey[400]!;
+lib/services/minecraft/geometry_generator.dart:    if (colorName != 'normal' && colorName != 'rainbow') {
+lib/services/minecraft/geometry_generator.dart:    if (sizeAttr != 'normal') {
+lib/services/minecraft/script_api_generator.dart:  player.sendMessage(`§aSummoned §e${creatures.length} §a$creatureName(s) near you!`);
+lib/services/minecraft/script_api_generator.dart:    player.sendMessage('§cNo $creatureName found nearby. Use $namespace:summon to create some!');
+lib/services/minecraft/script_api_generator.dart:  if (size !== 'normal') {
+lib/services/minecraft/script_api_generator.dart:  if (color !== 'normal') {
+lib/services/minecraft/script_api_generator.dart:    player.sendMessage('§7Use $namespace:summon to create some creatures!');
+lib/services/minecraft/script_api_generator.dart:    player.sendMessage('§7Use $namespace:summon to create some creatures!');
+lib/services/minecraft/script_api_generator.dart:  if (color !== 'normal') {
+lib/services/minecraft/script_api_generator.dart:  if (size !== 'normal') {
+lib/services/minecraft/entity_client_generator.dart:    if (color != 'normal' && color != 'rainbow') {
+lib/services/minecraft/entity_client_generator.dart:    if (size != 'normal') {
+lib/services/minecraft/minecraft_export_service.dart:      if (!processedTypes.contains(creatureType)) {
+lib/services/minecraft/minecraft_export_service.dart:  world.sendMessage("§6[Crafta] §eCreatures addon loaded!");
+lib/services/minecraft/minecraft_export_service.dart:      if (downloadsDir != null) {
+lib/services/minecraft/minecraft_export_service.dart:    if (!await dir.exists()) {
+lib/services/minecraft/minecraft_export_service.dart:        text: 'Install this addon in Minecraft Bedrock Edition!',
+lib/services/minecraft/minecraft_export_service.dart:                  'Your Creature is Ready!',
+lib/services/minecraft/minecraft_export_service.dart:                'Adding ${addon.metadata.name} to your world!',
+lib/services/minecraft/minecraft_export_service.dart:                  'World Created!',
+lib/services/minecraft/minecraft_export_service.dart:                'Your new world is ready!',
+lib/services/minecraft/minecraft_export_service.dart:                '${addon.metadata.name} is now in your world!',
+lib/services/minecraft/minecraft_export_service.dart:                'Awesome!',
+lib/services/minecraft/minecraft_export_service.dart:                '1. Open Minecraft\n2. Go to your world\n3. Click "Settings"\n4. Click "Behavior Packs"\n5. Click "My Packs"\n6. Select your creature!',
+lib/services/minecraft/minecraft_export_service.dart:                'Got it!',
+lib/services/minecraft/minecraft_export_service.dart:                  'Oops!',
+lib/services/minecraft/entity_behavior_generator.dart:    if (color != 'normal' && color != 'rainbow') {
+lib/services/minecraft/entity_behavior_generator.dart:    if (size != 'normal') {
+lib/services/speech_service.dart:    if (!_isAvailable) {
+lib/services/groq_ai_service.dart:        return 'Let\'s take a little break and try again soon!';
+lib/services/groq_ai_service.dart:- "I want a dragon" → "Wow! A dragon sounds amazing! What color should it be?"
+lib/services/groq_ai_service.dart:- "I want a couch" → "Great idea! A couch for your Minecraft house! What color would you like?"
+lib/services/groq_ai_service.dart:- "I want a rainbow unicorn" → "A rainbow unicorn! That's so magical! Let me create that for you!"
+lib/services/groq_ai_service.dart:    if (!response.endsWith('.') && !response.endsWith('!') && !response.endsWith('?')) {
+lib/services/groq_ai_service.dart:      response += '!';
+lib/services/groq_ai_service.dart:Free Tier: 14,400 requests/day (very generous!)
+lib/services/updater_service.dart:      if (!forceCheck && await _shouldSkipCheck()) {
+lib/services/updater_service.dart:      final date = DateTime.parse(publishedAt!);
+lib/services/updater_service.dart:    return releaseNotes!.length > 200 
+lib/services/updater_service.dart:        ? '${releaseNotes!.substring(0, 200)}...'
+lib/services/updater_service.dart:        : releaseNotes!;
+lib/services/security_service.dart:    if (!_isSecure) return false;
+lib/services/security_service.dart:    if (!_isSecure) return false;
+lib/services/security_service.dart:    if (!_isSecure) return data;
+lib/services/security_service.dart:    if (!_isSecure) return encryptedData;
+lib/services/security_service.dart:    if (!_isSecure) return false;
+lib/services/security_service.dart:    if (!_isSecure) return false;
+lib/services/security_service.dart:    if (!checkChildSafety(input)) {
+lib/services/security_service.dart:    if (!checkPrivacyCompliance(input)) {
+lib/services/security_service.dart:    if (!_isSecure) return;
+lib/services/security_service.dart:    if (!_isSecure) return null;
+lib/services/huggingface_ai_service.dart:        return 'Let\'s take a little break and try again soon!';
+lib/services/huggingface_ai_service.dart:    if (!response.endsWith('.') && !response.endsWith('!') && !response.endsWith('?')) {
+lib/services/huggingface_ai_service.dart:      response += '!';
+lib/services/startup_service.dart:        if (updateInfo != null && updateInfo.isUpdateAvailable) {
+lib/services/ollama_ai_service.dart:    if (!isRunning) {
+lib/services/ollama_ai_service.dart:    if (!response.endsWith('.') && !response.endsWith('!') && !response.endsWith('?')) {
+lib/services/ollama_ai_service.dart:      response += '!';
+lib/services/creature_sharing_service.dart:      if (localCreature != null) {
+lib/services/creature_sharing_service.dart:      if (cloudCreature != null) {
+lib/services/creature_sharing_service.dart:      if (query != null && query.isNotEmpty) {
+lib/services/creature_sharing_service.dart:      if (creatureType != null && creatureType.isNotEmpty) {
+lib/services/creature_sharing_service.dart:    if (shareCode.length != 8) return false;
+lib/services/creature_sharing_service.dart:    final baseText = 'Check out my $creatureName created with Crafta!';
+lib/services/creature_sharing_service.dart:    final descText = description != null && description.isNotEmpty ? '\n$description' : '';
+lib/services/creature_sharing_service.dart:        return 'Check out my $creatureName created with Crafta! $shareCode #Crafta #Minecraft';
+lib/services/creature_sharing_service.dart:        return 'I created an amazing $creatureName with Crafta! Share code: $shareCode';
+lib/services/creature_sharing_service.dart:        return 'Created this $creatureName with Crafta! $shareCode #Crafta #Minecraft #Creativity';
+lib/services/creature_sharing_service.dart:        return 'Check out my $creatureName! $shareCode #Crafta #Minecraft #Creativity';
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return;
+lib/services/monitoring_service.dart:    if (!_isMonitoring) return '';
+lib/services/responsive_service.dart:  static bool get isPhone => !isTablet;
+lib/services/responsive_service.dart:    return _mediaQuery.platformBrightness != null && 
+lib/services/responsive_service.dart:      width: width != null ? ResponsiveService.getWidthPercent(width!) : null,
+lib/services/responsive_service.dart:      height: height != null ? ResponsiveService.getHeightPercent(height!) : null,
+lib/services/responsive_service.dart:      padding: padding != null 
+lib/services/responsive_service.dart:          ? EdgeInsets.all(ResponsiveService.getPadding(padding!.left))
+lib/services/responsive_service.dart:      margin: margin != null 
+lib/services/responsive_service.dart:          ? EdgeInsets.all(ResponsiveService.getMargin(margin!.left))
+lib/services/swedish_export_service.dart:    return '🎉 Din skapelse har exporterats framgångsrikt! 🎉';
+lib/services/swedish_export_service.dart:    return '😅 Exporten misslyckades. Försök igen! 😅';
+lib/services/swedish_export_service.dart:    return '📤 Din skapelse har delats framgångsrikt! 📤';
+lib/services/swedish_export_service.dart:    return '😅 Delningen misslyckades. Försök igen! 😅';
+lib/services/swedish_export_service.dart:    return '✅ Export slutförd! Din skapelse är redo för Minecraft! ✅';
+lib/services/swedish_export_service.dart:    return '💾 Din skapelse har sparats lokalt! 💾';
+lib/services/swedish_export_service.dart:    return '📂 Din skapelse har laddats från lokalt lagring! 📂';
+lib/services/swedish_export_service.dart:    return '🔗 Delningskod genererad! Dela denna kod med dina vänner! 🔗';
+lib/services/swedish_export_service.dart:    return '📋 Delningskod kopierad till urklipp! 📋';
+lib/services/swedish_export_service.dart:    return '🔍 Ny skapelse upptäckt! Vill du ladda ner den? 🔍';
+lib/services/swedish_export_service.dart:    return '⬇️ Skapelse nedladdad framgångsrikt! ⬇️';
+lib/services/swedish_export_service.dart:    return '⭐ Skapelse tillagd till favoriter! ⭐';
+lib/services/swedish_export_service.dart:    return '💔 Skapelse borttagen från favoriter! 💔';
+lib/services/swedish_export_service.dart:    return '📁 Din skapelse har sparats i Downloads-mappen! 📁';
+lib/services/swedish_export_service.dart:    return '📖 Instruktioner: Öppna Minecraft, gå till Inställningar > Globala resurser > My Packs och aktivera din addon! 📖';
+lib/services/api_key_manager.dart:    return groq != null || hf != null || openai != null;
+lib/services/api_key_manager.dart:      'groq': (await getAPIKey('groq')) != null,
+lib/services/api_key_manager.dart:      'huggingface': (await getAPIKey('huggingface')) != null,
+lib/services/api_key_manager.dart:      'openai': (await getAPIKey('openai')) != null,
+lib/services/offline_ai_service.dart:    'rainbow cow': 'Wow! A rainbow cow sounds amazing! That will be so colorful and fun!',
+lib/services/offline_ai_service.dart:    'pink cow': 'A pink cow! How cute! Should it have sparkles or glows?',
+lib/services/offline_ai_service.dart:    'blue cow': 'A blue cow! That\'s so creative! What size should it be?',
+lib/services/offline_ai_service.dart:    'tiny cow': 'A tiny cow! That will be adorable! What color would you like?',
+lib/services/offline_ai_service.dart:    'big cow': 'A huge cow! That will be amazing! What color should it be?',
+lib/services/offline_ai_service.dart:    'golden cow': 'A golden cow! So shiny! Should it have any special effects?',
+lib/services/offline_ai_service.dart:    'purple cow': 'A purple cow! That\'s so unique! What should it do?',
+lib/services/offline_ai_service.dart:    'pink pig': 'A pink pig! That\'s perfect! Pigs love being pink!',
+lib/services/offline_ai_service.dart:    'rainbow pig': 'A rainbow pig! How magical! Should it fly or have sparkles?',
+lib/services/offline_ai_service.dart:    'sparkle pig': 'A pig with sparkles! That will shine so bright!',
+lib/services/offline_ai_service.dart:    'flying pig': 'A flying pig! Now that\'s imaginative! What color?',
+lib/services/offline_ai_service.dart:    'golden pig': 'A golden pig! So special! Should it glow?',
+lib/services/offline_ai_service.dart:    'tiny pig': 'A tiny pig! How adorable! What color should it be?',
+lib/services/offline_ai_service.dart:    'blue chicken': 'A blue chicken! That\'s unique! Should it fly high?',
+lib/services/offline_ai_service.dart:    'rainbow chicken': 'A rainbow chicken! So colorful! What effects should it have?',
+lib/services/offline_ai_service.dart:    'tiny chicken': 'A tiny chicken! So cute and small! What color?',
+lib/services/offline_ai_service.dart:    'golden chicken': 'A golden chicken! Like treasure! Should it sparkle?',
+lib/services/offline_ai_service.dart:    'red chicken': 'A red chicken! So bright! What effects would you like?',
+lib/services/offline_ai_service.dart:    'flying chicken': 'A flying chicken! How cool! What color should it be?',
+lib/services/offline_ai_service.dart:    'sheep': 'A sheep! Fluffy and fun! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow sheep': 'A rainbow sheep! So colorful and fluffy!',
+lib/services/offline_ai_service.dart:    'pink sheep': 'A pink sheep! Super fluffy and pretty!',
+lib/services/offline_ai_service.dart:    'blue sheep': 'A blue sheep! Cool and fluffy!',
+lib/services/offline_ai_service.dart:    'purple sheep': 'A purple sheep! Magical and fluffy!',
+lib/services/offline_ai_service.dart:    'horse': 'A horse! Strong and fast! What color?',
+lib/services/offline_ai_service.dart:    'rainbow horse': 'A rainbow horse! Colorful and majestic!',
+lib/services/offline_ai_service.dart:    'golden horse': 'A golden horse! Shiny and beautiful!',
+lib/services/offline_ai_service.dart:    'white horse': 'A white horse! Pure and elegant!',
+lib/services/offline_ai_service.dart:    'black horse': 'A black horse! Sleek and powerful!',
+lib/services/offline_ai_service.dart:    'dragon': 'A dragon! So exciting! What color dragon would you like?',
+lib/services/offline_ai_service.dart:    'rainbow dragon': 'A rainbow dragon! Amazing! Should it breathe fire or sparkles?',
+lib/services/offline_ai_service.dart:    'fire dragon': 'A fire dragon! Powerful! What color should the flames be?',
+lib/services/offline_ai_service.dart:    'pink dragon': 'A pink dragon! How cute and magical! Should it have wings?',
+lib/services/offline_ai_service.dart:    'blue dragon': 'A blue dragon! Cool and mysterious! What effects should it have?',
+lib/services/offline_ai_service.dart:    'golden dragon': 'A golden dragon! So shiny and special! Should it sparkle?',
+lib/services/offline_ai_service.dart:    'tiny dragon': 'A tiny dragon! So adorable! What color should it be?',
+lib/services/offline_ai_service.dart:    'big dragon': 'A huge dragon! That will be amazing! What color?',
+lib/services/offline_ai_service.dart:    'flying dragon': 'A flying dragon! How cool! What color should it be?',
+lib/services/offline_ai_service.dart:    'dragon couch': 'A dragon couch! That sounds amazing! Should it have dragon scales?',
+lib/services/offline_ai_service.dart:    'dragon chair': 'A dragon chair! So cool! Should it have dragon wings?',
+lib/services/offline_ai_service.dart:    'dragon table': 'A dragon table! How unique! Should it have a dragon head?',
+lib/services/offline_ai_service.dart:    'dragon bed': 'A dragon bed! Perfect for sleeping! Should it have dragon scales?',
+lib/services/offline_ai_service.dart:    'fox': 'A fox! So clever and cute! What color would you like?',
+lib/services/offline_ai_service.dart:    'blue fox': 'A blue fox! That\'s so unique! Should it have any special effects?',
+lib/services/offline_ai_service.dart:    'red fox': 'A red fox! Classic and beautiful! What effects should it have?',
+lib/services/offline_ai_service.dart:    'white fox': 'A white fox! So elegant! Should it have wings?',
+lib/services/offline_ai_service.dart:    'flying fox': 'A flying fox! How amazing! What color should it be?',
+lib/services/offline_ai_service.dart:    'fox with wings': 'A fox with wings! So magical! What color?',
+lib/services/offline_ai_service.dart:    'blue fox with wings': 'A blue fox with wings! That sounds amazing!',
+lib/services/offline_ai_service.dart:    'fox with two legs': 'A fox with two legs! That\'s interesting! What color?',
+lib/services/offline_ai_service.dart:    'blue fox with two legs and wings': 'A blue fox with two legs and wings! That sounds incredible!',
+lib/services/offline_ai_service.dart:    'unicorn': 'A unicorn! So magical! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow unicorn': 'A rainbow unicorn! How beautiful! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'pink unicorn': 'A pink unicorn! So pretty and magical!',
+lib/services/offline_ai_service.dart:    'golden unicorn': 'A golden unicorn! So shiny and special!',
+lib/services/offline_ai_service.dart:    'flying unicorn': 'A flying unicorn! How amazing! What color?',
+lib/services/offline_ai_service.dart:    'tiny unicorn': 'A tiny unicorn! So adorable! What color should it be?',
+lib/services/offline_ai_service.dart:    'cat': 'A cat! So cute! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow cat': 'A rainbow cat! How colorful! Should it have wings?',
+lib/services/offline_ai_service.dart:    'flying cat': 'A flying cat! How cool! What color should it be?',
+lib/services/offline_ai_service.dart:    'pink cat': 'A pink cat! So cute! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'golden cat': 'A golden cat! So shiny! Should it glow?',
+lib/services/offline_ai_service.dart:    'cat with wings': 'A cat with wings! How magical! What color should it be?',
+lib/services/offline_ai_service.dart:    'dog': 'A dog! So friendly! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow dog': 'A rainbow dog! How colorful! Should it have wings?',
+lib/services/offline_ai_service.dart:    'flying dog': 'A flying dog! How amazing! What color?',
+lib/services/offline_ai_service.dart:    'pink dog': 'A pink dog! So cute! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'golden dog': 'A golden dog! So shiny! Should it glow?',
+lib/services/offline_ai_service.dart:    'bird': 'A bird! So free! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow bird': 'A rainbow bird! How colorful! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'golden bird': 'A golden bird! So shiny! Should it glow?',
+lib/services/offline_ai_service.dart:    'tiny bird': 'A tiny bird! So cute! What color?',
+lib/services/offline_ai_service.dart:    'big bird': 'A big bird! So impressive! What color should it be?',
+lib/services/offline_ai_service.dart:    'fish': 'A fish! So graceful! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow fish': 'A rainbow fish! How colorful! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'golden fish': 'A golden fish! So shiny! Should it glow?',
+lib/services/offline_ai_service.dart:    'tiny fish': 'A tiny fish! So cute! What color?',
+lib/services/offline_ai_service.dart:    'big fish': 'A big fish! So impressive! What color should it be?',
+lib/services/offline_ai_service.dart:    'fox': 'A fox! So clever and cute! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow fox': 'A rainbow fox! How magical! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'arctic fox': 'An arctic fox! So fluffy and white! Perfect for snow!',
+lib/services/offline_ai_service.dart:    'red fox': 'A red fox! Classic and beautiful! What effects should it have?',
+lib/services/offline_ai_service.dart:    'wolf': 'A wolf! Strong and loyal! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow wolf': 'A rainbow wolf! How unique! Should it have wings?',
+lib/services/offline_ai_service.dart:    'white wolf': 'A white wolf! So majestic! Should it glow?',
+lib/services/offline_ai_service.dart:    'black wolf': 'A black wolf! Mysterious and powerful!',
+lib/services/offline_ai_service.dart:    'bear': 'A bear! Big and cuddly! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow bear': 'A rainbow bear! How colorful! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'polar bear': 'A polar bear! White and fluffy! Perfect for ice!',
+lib/services/offline_ai_service.dart:    'brown bear': 'A brown bear! Classic and strong!',
+lib/services/offline_ai_service.dart:    'rabbit': 'A rabbit! So cute and bouncy! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow rabbit': 'A rainbow rabbit! How magical! Should it have wings?',
+lib/services/offline_ai_service.dart:    'white rabbit': 'A white rabbit! Pure and fluffy!',
+lib/services/offline_ai_service.dart:    'brown rabbit': 'A brown rabbit! Natural and cute!',
+lib/services/offline_ai_service.dart:    'squirrel': 'A squirrel! So quick and clever! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow squirrel': 'A rainbow squirrel! How unique! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'red squirrel': 'A red squirrel! Classic and cute!',
+lib/services/offline_ai_service.dart:    'gray squirrel': 'A gray squirrel! Natural and smart!',
+lib/services/offline_ai_service.dart:    'deer': 'A deer! So graceful and elegant! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow deer': 'A rainbow deer! How magical! Should it have antlers?',
+lib/services/offline_ai_service.dart:    'white deer': 'A white deer! Pure and mystical!',
+lib/services/offline_ai_service.dart:    'brown deer': 'A brown deer! Natural and beautiful!',
+lib/services/offline_ai_service.dart:    'throne': 'A throne! So royal and majestic! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow throne': 'A rainbow throne! How magical! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'golden throne': 'A golden throne! So shiny and special!',
+lib/services/offline_ai_service.dart:    'dragon throne': 'A dragon throne! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'bookshelf': 'A bookshelf! Perfect for storing books! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow bookshelf': 'A rainbow bookshelf! How colorful! Should it glow?',
+lib/services/offline_ai_service.dart:    'magical bookshelf': 'A magical bookshelf! So enchanting!',
+lib/services/offline_ai_service.dart:    'floating bookshelf': 'A floating bookshelf! How cool!',
+lib/services/offline_ai_service.dart:    'lamp': 'A lamp! Perfect for lighting! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow lamp': 'A rainbow lamp! How colorful! Should it change colors?',
+lib/services/offline_ai_service.dart:    'magical lamp': 'A magical lamp! So enchanting!',
+lib/services/offline_ai_service.dart:    'floating lamp': 'A floating lamp! How amazing!',
+lib/services/offline_ai_service.dart:    'chest': 'A chest! Perfect for storing treasures! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow chest': 'A rainbow chest! How magical! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'golden chest': 'A golden chest! So valuable!',
+lib/services/offline_ai_service.dart:    'magical chest': 'A magical chest! So enchanting!',
+lib/services/offline_ai_service.dart:    'barrel': 'A barrel! Perfect for storage! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow barrel': 'A rainbow barrel! How colorful!',
+lib/services/offline_ai_service.dart:    'wooden barrel': 'A wooden barrel! Classic and sturdy!',
+lib/services/offline_ai_service.dart:    'metal barrel': 'A metal barrel! Strong and durable!',
+lib/services/offline_ai_service.dart:    'shelf': 'A shelf! Perfect for displaying items! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow shelf': 'A rainbow shelf! How colorful!',
+lib/services/offline_ai_service.dart:    'floating shelf': 'A floating shelf! How cool!',
+lib/services/offline_ai_service.dart:    'magical shelf': 'A magical shelf! So enchanting!',
+lib/services/offline_ai_service.dart:    'sword': 'A sword! Perfect for adventure! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow sword': 'A rainbow sword! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'dragon sword': 'A dragon sword! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'golden sword': 'A golden sword! So shiny and special!',
+lib/services/offline_ai_service.dart:    'magical sword': 'A magical sword! So enchanting!',
+lib/services/offline_ai_service.dart:    'bow': 'A bow! Perfect for archery! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow bow': 'A rainbow bow! How magical! Should it have sparkles?',
+lib/services/offline_ai_service.dart:    'magical bow': 'A magical bow! So enchanting!',
+lib/services/offline_ai_service.dart:    'golden bow': 'A golden bow! So shiny and special!',
+lib/services/offline_ai_service.dart:    'staff': 'A staff! Perfect for magic! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow staff': 'A rainbow staff! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'magical staff': 'A magical staff! So enchanting!',
+lib/services/offline_ai_service.dart:    'crystal staff': 'A crystal staff! So beautiful and powerful!',
+lib/services/offline_ai_service.dart:    'helmet': 'A helmet! Perfect for protection! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow helmet': 'A rainbow helmet! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'dragon helmet': 'A dragon helmet! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'golden helmet': 'A golden helmet! So shiny and special!',
+lib/services/offline_ai_service.dart:    'armor': 'Armor! Perfect for protection! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow armor': 'Rainbow armor! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'dragon armor': 'Dragon armor! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'golden armor': 'Golden armor! So shiny and special!',
+lib/services/offline_ai_service.dart:    'shield': 'A shield! Perfect for defense! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow shield': 'A rainbow shield! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'dragon shield': 'A dragon shield! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'magical shield': 'A magical shield! So enchanting!',
+lib/services/offline_ai_service.dart:    'crystal': 'A crystal! So beautiful and magical! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow crystal': 'A rainbow crystal! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'dragon crystal': 'A dragon crystal! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'floating crystal': 'A floating crystal! How amazing!',
+lib/services/offline_ai_service.dart:    'gem': 'A gem! So precious and beautiful! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow gem': 'A rainbow gem! How magical! Should it sparkle?',
+lib/services/offline_ai_service.dart:    'dragon gem': 'A dragon gem! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'floating gem': 'A floating gem! How amazing!',
+lib/services/offline_ai_service.dart:    'orb': 'An orb! So mysterious and magical! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow orb': 'A rainbow orb! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'dragon orb': 'A dragon orb! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'floating orb': 'A floating orb! How amazing!',
+lib/services/offline_ai_service.dart:    'boat': 'A boat! Perfect for sailing! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow boat': 'A rainbow boat! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'dragon boat': 'A dragon boat! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'flying boat': 'A flying boat! How amazing!',
+lib/services/offline_ai_service.dart:    'car': 'A car! Perfect for driving! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow car': 'A rainbow car! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'dragon car': 'A dragon car! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'flying car': 'A flying car! How amazing!',
+lib/services/offline_ai_service.dart:    'airplane': 'An airplane! Perfect for flying! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow airplane': 'A rainbow airplane! How magical! Should it glow?',
+lib/services/offline_ai_service.dart:    'dragon airplane': 'A dragon airplane! Powerful and magical!',
+lib/services/offline_ai_service.dart:    'magical airplane': 'A magical airplane! So enchanting!',
+lib/services/offline_ai_service.dart:    'dragon bed': 'A dragon bed! How cozy! It will have dragon scales and magical effects!',
+lib/services/offline_ai_service.dart:    'ice dragon': 'An ice dragon! Cool! Should it have frosty breath?',
+lib/services/offline_ai_service.dart:    'lightning dragon': 'A lightning dragon! Electric! So powerful!',
+lib/services/offline_ai_service.dart:    'purple dragon': 'A purple dragon! Majestic! What powers should it have?',
+lib/services/offline_ai_service.dart:    'tiny dragon': 'A tiny dragon! Adorable! What should it breathe?',
+lib/services/offline_ai_service.dart:    'unicorn': 'A unicorn! How magical! What color would you like?',
+lib/services/offline_ai_service.dart:    'rainbow unicorn': 'A rainbow unicorn! So magical and colorful!',
+lib/services/offline_ai_service.dart:    'sparkle unicorn': 'A unicorn with sparkles! That will be so shiny!',
+lib/services/offline_ai_service.dart:    'pink unicorn': 'A pink unicorn! Sweet and magical!',
+lib/services/offline_ai_service.dart:    'golden unicorn': 'A golden unicorn! Shiny and magical!',
+lib/services/offline_ai_service.dart:    'flying unicorn': 'A flying unicorn! Double magical!',
+lib/services/offline_ai_service.dart:    'phoenix': 'A phoenix! A bird of fire! What colors?',
+lib/services/offline_ai_service.dart:    'fire phoenix': 'A fire phoenix! Rising from flames! Amazing!',
+lib/services/offline_ai_service.dart:    'rainbow phoenix': 'A rainbow phoenix! Colorful and fiery!',
+lib/services/offline_ai_service.dart:    'golden phoenix': 'A golden phoenix! Shining bright!',
+lib/services/offline_ai_service.dart:    'griffin': 'A griffin! Half eagle, half lion! So cool!',
+lib/services/offline_ai_service.dart:    'golden griffin': 'A golden griffin! Majestic and powerful!',
+lib/services/offline_ai_service.dart:    'white griffin': 'A white griffin! Noble and strong!',
+lib/services/offline_ai_service.dart:    'cat': 'A cat! Purr-fect! What color cat?',
+lib/services/offline_ai_service.dart:    'rainbow cat': 'A rainbow cat! Colorful and cute!',
+lib/services/offline_ai_service.dart:    'black cat': 'A black cat! Mysterious and cool!',
+lib/services/offline_ai_service.dart:    'golden cat': 'A golden cat! Shiny and special!',
+lib/services/offline_ai_service.dart:    'dog': 'A dog! Best friend! What kind?',
+lib/services/offline_ai_service.dart:    'rainbow dog': 'A rainbow dog! Colorful and loyal!',
+lib/services/offline_ai_service.dart:    'golden dog': 'A golden dog! Shiny and friendly!',
+lib/services/offline_ai_service.dart:    'big dog': 'A big dog! Strong and protective!',
+lib/services/offline_ai_service.dart:    'default': 'That sounds fun! Tell me more about what you\'d like to create!',
+lib/services/offline_ai_service.dart:      'A rainbow chicken sounds fun!',
+lib/services/offline_ai_service.dart:      'A phoenix with fire could be cool!',
+lib/services/offline_ai_service.dart:      'Try a massive dragon with lightning!',
+lib/services/offline_ai_service.dart:      return _commonResponses[normalized]!;
+lib/services/offline_ai_service.dart:        return _commonResponses[key]!;
+lib/services/offline_ai_service.dart:            return _commonResponses[key]!;
+lib/services/offline_ai_service.dart:    final suggestions = _ageSuggestions[_getAgeGroup(age)] ?? _ageSuggestions[7]!;
+lib/services/offline_ai_service.dart:    return 'I\'m working offline right now, but I can still help! $suggestion';
+lib/services/offline_ai_service.dart:      'Great idea! Let\'s create something amazing together!',
+lib/services/offline_ai_service.dart:      'I love your creativity! Let\'s make this happen!',
+lib/services/offline_ai_service.dart:      'That sounds wonderful! You have great ideas!',
+lib/services/offline_ai_service.dart:      'Awesome! Let\'s build something fun!',
+lib/services/offline_ai_service.dart:      'Fantastic! I can\'t wait to see what you create!',
+lib/services/offline_ai_service.dart:Just tell me what you\'d like to make!
+lib/services/offline_ai_service.dart:      !_isDefaultResponse(key)
+lib/services/offline_ai_service.dart:      'custom_responses': _commonResponses.keys.where((k) => !_isDefaultResponse(k)).length,
+lib/main.dart:                final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+lib/main.dart:          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+lib/main.dart:          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+Security Issues:
+lib/core/result.dart:        return "We need to set up the magic key first!";
+lib/core/result.dart:        return "API key not configured";
+lib/utils/rendering_optimizer.dart:      final key = '${call.materialType}_${call.textureId}';
+lib/utils/rendering_optimizer.dart:      if (!batches.containsKey(key)) {
+lib/utils/rendering_optimizer.dart:        batches[key] = RenderBatch(call.materialType, call.textureId);
+lib/utils/rendering_optimizer.dart:      batches[key]!.calls.add(call);
+lib/utils/memory_optimizer.dart:      stats[entry.key] = {
+lib/utils/memory_optimizer.dart:  V? get(K key) {
+lib/utils/memory_optimizer.dart:    if (!_cache.containsKey(key)) {
+lib/utils/memory_optimizer.dart:    final entry = _cache.remove(key)!;
+lib/utils/memory_optimizer.dart:    _cache[key] = entry;
+lib/utils/memory_optimizer.dart:  void put(K key, V value, {Duration? ttl}) {
+lib/utils/memory_optimizer.dart:    _cache.remove(key);
+lib/utils/memory_optimizer.dart:    _cache[key] = CacheEntry(value, ttl: ttl);
+lib/utils/memory_optimizer.dart:      _cache.remove(_cache.keys.first);
+lib/utils/memory_optimizer.dart:  bool containsKey(K key) {
+lib/utils/memory_optimizer.dart:    if (!_cache.containsKey(key)) {
+lib/utils/memory_optimizer.dart:    final entry = _cache[key]!;
+lib/utils/memory_optimizer.dart:  V? remove(K key) {
+lib/utils/memory_optimizer.dart:    final entry = _cache.remove(key);
+lib/utils/memory_optimizer.dart:    final keysToRemove = <K>[];
+lib/utils/memory_optimizer.dart:        keysToRemove.add(entry.key);
+lib/utils/memory_optimizer.dart:    for (final key in keysToRemove) {
+lib/utils/memory_optimizer.dart:      _cache.remove(key);
+lib/utils/memory_optimizer.dart:    if (keysToRemove.isNotEmpty) {
+lib/utils/memory_optimizer.dart:      print('🗑️  Removed ${keysToRemove.length} expired cache entries');
+lib/utils/memory_optimizer.dart:  void cacheImage(String key, dynamic image) {
+lib/utils/memory_optimizer.dart:    _cache.put(key, image, ttl: const Duration(hours: 1));
+lib/utils/memory_optimizer.dart:  dynamic getImage(String key) {
+lib/utils/memory_optimizer.dart:    return _cache.get(key);
+lib/widgets/creature_3d_preview.dart:    super.key,
+lib/widgets/legal_disclaimer.dart:    super.key,
+lib/widgets/legal_disclaimer.dart:  const ExportLegalDisclaimer({super.key});
+lib/widgets/legal_disclaimer.dart:  const CompactLegalDisclaimer({super.key});
+lib/widgets/legal_disclaimer.dart:  const FullLegalDisclaimer({super.key});
+lib/widgets/language_selector.dart:  const LanguageSelector({super.key});
+lib/widgets/procedural_creature_renderer.dart:    super.key,
+lib/widgets/update_dialog.dart:    super.key,
+lib/widgets/creature_preview.dart:    super.key,
+lib/widgets/enhanced_creature_preview.dart:    super.key,
+lib/widgets/offline_indicator.dart:    super.key,
+lib/widgets/offline_indicator.dart:    super.key,
+lib/widgets/offline_indicator.dart:  const ConnectivityQualityIndicator({super.key});
+lib/widgets/furniture_renderer.dart:    super.key,
+lib/widgets/qr_code_generator.dart:    super.key,
+lib/widgets/qr_code_generator.dart:    super.key,
+lib/screens/creature_preview_screen.dart:    super.key,
+lib/screens/parent_settings_screen.dart:  const ParentSettingsScreen({super.key});
+lib/screens/welcome_screen.dart:  const WelcomeScreen({super.key});
+lib/screens/minecraft_settings_screen.dart:  const MinecraftSettingsScreen({Key? key}) : super(key: key);
+lib/screens/minecraft_settings_screen.dart:        key: _formKey,
+lib/screens/dragon_couch_preview.dart:  const DragonCouchPreviewScreen({super.key});
+lib/screens/creation_history_screen.dart:  const CreationHistoryScreen({super.key});
+lib/screens/creature_sharing_screen.dart:    super.key,
+lib/screens/export_management_screen.dart:  const ExportManagementScreen({super.key});
+lib/screens/creator_screen.dart:  const CreatorScreen({super.key});
+lib/screens/ai_setup_screen.dart:import '../services/api_key_manager.dart';
+lib/screens/ai_setup_screen.dart:  const AISetupScreen({super.key});
+lib/screens/ai_setup_screen.dart:                hintText: 'Paste your API key here',
+lib/screens/ai_setup_screen.dart:                prefixIcon: const Icon(Icons.key),
+lib/screens/ai_setup_screen.dart:    final key = _controllers[service]?.text.trim();
+lib/screens/ai_setup_screen.dart:    if (key == null || key.isEmpty) {
+lib/screens/ai_setup_screen.dart:        const SnackBar(content: Text('Please enter an API key')),
+lib/screens/ai_setup_screen.dart:    await APIKeyManager.setAPIKey(service, key);
+lib/screens/ai_setup_screen.dart:        content: Text('$service API key saved!'),
+lib/screens/legal_settings_screen.dart:  const LegalSettingsScreen({super.key});
+lib/screens/complete_screen.dart:  const CompleteScreen({super.key});
+lib/screens/export_minecraft_screen.dart:    Key? key,
+lib/screens/export_minecraft_screen.dart:  }) : super(key: key);
+lib/services/ai_service.dart:import 'api_key_manager.dart';
+lib/services/ai_service.dart:      suggestions.add('Would you like a $color key for your chest?');
+lib/services/performance_monitor.dart:    for (final operation in _metrics.keys) {
+lib/services/performance_monitor.dart:    for (final operation in _metrics.keys) {
+lib/services/performance_monitor.dart:        buffer.writeln('  ${event.key}: ${event.value}');
+lib/services/performance_monitor.dart:    for (final operation in _metrics.keys) {
+lib/services/performance_monitor.dart:    return _metrics.keys.where((op) => isOperationSlow(op, thresholdMs: thresholdMs)).toList();
+lib/services/local_storage_service.dart:  Future<File> _getFile(String key) async {
+lib/services/local_storage_service.dart:    return File('${dir.path}/$key.json');
+lib/services/local_storage_service.dart:  Future<bool> saveData(String key, Map<String, dynamic> data) async {
+lib/services/local_storage_service.dart:      final file = await _getFile(key);
+lib/services/local_storage_service.dart:      print('Error saving data for key $key: $e');
+lib/services/local_storage_service.dart:  Future<Map<String, dynamic>?> loadData(String key) async {
+lib/services/local_storage_service.dart:      final file = await _getFile(key);
+lib/services/local_storage_service.dart:      print('Error loading data for key $key: $e');
+lib/services/local_storage_service.dart:  Future<bool> deleteData(String key) async {
+lib/services/local_storage_service.dart:      final file = await _getFile(key);
+lib/services/local_storage_service.dart:      print('Error deleting data for key $key: $e');
+lib/services/local_storage_service.dart:  Future<bool> hasData(String key) async {
+lib/services/local_storage_service.dart:      final file = await _getFile(key);
+lib/services/local_storage_service.dart:  Future<bool> cacheAPIResponse(String key, String response) async {
+lib/services/local_storage_service.dart:      cache[key] = {
+lib/services/local_storage_service.dart:  Future<String?> getCachedAPIResponse(String key, {Duration maxAge = const Duration(hours: 1)}) async {
+lib/services/local_storage_service.dart:      if (!cache.containsKey(key)) {
+lib/services/local_storage_service.dart:      final entry = cache[key];
+lib/services/swedish_ai_service.dart:      if (message.contains(entry.key.toLowerCase())) {
+lib/services/minecraft/manifest_generator.dart:    translations.forEach((key, value) {
+lib/services/minecraft/manifest_generator.dart:      buffer.writeln('$key=$value');
+lib/services/groq_ai_service.dart:3. Generate a new API key
+lib/services/security_service.dart:      'name', 'address', 'phone', 'email', 'password'
+lib/services/security_service.dart:  Future<void> secureDataStorage(String key, String value) async {
+lib/services/security_service.dart:    print('Security: Data securely stored for key: $key');
+lib/services/security_service.dart:  Future<String?> secureDataRetrieval(String key) async {
+lib/services/security_service.dart:    final decryptedValue = decryptData('encrypted_data_for_$key');
+lib/services/security_service.dart:    print('Security: Data securely retrieved for key: $key');
+lib/services/responsive_service.dart:    super.key,
+lib/services/responsive_service.dart:    super.key,
+lib/services/responsive_service.dart:    super.key,
+lib/services/api_key_manager.dart:  static const String _groqKey = 'groq_api_key';
+lib/services/api_key_manager.dart:  static const String _huggingfaceKey = 'huggingface_api_key';
+lib/services/api_key_manager.dart:  static const String _openaiKey = 'openai_api_key';
+lib/services/api_key_manager.dart:    return prefs.getString('${service}_api_key');
+lib/services/api_key_manager.dart:  static Future<void> setAPIKey(String service, String key) async {
+lib/services/api_key_manager.dart:    await prefs.setString('${service}_api_key', key);
+lib/services/api_key_manager.dart:3. Generate a new API key
+lib/services/api_key_manager.dart:4. Generate an API key
+lib/services/offline_ai_service.dart:    for (final key in _commonResponses.keys) {
+lib/services/offline_ai_service.dart:      if (normalized.contains(key) || key.contains(normalized)) {
+lib/services/offline_ai_service.dart:        print('✅ Partial match found: $key');
+lib/services/offline_ai_service.dart:        return _commonResponses[key]!;
+lib/services/offline_ai_service.dart:        for (final key in _commonResponses.keys) {
+lib/services/offline_ai_service.dart:          if (key.contains(word) || word.contains(key)) {
+lib/services/offline_ai_service.dart:            print('✅ Word match found: $word in $key');
+lib/services/offline_ai_service.dart:            return _commonResponses[key]!;
+lib/services/offline_ai_service.dart:    for (final key in _commonResponses.keys) {
+lib/services/offline_ai_service.dart:      if (normalized.contains(key) || key.contains(normalized)) {
+lib/services/offline_ai_service.dart:    _commonResponses.removeWhere((key, value) =>
+lib/services/offline_ai_service.dart:      !_isDefaultResponse(key)
+lib/services/offline_ai_service.dart:  bool _isDefaultResponse(String key) {
+lib/services/offline_ai_service.dart:    return defaultKeys.contains(key);
+lib/services/offline_ai_service.dart:      'default_responses': _commonResponses.keys.where(_isDefaultResponse).length,
+lib/services/offline_ai_service.dart:      'custom_responses': _commonResponses.keys.where((k) => !_isDefaultResponse(k)).length,
+lib/main.dart:  const CraftaApp({super.key});
+
+📈 METRICS:
+- Error Handling Blocks: 98
+- setState Calls: 66
+- Potential Memory Leaks: 148
+- Null Safety Issues: 822
+
+🔧 RECOMMENDATIONS:
+1. Review all ERROR results above
+2. Fix memory leaks if any found
+3. Address null safety issues
+4. Improve error handling where needed
+5. Optimize performance if setState count is high
+6. Review security issues if any found
+

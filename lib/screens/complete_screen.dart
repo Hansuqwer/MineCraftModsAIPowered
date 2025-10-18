@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../widgets/procedural_creature_renderer.dart';
 import '../widgets/furniture_renderer.dart';
+import '../widgets/minecraft_3d_preview.dart';
 import '../services/ai_service.dart';
+import '../services/enhanced_ai_service.dart';
 import '../utils/screen_utils.dart';
 import '../services/minecraft/minecraft_export_service.dart';
 import '../models/minecraft/addon_metadata.dart';
@@ -37,6 +39,7 @@ class _CompleteScreenState extends State<CompleteScreen>
   bool _showSuccessAnimation = false;
   bool _showExportAnimation = false;
   bool _isExporting = false;
+  bool _show3DPreview = false;
   
   // Creature data
   String creatureName = 'Rainbow Cow';
@@ -145,7 +148,19 @@ class _CompleteScreenState extends State<CompleteScreen>
   /// Get AI suggestion for the created item
   String _getAISuggestion() {
     if (_currentSuggestion.isEmpty) {
-      _currentSuggestion = _aiService.generateCreationSuggestions(creatureAttributes);
+      // Get contextual suggestions based on current creation
+      final contextualSuggestions = EnhancedAIService.getContextualSuggestions(creatureAttributes);
+      if (contextualSuggestions.isNotEmpty) {
+        _currentSuggestion = contextualSuggestions.first;
+      } else {
+        // Fallback to age-appropriate suggestions
+        final ageSuggestions = EnhancedAIService.getEnhancedAgeSuggestions(6); // Default age
+        if (ageSuggestions.isNotEmpty) {
+          _currentSuggestion = ageSuggestions.first;
+        } else {
+          _currentSuggestion = 'Try creating something new!';
+        }
+      }
     }
     return _currentSuggestion;
   }
@@ -424,6 +439,28 @@ class _CompleteScreenState extends State<CompleteScreen>
                   ),
                   child: Column(
                     children: [
+                      // 3D Preview Toggle Button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _show3DPreview = !_show3DPreview;
+                              });
+                            },
+                            icon: Icon(_show3DPreview ? Icons.view_agenda : Icons.view_in_ar),
+                            label: Text(_show3DPreview ? '2D View' : '3D View'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _show3DPreview ? Colors.orange : const Color(0xFF98D8C8),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      
                       // Animated Creature Preview Image
                       AnimatedBuilder(
                         animation: _celebrationAnimation,
@@ -446,17 +483,27 @@ class _CompleteScreenState extends State<CompleteScreen>
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
-                                child: _isFurniture(creatureType)
-                                  ? FurnitureRenderer(
-                                      furnitureAttributes: creatureAttributes,
-                                      size: 200,
-                                      isAnimated: true,
-                                    )
-                                  : ProceduralCreatureRenderer(
+                                child: _show3DPreview
+                                  ? Minecraft3DPreview(
                                       creatureAttributes: creatureAttributes,
+                                      modelPath: 'assets/models/${creatureType.toLowerCase()}.glb',
+                                      texturePath: 'assets/textures/${creatureType.toLowerCase()}.png',
                                       size: 200,
-                                      isAnimated: true,
-                                    ),
+                                      enableRotation: true,
+                                      enableZoom: true,
+                                      enableEffects: true,
+                                    )
+                                  : _isFurniture(creatureType)
+                                    ? FurnitureRenderer(
+                                        furnitureAttributes: creatureAttributes,
+                                        size: 200,
+                                        isAnimated: true,
+                                      )
+                                    : ProceduralCreatureRenderer(
+                                        creatureAttributes: creatureAttributes,
+                                        size: 200,
+                                        isAnimated: true,
+                                      ),
                               ),
                             ),
                           );

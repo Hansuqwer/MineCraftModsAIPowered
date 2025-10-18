@@ -193,17 +193,80 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
               ),
               
-              // Parent Settings Button
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/parent-settings');
-                },
-                child: const Text(
-                  'Parent Settings',
-                  style: TextStyle(
-                    color: Color(0xFF666666),
-                    fontSize: 14,
+              // Quick Access Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Language Button
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/parent-settings');
+                    },
+                    icon: const Icon(Icons.language, size: 16),
+                    label: const Text(
+                      'Language',
+                      style: TextStyle(
+                        color: Color(0xFF666666),
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
+                  // Parent Settings Button
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/parent-settings');
+                    },
+                    icon: const Icon(Icons.settings, size: 16),
+                    label: const Text(
+                      'Settings',
+                      style: TextStyle(
+                        color: Color(0xFF666666),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Quick Tips
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0F8FF),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFF98D8C8),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.lightbulb_outline,
+                      color: Color(0xFF98D8C8),
+                      size: 24,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      '💡 Quick Tips',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      '• Say "I want a dragon" to create creatures\n• Try "make me a chair" for furniture\n• Use colors like "blue", "rainbow", "gold"\n• Add effects like "wings", "sparkles", "glow"',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF666666),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -7,25 +7,24 @@ echo "📦 Cleaning and getting dependencies..."
 flutter clean
 flutter pub get
 
-# Build APK with error capture
+# Build APK
 echo "🏗️ Building APK..."
-flutter build apk --debug 2>&1 | tee build_output.log
-
-# Check if build was successful
-if [ $? -eq 0 ]; then
+if flutter build apk --debug; then
     echo "✅ Build successful!"
     
     # Create timestamped filename
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-    APK_NAME="crafta_debug_${TIMESTAMP}.apk"
+    APK_NAME="crafta_enhanced_${TIMESTAMP}.apk"
     
     # Move APK to Downloads
     if [ -f "build/app/outputs/flutter-apk/app-debug.apk" ]; then
         cp build/app/outputs/flutter-apk/app-debug.apk ~/Downloads/$APK_NAME
         echo "📱 APK saved to: ~/Downloads/$APK_NAME"
+        echo "✅ APK moved successfully!"
+    else
+        echo "❌ APK file not found!"
     fi
 else
-    echo "❌ Build failed! Check build_output.log for details"
-    echo "📋 Last 20 lines of output:"
-    tail -20 build_output.log
+    echo "❌ Build failed!"
+    exit 1
 fi

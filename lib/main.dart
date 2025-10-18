@@ -40,7 +40,7 @@ Future<void> main() async {
   await DebugService.initialize();
 
   // Initialize responsive service
-  ResponsiveService.init();
+  // ResponsiveService.init(); // Will be initialized in WelcomeScreen
 
   runApp(const CraftaApp());
 }

@@ -208,7 +208,7 @@ class _UpdateDialogState extends State<UpdateDialog> with TickerProviderStateMix
                     ),
                     const SizedBox(height: 8),
                     const _FeatureItem(
-                      icon: Icons.bug_fix,
+                      icon: Icons.bug_report,
                       text: 'Bug fixes and improvements',
                     ),
                     const _FeatureItem(

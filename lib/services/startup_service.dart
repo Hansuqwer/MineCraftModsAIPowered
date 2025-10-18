@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'language_service.dart';
 import 'updater_service.dart';
-import 'widgets/update_dialog.dart';
+import '../widgets/update_dialog.dart';
 
 /// Service for handling app startup tasks
 class StartupService {

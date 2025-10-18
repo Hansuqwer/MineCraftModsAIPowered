@@ -661,8 +661,9 @@ class _CreatorScreenState extends State<CreatorScreen>
           ? _buildFoldableLayout()
           : Padding(
               padding: EdgeInsets.all(isTablet ? 32.0 : 24.0),
-              child: Column(
-            children: [
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
               // Crafta Avatar and Speech Bubble
               Expanded(
                 flex: 2,
@@ -972,6 +973,8 @@ class _CreatorScreenState extends State<CreatorScreen>
                 ),
               ),
             ],
+              ),
+            ),
           ),
         ),
       ),

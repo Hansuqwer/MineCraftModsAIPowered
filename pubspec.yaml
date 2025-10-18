@@ -45,6 +45,10 @@ dependencies:
   vector_math: ^2.1.4
   # Animation and effects
   rive: ^0.12.4
+  # WebView for 3D previews
+  webview_flutter: ^4.4.2
+  # File handling for 3D models
+  file_picker: ^8.0.0+1
   # Environment variables
   flutter_dotenv: ^5.1.0
   # Testing utilities

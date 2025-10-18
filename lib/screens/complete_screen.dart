@@ -4,6 +4,7 @@ import '../widgets/furniture_renderer.dart';
 import '../widgets/minecraft_3d_preview.dart';
 import '../services/ai_service.dart';
 import '../services/enhanced_ai_service.dart';
+import '../models/enhanced_creature_attributes.dart';
 import '../utils/screen_utils.dart';
 import '../services/minecraft/minecraft_export_service.dart';
 import '../models/minecraft/addon_metadata.dart';
@@ -149,7 +150,14 @@ class _CompleteScreenState extends State<CompleteScreen>
   String _getAISuggestion() {
     if (_currentSuggestion.isEmpty) {
       // Get contextual suggestions based on current creation
-      final contextualSuggestions = EnhancedAIService.getContextualSuggestions(creatureAttributes);
+      final enhancedAttributes = EnhancedCreatureAttributes.fromBasic(
+        baseType: creatureAttributes['creatureType'] ?? 'creature',
+        color: creatureAttributes['color'],
+        size: creatureAttributes['size'],
+        effects: creatureAttributes['effects'],
+        theme: creatureAttributes['theme'],
+      );
+      final contextualSuggestions = EnhancedAIService.getContextualSuggestions(enhancedAttributes);
       if (contextualSuggestions.isNotEmpty) {
         _currentSuggestion = contextualSuggestions.first;
       } else {

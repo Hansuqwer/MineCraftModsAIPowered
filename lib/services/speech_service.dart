@@ -1,5 +1,6 @@
 import 'package:speech_to_text/speech_to_text.dart';
 import 'dart:io';
+import 'language_service.dart';
 
 class SpeechService {
   final SpeechToText _speech = SpeechToText();
@@ -48,23 +49,33 @@ class SpeechService {
       _isListening = true;
       print('Starting speech recognition...');
       
+      // Get current language for speech recognition
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final localeId = currentLocale.languageCode == 'sv' ? 'sv_SE' : 'en_US';
+      print('Using speech recognition locale: $localeId');
+      
       await _speech.listen(
         onResult: (result) {
-          print('Speech result: ${result.recognizedWords}');
+          print('Speech result: ${result.recognizedWords} (confidence: ${result.confidence})');
           _lastWords = result.recognizedWords;
-          if (result.finalResult) {
-            print('Final result: $_lastWords');
-            onResult(_lastWords);
-            _isListening = false;
+          
+          // Only process results with reasonable confidence
+          if (result.confidence > 0.3) {
+            if (result.finalResult) {
+              print('Final result: $_lastWords (confidence: ${result.confidence})');
+              onResult(_lastWords);
+              _isListening = false;
+            }
+          } else {
+            print('Low confidence result ignored: ${result.confidence}');
           }
         },
-        listenFor: const Duration(seconds: 10),
-        pauseFor: const Duration(seconds: 3),
+        listenFor: const Duration(seconds: 15), // Increased listening time
+        pauseFor: const Duration(seconds: 2), // Reduced pause time
         partialResults: true,
-        localeId: 'en_US',
-        onSoundLevelChange: (level) {
-          print('Sound level: $level');
-        },
+        localeId: localeId,
+        listenMode: ListenMode.confirmation, // Better for single commands
+        cancelOnError: false, // Don't cancel on minor errors
       );
     } catch (e) {
       print('Speech listening error: $e');

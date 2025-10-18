@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../services/ai_service.dart';
+import '../services/enhanced_ai_service.dart';
 import '../services/speech_service.dart';
 import '../services/tts_service.dart';
 import '../models/conversation.dart';
+import '../models/enhanced_creature_attributes.dart';
+import 'advanced_customization_screen.dart';
 
 /// Simple Creator Screen - Working version
 class CreatorScreenSimple extends StatefulWidget {
@@ -22,6 +25,7 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
   bool _isListening = false;
   bool _isProcessing = false;
   Conversation _conversation = Conversation(messages: []);
+  EnhancedCreatureAttributes? _currentCreature;
 
   @override
   void initState() {
@@ -32,6 +36,11 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
   Future<void> _initializeServices() async {
     await _speechService.initialize();
     await _ttsService.initialize();
+    
+    // Play warm welcome after a short delay
+    Future.delayed(const Duration(seconds: 1), () {
+      _ttsService.playWarmWelcome();
+    });
   }
 
   Future<void> _startListening() async {
@@ -72,14 +81,23 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
       // Add user message to conversation
       _conversation = _conversation.addMessage(text, true);
       
-      // Get AI response
-      final response = await _aiService.getCraftaResponse(text);
+      // Get enhanced AI response with advanced attributes
+      final enhancedAttributes = await EnhancedAIService.parseEnhancedCreatureRequest(text);
       
-      // Add AI response to conversation
-      _conversation = _conversation.addMessage(response, false);
+      setState(() {
+        _currentCreature = enhancedAttributes;
+        _conversation = _conversation.addMessage(
+          'I created ${enhancedAttributes.customName}! ${enhancedAttributes.fullDescription}', 
+          false
+        );
+      });
       
-      // Speak the response
-      await _ttsService.speak(response);
+      // Speak the response with personality
+      await _ttsService.speak('I created ${enhancedAttributes.customName}! ${enhancedAttributes.fullDescription}');
+      
+      // Add some encouragement
+      await Future.delayed(const Duration(milliseconds: 500));
+      await _ttsService.playEncouragement();
       
       setState(() {
         _isProcessing = false;
@@ -88,6 +106,39 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
     } catch (e) {
       print('Error processing text: $e');
       setState(() => _isProcessing = false);
+    }
+  }
+
+  Future<void> _openAdvancedCustomization() async {
+    if (_currentCreature == null) return;
+    
+    final result = await Navigator.push<EnhancedCreatureAttributes>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AdvancedCustomizationScreen(
+          initialAttributes: _currentCreature!,
+          onAttributesChanged: (attributes) {
+            setState(() {
+              _currentCreature = attributes;
+            });
+          },
+        ),
+      ),
+    );
+    
+    if (result != null) {
+      setState(() {
+        _currentCreature = result;
+      });
+      
+      // Update conversation with new attributes
+      _conversation = _conversation.addMessage(
+        'Updated ${result.customName}! ${result.fullDescription}',
+        false,
+      );
+      
+      // Speak the update
+      await _ttsService.speak('Updated ${result.customName}! ${result.fullDescription}');
     }
   }
 
@@ -243,6 +294,52 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
                   ],
                 ),
               ),
+              
+              const SizedBox(height: 16),
+              
+              // Advanced Customization Button
+              if (_currentCreature != null)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF98D8C8).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF98D8C8)),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        '🎨 Advanced Customization Available!',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF98D8C8),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Customize colors, size, personality, abilities, and accessories',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF666666),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton.icon(
+                        onPressed: () => _openAdvancedCustomization(),
+                        icon: const Icon(Icons.palette, color: Colors.white),
+                        label: const Text('Customize', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF98D8C8),
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               
               if (_isProcessing) ...[
                 const SizedBox(height: 24),

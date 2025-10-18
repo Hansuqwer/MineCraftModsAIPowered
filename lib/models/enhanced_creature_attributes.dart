@@ -1,0 +1,549 @@
+import 'package:flutter/material.dart';
+
+/// Enhanced creature attributes with advanced customization options
+class EnhancedCreatureAttributes {
+  final String baseType;
+  final Color primaryColor;
+  final Color secondaryColor;
+  final Color accentColor;
+  final CreatureSize size;
+  final List<SpecialAbility> abilities;
+  final List<Accessory> accessories;
+  final PersonalityType personality;
+  final List<Pattern> patterns;
+  final TextureType texture;
+  final GlowEffect glowEffect;
+  final CreatureAnimationStyle animationStyle;
+  final String customName;
+  final String description;
+
+  const EnhancedCreatureAttributes({
+    required this.baseType,
+    required this.primaryColor,
+    required this.secondaryColor,
+    required this.accentColor,
+    required this.size,
+    required this.abilities,
+    required this.accessories,
+    required this.personality,
+    required this.patterns,
+    required this.texture,
+    required this.glowEffect,
+    required this.animationStyle,
+    required this.customName,
+    required this.description,
+  });
+
+  /// Create from basic attributes (backward compatibility)
+  factory EnhancedCreatureAttributes.fromBasic({
+    required String baseType,
+    String? color,
+    String? size,
+    String? effects,
+    String? theme,
+  }) {
+    return EnhancedCreatureAttributes(
+      baseType: baseType,
+      primaryColor: _parseColor(color) ?? Colors.blue,
+      secondaryColor: _parseColor(color)?.withOpacity(0.7) ?? Colors.blue.shade300,
+      accentColor: _parseColor(color)?.withOpacity(0.5) ?? Colors.blue.shade100,
+      size: _parseSize(size),
+      abilities: _parseAbilities(effects),
+      accessories: [],
+      personality: _parsePersonality(theme),
+      patterns: _parsePatterns(effects),
+      texture: TextureType.smooth,
+      glowEffect: GlowEffect.none,
+      animationStyle: CreatureAnimationStyle.natural,
+      customName: baseType,
+      description: 'A $baseType created with Crafta',
+    );
+  }
+
+  /// Convert to basic attributes (for backward compatibility)
+  Map<String, dynamic> toBasicAttributes() {
+    return {
+      'creatureType': baseType,
+      'color': _colorToString(primaryColor),
+      'size': size.name,
+      'effects': abilities.map((a) => a.name).join(', '),
+      'theme': personality.name,
+    };
+  }
+
+  /// Create a copy with updated values
+  EnhancedCreatureAttributes copyWith({
+    String? baseType,
+    Color? primaryColor,
+    Color? secondaryColor,
+    Color? accentColor,
+    CreatureSize? size,
+    List<SpecialAbility>? abilities,
+    List<Accessory>? accessories,
+    PersonalityType? personality,
+    List<Pattern>? patterns,
+    TextureType? texture,
+    GlowEffect? glowEffect,
+    CreatureAnimationStyle? animationStyle,
+    String? customName,
+    String? description,
+  }) {
+    return EnhancedCreatureAttributes(
+      baseType: baseType ?? this.baseType,
+      primaryColor: primaryColor ?? this.primaryColor,
+      secondaryColor: secondaryColor ?? this.secondaryColor,
+      accentColor: accentColor ?? this.accentColor,
+      size: size ?? this.size,
+      abilities: abilities ?? this.abilities,
+      accessories: accessories ?? this.accessories,
+      personality: personality ?? this.personality,
+      patterns: patterns ?? this.patterns,
+      texture: texture ?? this.texture,
+      glowEffect: glowEffect ?? this.glowEffect,
+      animationStyle: animationStyle ?? this.animationStyle,
+      customName: customName ?? this.customName,
+      description: description ?? this.description,
+    );
+  }
+
+  /// Get size multiplier for 3D rendering
+  double get sizeMultiplier {
+    switch (size) {
+      case CreatureSize.tiny:
+        return 0.3;
+      case CreatureSize.small:
+        return 0.6;
+      case CreatureSize.medium:
+        return 1.0;
+      case CreatureSize.large:
+        return 1.5;
+      case CreatureSize.giant:
+        return 2.0;
+    }
+  }
+
+  /// Get personality description
+  String get personalityDescription {
+    switch (personality) {
+      case PersonalityType.friendly:
+        return 'Always happy and loves to help others';
+      case PersonalityType.playful:
+        return 'Loves to play games and have fun';
+      case PersonalityType.shy:
+        return 'Quiet and gentle, likes peaceful places';
+      case PersonalityType.brave:
+        return 'Courageous and ready for adventure';
+      case PersonalityType.curious:
+        return 'Always asking questions and exploring';
+    }
+  }
+
+  /// Get abilities description
+  String get abilitiesDescription {
+    if (abilities.isEmpty) return 'No special abilities';
+    return abilities.map((a) => a.description).join(', ');
+  }
+
+  /// Get accessories description
+  String get accessoriesDescription {
+    if (accessories.isEmpty) return 'No accessories';
+    return accessories.map((a) => a.name).join(', ');
+  }
+
+  /// Get full creature description
+  String get fullDescription {
+    return '$customName is a $size ${personality.name} $baseType. '
+           '$personalityDescription '
+           '$abilitiesDescription. '
+           '$accessoriesDescription.';
+  }
+
+  // Helper methods
+  static Color? _parseColor(String? color) {
+    if (color == null) return null;
+    switch (color.toLowerCase()) {
+      case 'red': return Colors.red;
+      case 'blue': return Colors.blue;
+      case 'green': return Colors.green;
+      case 'yellow': return Colors.yellow;
+      case 'purple': return Colors.purple;
+      case 'orange': return Colors.orange;
+      case 'pink': return Colors.pink;
+      case 'brown': return Colors.brown;
+      case 'black': return Colors.black;
+      case 'white': return Colors.white;
+      default: return Colors.blue;
+    }
+  }
+
+  static String _colorToString(Color color) {
+    if (color == Colors.red) return 'red';
+    if (color == Colors.blue) return 'blue';
+    if (color == Colors.green) return 'green';
+    if (color == Colors.yellow) return 'yellow';
+    if (color == Colors.purple) return 'purple';
+    if (color == Colors.orange) return 'orange';
+    if (color == Colors.pink) return 'pink';
+    if (color == Colors.brown) return 'brown';
+    if (color == Colors.black) return 'black';
+    if (color == Colors.white) return 'white';
+    return 'blue';
+  }
+
+  static CreatureSize _parseSize(String? size) {
+    switch (size?.toLowerCase()) {
+      case 'tiny': return CreatureSize.tiny;
+      case 'small': return CreatureSize.small;
+      case 'large': return CreatureSize.large;
+      case 'giant': return CreatureSize.giant;
+      default: return CreatureSize.medium;
+    }
+  }
+
+  static List<SpecialAbility> _parseAbilities(String? effects) {
+    if (effects == null) return [];
+    List<SpecialAbility> abilities = [];
+    String lowerEffects = effects.toLowerCase();
+    
+    if (lowerEffects.contains('fly') || lowerEffects.contains('flying')) {
+      abilities.add(SpecialAbility.flying);
+    }
+    if (lowerEffects.contains('swim') || lowerEffects.contains('swimming')) {
+      abilities.add(SpecialAbility.swimming);
+    }
+    if (lowerEffects.contains('fire') || lowerEffects.contains('flame')) {
+      abilities.add(SpecialAbility.fireBreath);
+    }
+    if (lowerEffects.contains('ice') || lowerEffects.contains('freeze')) {
+      abilities.add(SpecialAbility.iceBreath);
+    }
+    if (lowerEffects.contains('magic') || lowerEffects.contains('spell')) {
+      abilities.add(SpecialAbility.magic);
+    }
+    if (lowerEffects.contains('teleport')) {
+      abilities.add(SpecialAbility.teleportation);
+    }
+    if (lowerEffects.contains('invisible')) {
+      abilities.add(SpecialAbility.invisibility);
+    }
+    
+    return abilities;
+  }
+
+  static PersonalityType _parsePersonality(String? theme) {
+    switch (theme?.toLowerCase()) {
+      case 'friendly': return PersonalityType.friendly;
+      case 'playful': return PersonalityType.playful;
+      case 'shy': return PersonalityType.shy;
+      case 'brave': return PersonalityType.brave;
+      case 'curious': return PersonalityType.curious;
+      default: return PersonalityType.friendly;
+    }
+  }
+
+  static List<Pattern> _parsePatterns(String? effects) {
+    if (effects == null) return [];
+    List<Pattern> patterns = [];
+    String lowerEffects = effects.toLowerCase();
+    
+    if (lowerEffects.contains('stripes')) {
+      patterns.add(Pattern.stripes);
+    }
+    if (lowerEffects.contains('spots') || lowerEffects.contains('dots')) {
+      patterns.add(Pattern.spots);
+    }
+    if (lowerEffects.contains('sparkle') || lowerEffects.contains('sparkles')) {
+      patterns.add(Pattern.sparkles);
+    }
+    if (lowerEffects.contains('rainbow')) {
+      patterns.add(Pattern.rainbow);
+    }
+    
+    return patterns;
+  }
+}
+
+/// Creature size options
+enum CreatureSize {
+  tiny,
+  small,
+  medium,
+  large,
+  giant,
+}
+
+/// Special abilities creatures can have
+enum SpecialAbility {
+  flying,
+  swimming,
+  fireBreath,
+  iceBreath,
+  magic,
+  teleportation,
+  invisibility,
+  superStrength,
+  superSpeed,
+  healing,
+  shapeshifting,
+  weatherControl,
+}
+
+extension SpecialAbilityExtension on SpecialAbility {
+  String get name {
+    switch (this) {
+      case SpecialAbility.flying:
+        return 'Flying';
+      case SpecialAbility.swimming:
+        return 'Swimming';
+      case SpecialAbility.fireBreath:
+        return 'Fire Breath';
+      case SpecialAbility.iceBreath:
+        return 'Ice Breath';
+      case SpecialAbility.magic:
+        return 'Magic';
+      case SpecialAbility.teleportation:
+        return 'Teleportation';
+      case SpecialAbility.invisibility:
+        return 'Invisibility';
+      case SpecialAbility.superStrength:
+        return 'Super Strength';
+      case SpecialAbility.superSpeed:
+        return 'Super Speed';
+      case SpecialAbility.healing:
+        return 'Healing';
+      case SpecialAbility.shapeshifting:
+        return 'Shapeshifting';
+      case SpecialAbility.weatherControl:
+        return 'Weather Control';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case SpecialAbility.flying:
+        return 'Can fly through the air';
+      case SpecialAbility.swimming:
+        return 'Excellent swimmer';
+      case SpecialAbility.fireBreath:
+        return 'Can breathe fire';
+      case SpecialAbility.iceBreath:
+        return 'Can breathe ice';
+      case SpecialAbility.magic:
+        return 'Has magical powers';
+      case SpecialAbility.teleportation:
+        return 'Can teleport instantly';
+      case SpecialAbility.invisibility:
+        return 'Can become invisible';
+      case SpecialAbility.superStrength:
+        return 'Very strong';
+      case SpecialAbility.superSpeed:
+        return 'Very fast';
+      case SpecialAbility.healing:
+        return 'Can heal others';
+      case SpecialAbility.shapeshifting:
+        return 'Can change shape';
+      case SpecialAbility.weatherControl:
+        return 'Can control weather';
+    }
+  }
+
+  String get icon {
+    switch (this) {
+      case SpecialAbility.flying:
+        return '🕊️';
+      case SpecialAbility.swimming:
+        return '🏊';
+      case SpecialAbility.fireBreath:
+        return '🔥';
+      case SpecialAbility.iceBreath:
+        return '❄️';
+      case SpecialAbility.magic:
+        return '✨';
+      case SpecialAbility.teleportation:
+        return '⚡';
+      case SpecialAbility.invisibility:
+        return '👻';
+      case SpecialAbility.superStrength:
+        return '💪';
+      case SpecialAbility.superSpeed:
+        return '💨';
+      case SpecialAbility.healing:
+        return '💚';
+      case SpecialAbility.shapeshifting:
+        return '🔄';
+      case SpecialAbility.weatherControl:
+        return '🌩️';
+    }
+  }
+}
+
+/// Personality types for creatures
+enum PersonalityType {
+  friendly,
+  playful,
+  shy,
+  brave,
+  curious,
+}
+
+/// Accessories that can be added to creatures
+class Accessory {
+  final String name;
+  final String icon;
+  final AccessoryType type;
+  final String description;
+  final Color? color;
+
+  const Accessory({
+    required this.name,
+    required this.icon,
+    required this.type,
+    required this.description,
+    this.color,
+  });
+
+  static const List<Accessory> allAccessories = [
+    // Hats
+    Accessory(
+      name: 'Wizard Hat',
+      icon: '🧙‍♂️',
+      type: AccessoryType.hat,
+      description: 'A magical wizard hat',
+    ),
+    Accessory(
+      name: 'Crown',
+      icon: '👑',
+      type: AccessoryType.hat,
+      description: 'A royal crown',
+    ),
+    Accessory(
+      name: 'Baseball Cap',
+      icon: '🧢',
+      type: AccessoryType.hat,
+      description: 'A cool baseball cap',
+    ),
+    
+    // Glasses
+    Accessory(
+      name: 'Sunglasses',
+      icon: '🕶️',
+      type: AccessoryType.glasses,
+      description: 'Cool sunglasses',
+    ),
+    Accessory(
+      name: 'Reading Glasses',
+      icon: '🤓',
+      type: AccessoryType.glasses,
+      description: 'Smart reading glasses',
+    ),
+    
+    // Armor
+    Accessory(
+      name: 'Knight Armor',
+      icon: '🛡️',
+      type: AccessoryType.armor,
+      description: 'Protective knight armor',
+    ),
+    Accessory(
+      name: 'Magic Robe',
+      icon: '🧙‍♀️',
+      type: AccessoryType.armor,
+      description: 'A magical robe',
+    ),
+    
+    // Magical Items
+    Accessory(
+      name: 'Magic Wand',
+      icon: '🪄',
+      type: AccessoryType.magical,
+      description: 'A powerful magic wand',
+    ),
+    Accessory(
+      name: 'Crystal Ball',
+      icon: '🔮',
+      type: AccessoryType.magical,
+      description: 'A mystical crystal ball',
+    ),
+  ];
+}
+
+enum AccessoryType {
+  hat,
+  glasses,
+  armor,
+  magical,
+}
+
+/// Patterns that can be applied to creatures
+enum Pattern {
+  stripes,
+  spots,
+  sparkles,
+  rainbow,
+  stars,
+  hearts,
+}
+
+extension PatternExtension on Pattern {
+  String get name {
+    switch (this) {
+      case Pattern.stripes:
+        return 'Stripes';
+      case Pattern.spots:
+        return 'Spots';
+      case Pattern.sparkles:
+        return 'Sparkles';
+      case Pattern.rainbow:
+        return 'Rainbow';
+      case Pattern.stars:
+        return 'Stars';
+      case Pattern.hearts:
+        return 'Hearts';
+    }
+  }
+
+  String get icon {
+    switch (this) {
+      case Pattern.stripes:
+        return '〰️';
+      case Pattern.spots:
+        return '⚫';
+      case Pattern.sparkles:
+        return '✨';
+      case Pattern.rainbow:
+        return '🌈';
+      case Pattern.stars:
+        return '⭐';
+      case Pattern.hearts:
+        return '❤️';
+    }
+  }
+}
+
+/// Texture types for creature surfaces
+enum TextureType {
+  smooth,
+  rough,
+  scaly,
+  furry,
+  metallic,
+  glassy,
+}
+
+/// Glow effects for creatures
+enum GlowEffect {
+  none,
+  soft,
+  bright,
+  pulsing,
+  rainbow,
+}
+
+/// Animation styles for creatures
+enum CreatureAnimationStyle {
+  natural,
+  bouncy,
+  graceful,
+  energetic,
+  calm,
+}

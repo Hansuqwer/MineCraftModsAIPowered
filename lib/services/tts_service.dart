@@ -34,9 +34,20 @@ class TTSService {
         await _flutterTts!.setLanguage('en-US'); // English (default)
       }
       
-      await _flutterTts!.setSpeechRate(0.5); // Much slower for kids
-      await _flutterTts!.setVolume(1.0);
-      await _flutterTts!.setPitch(1.1); // Slightly higher pitch for friendly voice
+      // Configure for warm, friendly, child-friendly voice
+      await _flutterTts!.setSpeechRate(0.6); // Slightly faster but still clear for kids
+      await _flutterTts!.setVolume(0.9); // Slightly softer for warmth
+      await _flutterTts!.setPitch(1.2); // Higher pitch for friendliness
+      
+      // Set voice characteristics for warmth
+      if (Platform.isAndroid) {
+        // Try to use a more natural voice on Android
+        await _flutterTts!.setEngine('com.google.android.tts');
+        await _flutterTts!.setLanguage(languageCode == 'sv' ? 'sv-SE' : 'en-US');
+      }
+      
+      // Set voice parameters for personality
+      await _flutterTts!.setLanguage(languageCode == 'sv' ? 'sv-SE' : 'en-US');
       
       _isInitialized = true;
       return true;
@@ -46,7 +57,7 @@ class TTSService {
     }
   }
 
-  /// Speak the given text
+  /// Speak the given text with personality
   Future<void> speak(String text) async {
     if (!_isInitialized) {
       print('TTS not initialized');
@@ -54,9 +65,58 @@ class TTSService {
     }
 
     try {
-      await _flutterTts!.speak(text);
+      // Add personality to the text
+      final enhancedText = await _addPersonalityToText(text);
+      await _flutterTts!.speak(enhancedText);
     } catch (e) {
       print('TTS speak error: $e');
+    }
+  }
+
+  /// Add personality and warmth to text
+  Future<String> _addPersonalityToText(String text) async {
+    // Get current language
+    final currentLocale = await LanguageService.getCurrentLanguage();
+    final isSwedish = currentLocale.languageCode == 'sv';
+    
+    // Add warm, friendly expressions
+    if (text.toLowerCase().contains('created') || text.toLowerCase().contains('skapade')) {
+      if (isSwedish) {
+        return '🎉 Wow! $text Det blev fantastiskt! 🎉';
+      } else {
+        return '🎉 Wow! $text That turned out amazing! 🎉';
+      }
+    }
+    
+    if (text.toLowerCase().contains('dragon') || text.toLowerCase().contains('drake')) {
+      if (isSwedish) {
+        return '🐉 $text Rååå! Vilken cool drake! 🐉';
+      } else {
+        return '🐉 $text Rawr! What a cool dragon! 🐉';
+      }
+    }
+    
+    if (text.toLowerCase().contains('magic') || text.toLowerCase().contains('magisk')) {
+      if (isSwedish) {
+        return '✨ $text Så magiskt! ✨';
+      } else {
+        return '✨ $text So magical! ✨';
+      }
+    }
+    
+    if (text.toLowerCase().contains('color') || text.toLowerCase().contains('färg')) {
+      if (isSwedish) {
+        return '🌈 $text Vilka vackra färger! 🌈';
+      } else {
+        return '🌈 $text What beautiful colors! 🌈';
+      }
+    }
+    
+    // Default warm response
+    if (isSwedish) {
+      return '🌟 $text Så roligt att skapa med dig! 🌟';
+    } else {
+      return '🌟 $text So fun creating with you! 🌟';
     }
   }
 
@@ -323,6 +383,128 @@ class TTSService {
       await _flutterTts!.speak(sound);
     } catch (e) {
       print('Ambient sound error: $e');
+    }
+  }
+
+  /// Play funny, warm welcome message
+  Future<void> playWarmWelcome() async {
+    if (!_isInitialized) return;
+
+    try {
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      final welcomeMessages = languageCode == 'sv' ? [
+        '🎨 Hej där, kreativa vän! Jag är Crafta och jag älskar att skapa med dig! 🎨',
+        '🌟 Välkommen till vår magiska verkstad! Låt oss skapa något fantastiskt tillsammans! 🌟',
+        '🌈 Hej! Jag är så glad att du är här! Låt oss ha kul och skapa! 🌈',
+        '✨ Välkommen, min kreativa vän! Jag kan inte vänta på att se vad vi ska skapa! ✨',
+        '🎉 Hej hej! Jag är Crafta och jag älskar att skapa varelser! Vad ska vi göra idag? 🎉'
+      ] : [
+        '🎨 Hey there, creative friend! I\'m Crafta and I love creating with you! 🎨',
+        '🌟 Welcome to our magical workshop! Let\'s create something amazing together! 🌟',
+        '🌈 Hi! I\'m so happy you\'re here! Let\'s have fun and create! 🌈',
+        '✨ Welcome, my creative friend! I can\'t wait to see what we\'ll create! ✨',
+        '🎉 Hey hey! I\'m Crafta and I love creating creatures! What should we make today? 🎉'
+      ];
+      
+      final randomMessage = welcomeMessages[DateTime.now().millisecond % welcomeMessages.length];
+      await _flutterTts!.speak(randomMessage);
+    } catch (e) {
+      print('Warm welcome error: $e');
+    }
+  }
+
+  /// Play funny encouragement message
+  Future<void> playEncouragement() async {
+    if (!_isInitialized) return;
+
+    try {
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      final encouragementMessages = languageCode == 'sv' ? [
+        '🎉 Fantastiskt jobbat! Du är så kreativ! 🎉',
+        '🌟 Wow! Det där var verkligen imponerande! 🌟',
+        '✨ Du har en sådan fantastisk fantasi! ✨',
+        '🌈 Vilken cool idé! Du är verkligen en konstnär! 🌈',
+        '🎨 Så bra! Du lär dig snabbt! 🎨',
+        '🦄 Du skapar de vackraste varelser! 🦄',
+        '🐉 Vilken fantastisk drake! Du är så duktig! 🐉',
+        '✨ Magiskt! Du har verkligen talang! ✨'
+      ] : [
+        '🎉 Amazing job! You\'re so creative! 🎉',
+        '🌟 Wow! That was really impressive! 🌟',
+        '✨ You have such an amazing imagination! ✨',
+        '🌈 What a cool idea! You\'re really an artist! 🌈',
+        '🎨 So good! You learn so fast! 🎨',
+        '🦄 You create the most beautiful creatures! 🦄',
+        '🐉 What an amazing dragon! You\'re so talented! 🐉',
+        '✨ Magical! You really have talent! ✨'
+      ];
+      
+      final randomMessage = encouragementMessages[DateTime.now().millisecond % encouragementMessages.length];
+      await _flutterTts!.speak(randomMessage);
+    } catch (e) {
+      print('Encouragement error: $e');
+    }
+  }
+
+  /// Play funny thinking sound
+  Future<void> playFunnyThinking() async {
+    if (!_isInitialized) return;
+
+    try {
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      final thinkingMessages = languageCode == 'sv' ? [
+        '🤔 Hmm, låt mig tänka... Vad ska vi skapa? 🤔',
+        '🧠 Ooh, jag får en idé! Vänta lite... 🧠',
+        '💭 Låt mig fundera... Det här blir spännande! 💭',
+        '🤯 Wow, så många möjligheter! Vad väljer vi? 🤯',
+        '🎯 Aha! Jag vet precis vad vi ska göra! 🎯'
+      ] : [
+        '🤔 Hmm, let me think... What should we create? 🤔',
+        '🧠 Ooh, I\'m getting an idea! Just wait... 🧠',
+        '💭 Let me ponder... This is going to be exciting! 💭',
+        '🤯 Wow, so many possibilities! What do we choose? 🤯',
+        '🎯 Aha! I know exactly what we should do! 🎯'
+      ];
+      
+      final randomMessage = thinkingMessages[DateTime.now().millisecond % thinkingMessages.length];
+      await _flutterTts!.speak(randomMessage);
+    } catch (e) {
+      print('Funny thinking error: $e');
+    }
+  }
+
+  /// Play funny surprise sound
+  Future<void> playFunnySurprise() async {
+    if (!_isInitialized) return;
+
+    try {
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final languageCode = currentLocale.languageCode;
+      
+      final surpriseMessages = languageCode == 'sv' ? [
+        '😲 Oj! Det där var oväntat! Så coolt! 😲',
+        '🤯 Wow! Det här blir verkligen fantastiskt! 🤯',
+        '😍 Åh! Jag älskar det här! Så vackert! 😍',
+        '🎊 Fantastiskt! Det här är verkligen magiskt! 🎊',
+        '🌟 Omg! Det här är så coolt! Jag är imponerad! 🌟'
+      ] : [
+        '😲 Whoa! That was unexpected! So cool! 😲',
+        '🤯 Wow! This is going to be really amazing! 🤯',
+        '😍 Oh! I love this! So beautiful! 😍',
+        '🎊 Fantastic! This is really magical! 🎊',
+        '🌟 Omg! This is so cool! I\'m impressed! 🌟'
+      ];
+      
+      final randomMessage = surpriseMessages[DateTime.now().millisecond % surpriseMessages.length];
+      await _flutterTts!.speak(randomMessage);
+    } catch (e) {
+      print('Funny surprise error: $e');
     }
   }
 }

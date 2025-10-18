@@ -18,13 +18,14 @@
 
 ### What Kids Can Create
 
-- **⚔️ Epic Weapons**: Flaming swords with blue diamonds, magical bows, enchanted axes
-- **🛡️ Cool Armor**: Glowing helmets, protective chestplates, magical boots  
-- **🪑 Awesome Furniture**: Dragon couches, crystal chairs, floating tables
-- **🚗 Amazing Vehicles**: Flying cars, underwater submarines, space rockets
-- **🐉 Magical Creatures**: Friendly dragons, rainbow unicorns, talking animals
+- **⚔️ Realistic Weapons**: Swords with custom materials, bows with special colors
+- **🛡️ Custom Armor**: Helmets, chestplates, boots with different materials and colors
+- **🪑 Practical Furniture**: Chairs, tables, couches, beds with custom designs
+- **🚗 Real Vehicles**: Cars, boats, planes with custom colors and materials
+- **🐉 Friendly Creatures**: Cows, pigs, horses, cats, dogs with custom colors
+- **⛏️ Custom Tools**: Pickaxes, axes, shovels with special materials like diamond handles
 
-*All creations follow child-safe guidelines - no inappropriate content, just fun and imagination!*
+*All items are realistic and functional - a mining pick looks like a mining pick, just with custom materials and colors!*
 
 ### Key Features
 

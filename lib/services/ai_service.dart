@@ -410,47 +410,66 @@ Keep responses short and engaging (2-3 sentences max).''';
       // Auto-detect item category and type
       final lowerMessage = userMessage.toLowerCase();
       
-      // Detect tools (pickaxe, axe, shovel, hoe, etc.)
-      if (lowerMessage.contains('stick') || lowerMessage.contains('pickaxe') || lowerMessage.contains('axe') || 
-          lowerMessage.contains('shovel') || lowerMessage.contains('hoe') || lowerMessage.contains('mine') ||
-          lowerMessage.contains('dig') || lowerMessage.contains('chop') || lowerMessage.contains('tool')) {
+      // Detect tools (pickaxe, axe, shovel, hoe, etc.) - realistic tools only
+      if (lowerMessage.contains('pickaxe') || lowerMessage.contains('pick') || lowerMessage.contains('mining')) {
         itemData['category'] = 'tool';
-        itemData['baseType'] = 'pickaxe'; // Default to pickaxe for tools
-        if (lowerMessage.contains('axe')) itemData['baseType'] = 'axe';
-        if (lowerMessage.contains('shovel')) itemData['baseType'] = 'shovel';
-        if (lowerMessage.contains('hoe')) itemData['baseType'] = 'hoe';
+        itemData['baseType'] = 'pickaxe';
+      } else if (lowerMessage.contains('axe') || lowerMessage.contains('chopping')) {
+        itemData['category'] = 'tool';
+        itemData['baseType'] = 'axe';
+      } else if (lowerMessage.contains('shovel') || lowerMessage.contains('digging')) {
+        itemData['category'] = 'tool';
+        itemData['baseType'] = 'shovel';
+      } else if (lowerMessage.contains('hoe') || lowerMessage.contains('farming')) {
+        itemData['category'] = 'tool';
+        itemData['baseType'] = 'hoe';
       }
-      // Detect weapons (sword, bow, etc.)
-      else if (lowerMessage.contains('sword') || lowerMessage.contains('weapon') || lowerMessage.contains('bow') ||
-               lowerMessage.contains('fight') || lowerMessage.contains('attack') || lowerMessage.contains('battle')) {
+      // Detect weapons (sword, bow, etc.) - realistic weapons only
+      else if (lowerMessage.contains('sword')) {
         itemData['category'] = 'weapon';
-        itemData['baseType'] = 'sword'; // Default to sword for weapons
-        if (lowerMessage.contains('bow')) itemData['baseType'] = 'bow';
+        itemData['baseType'] = 'sword';
+      } else if (lowerMessage.contains('bow') || lowerMessage.contains('arrow')) {
+        itemData['category'] = 'weapon';
+        itemData['baseType'] = 'bow';
       }
-      // Detect armor (helmet, chestplate, etc.)
-      else if (lowerMessage.contains('armor') || lowerMessage.contains('helmet') || lowerMessage.contains('chestplate') ||
-               lowerMessage.contains('boots') || lowerMessage.contains('protect') || lowerMessage.contains('shield')) {
+      // Detect armor (helmet, chestplate, etc.) - realistic armor only
+      else if (lowerMessage.contains('helmet')) {
         itemData['category'] = 'armor';
-        itemData['baseType'] = 'helmet'; // Default to helmet for armor
-        if (lowerMessage.contains('chestplate')) itemData['baseType'] = 'chestplate';
-        if (lowerMessage.contains('boots')) itemData['baseType'] = 'boots';
+        itemData['baseType'] = 'helmet';
+      } else if (lowerMessage.contains('chestplate') || lowerMessage.contains('chest plate')) {
+        itemData['category'] = 'armor';
+        itemData['baseType'] = 'chestplate';
+      } else if (lowerMessage.contains('boots') || lowerMessage.contains('shoes')) {
+        itemData['category'] = 'armor';
+        itemData['baseType'] = 'boots';
+      } else if (lowerMessage.contains('shield')) {
+        itemData['category'] = 'armor';
+        itemData['baseType'] = 'shield';
       }
-      // Detect furniture (chair, table, couch, etc.)
-      else if (lowerMessage.contains('chair') || lowerMessage.contains('table') || lowerMessage.contains('couch') ||
-               lowerMessage.contains('furniture') || lowerMessage.contains('sit') || lowerMessage.contains('bed')) {
+      // Detect furniture (chair, table, couch, etc.) - realistic furniture only
+      else if (lowerMessage.contains('chair')) {
         itemData['category'] = 'furniture';
-        itemData['baseType'] = 'chair'; // Default to chair for furniture
-        if (lowerMessage.contains('table')) itemData['baseType'] = 'table';
-        if (lowerMessage.contains('couch')) itemData['baseType'] = 'couch';
-        if (lowerMessage.contains('bed')) itemData['baseType'] = 'bed';
+        itemData['baseType'] = 'chair';
+      } else if (lowerMessage.contains('table')) {
+        itemData['category'] = 'furniture';
+        itemData['baseType'] = 'table';
+      } else if (lowerMessage.contains('couch') || lowerMessage.contains('sofa')) {
+        itemData['category'] = 'furniture';
+        itemData['baseType'] = 'couch';
+      } else if (lowerMessage.contains('bed')) {
+        itemData['category'] = 'furniture';
+        itemData['baseType'] = 'bed';
       }
-      // Detect vehicles (car, boat, plane, etc.)
-      else if (lowerMessage.contains('car') || lowerMessage.contains('boat') || lowerMessage.contains('plane') ||
-               lowerMessage.contains('vehicle') || lowerMessage.contains('drive') || lowerMessage.contains('fly')) {
+      // Detect vehicles (car, boat, plane, etc.) - realistic vehicles only
+      else if (lowerMessage.contains('car')) {
         itemData['category'] = 'vehicle';
-        itemData['baseType'] = 'car'; // Default to car for vehicles
-        if (lowerMessage.contains('boat')) itemData['baseType'] = 'boat';
-        if (lowerMessage.contains('plane')) itemData['baseType'] = 'plane';
+        itemData['baseType'] = 'car';
+      } else if (lowerMessage.contains('boat')) {
+        itemData['category'] = 'vehicle';
+        itemData['baseType'] = 'boat';
+      } else if (lowerMessage.contains('plane') || lowerMessage.contains('airplane')) {
+        itemData['category'] = 'vehicle';
+        itemData['baseType'] = 'plane';
       }
       // Default to creature if no specific category detected
       else {
@@ -467,12 +486,41 @@ Keep responses short and engaging (2-3 sentences max).''';
         }
       }
       
-      // Extract colors
-      final colors = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'orange', 'black', 'white', 'rainbow', 'golden', 'gold', 'diamond', 'iron', 'netherite'];
+      // Extract materials and colors - realistic Minecraft materials
+      final materials = ['wood', 'stone', 'iron', 'gold', 'diamond', 'netherite', 'leather', 'chain', 'turtle'];
+      final colors = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'orange', 'black', 'white', 'rainbow', 'golden', 'gold'];
+      final foundMaterials = <String>[];
       final foundColors = <String>[];
+      
+      // Check for materials
+      for (final material in materials) {
+        if (lowerMessage.contains(material)) {
+          foundMaterials.add(material);
+        }
+      }
+      
+      // Check for colors
       for (final color in colors) {
         if (lowerMessage.contains(color)) {
           foundColors.add(color);
+        }
+      }
+      
+      // Handle specific material combinations
+      if (lowerMessage.contains('shiny') || lowerMessage.contains('shinny')) {
+        itemData['material'] = 'polished';
+      }
+      if (lowerMessage.contains('inlaid') || lowerMessage.contains('inlay')) {
+        itemData['decoration'] = 'inlaid';
+      }
+      if (lowerMessage.contains('diamond')) {
+        itemData['decoration_material'] = 'diamond';
+      }
+      
+      if (foundMaterials.isNotEmpty) {
+        itemData['primaryMaterial'] = foundMaterials.first;
+        if (foundMaterials.length > 1) {
+          itemData['secondaryMaterial'] = foundMaterials[1];
         }
       }
       if (foundColors.isNotEmpty) {
@@ -525,8 +573,20 @@ Keep responses short and engaging (2-3 sentences max).''';
         itemData['personality'] = 'friendly';
       }
       
-      // Add description
-      itemData['description'] = 'A ${itemData['size'] ?? 'medium'} ${itemData['baseType'] ?? 'creature'} with ${foundColors.isNotEmpty ? foundColors.join(' and ') : 'beautiful'} colors';
+      // Add realistic description
+      String description = 'A ${itemData['size'] ?? 'medium'} ${itemData['baseType'] ?? 'item'}';
+      
+      if (itemData.containsKey('primaryMaterial')) {
+        description += ' made of ${itemData['primaryMaterial']}';
+      }
+      if (itemData.containsKey('decoration') && itemData.containsKey('decoration_material')) {
+        description += ' with ${itemData['decoration']} ${itemData['decoration_material']}';
+      }
+      if (foundColors.isNotEmpty) {
+        description += ' in ${foundColors.join(' and ')} colors';
+      }
+      
+      itemData['description'] = description;
       
       return itemData;
     } catch (e) {

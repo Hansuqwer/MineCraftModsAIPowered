@@ -43,9 +43,11 @@ dependencies:
   provider: ^6.1.5+1
   # 3D Rendering
   vector_math: ^2.1.4
+  # Native 3D rendering for mobile
+  # flutter_3d_controller: ^2.1.0  # Has compatibility issues
   # Animation and effects
   rive: ^0.12.4
-  # WebView for 3D previews
+  # WebView for 3D previews (fallback)
   webview_flutter: ^4.4.2
   # File handling for 3D models
   file_picker: ^8.0.0+1

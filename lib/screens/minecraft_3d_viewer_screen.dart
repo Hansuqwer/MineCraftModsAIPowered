@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/ai_suggestion_service.dart';
 import '../services/speech_service.dart';
@@ -5,6 +6,7 @@ import '../services/tts_service.dart';
 import '../services/language_service.dart';
 import '../models/enhanced_creature_attributes.dart';
 import '../widgets/minecraft_3d_preview.dart';
+import '../widgets/simple_3d_preview.dart';
 import '../theme/minecraft_theme.dart';
 
 /// Minecraft 3D Viewer Screen - Shows items exactly as they will look in Minecraft
@@ -41,6 +43,10 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
   late AnimationController _listeningController;
   late Animation<double> _suggestionAnimation;
   late Animation<double> _listeningAnimation;
+  
+  // State management for suggestions
+  Timer? _suggestionTimer;
+  bool _isGeneratingSuggestion = false;
 
   @override
   void initState() {
@@ -85,10 +91,11 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
   }
 
   Future<void> _generateSuggestion() async {
-    if (_isProcessingSuggestion) return;
+    if (_isProcessingSuggestion || _isGeneratingSuggestion) return;
 
     setState(() {
       _isProcessingSuggestion = true;
+      _isGeneratingSuggestion = true;
     });
 
     try {
@@ -107,20 +114,31 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
         await _applySuggestion(suggestion);
       } else {
         await _suggestionService.giveEncouragingResponse();
-        // Generate another suggestion
-        Future.delayed(const Duration(seconds: 1), () {
-          _generateSuggestion();
-        });
+        // Generate another suggestion with debouncing
+        _scheduleNextSuggestion();
       }
     } catch (e) {
       print('Error generating suggestion: $e');
     } finally {
       setState(() {
         _isProcessingSuggestion = false;
+        _isGeneratingSuggestion = false;
         _currentSuggestion = null;
       });
       _suggestionController.reset();
     }
+  }
+  
+  void _scheduleNextSuggestion() {
+    // Cancel any existing timer
+    _suggestionTimer?.cancel();
+    
+    // Schedule next suggestion with debouncing
+    _suggestionTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted) {
+        _generateSuggestion();
+      }
+    });
   }
 
   Future<void> _applySuggestion(String suggestion) async {
@@ -202,6 +220,7 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
 
   @override
   void dispose() {
+    _suggestionTimer?.cancel();
     _suggestionController.dispose();
     _listeningController.dispose();
     super.dispose();
@@ -313,10 +332,9 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
                               ),
                             ),
                           )
-                        : Minecraft3DPreview(
-                            creatureAttributes: _currentAttributes.toMap(),
-                            modelPath: '',
-                            texturePath: '',
+                        : Simple3DPreview(
+                            creatureAttributes: _currentAttributes,
+                            creatureName: _currentName,
                             size: 400,
                             enableRotation: true,
                             enableZoom: true,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as path;
+import 'package:archive/archive.dart';
 import '../models/enhanced_creature_attributes.dart';
 import 'ai_animation_service.dart';
 
@@ -30,6 +31,9 @@ class AIMinecraftExportService {
       await _createEntityDefinition(exportDir, itemAttributes, itemName);
       await _createAnimationFiles(exportDir, itemAttributes, itemName);
       await _createTextureFiles(exportDir, itemAttributes, itemName);
+      
+      // Create .mcpack file
+      await _createMcpackFile(exportDir, itemName);
       
       return true;
     } catch (e) {
@@ -298,5 +302,36 @@ class AIMinecraftExportService {
     if (attributes.abilities.contains(SpecialAbility.superSpeed)) return 0.3;
     if (attributes.abilities.contains(SpecialAbility.flying)) return 0.25;
     return 0.2; // Default
+  }
+  
+  /// Create .mcpack file from export directory
+  Future<void> _createMcpackFile(Directory exportDir, String itemName) async {
+    try {
+      final mcpackPath = '${itemName.toLowerCase().replaceAll(' ', '_')}.mcpack';
+      final mcpackFile = File(mcpackPath);
+      
+      // Create a ZIP archive of the export directory
+      final archive = Archive();
+      
+      // Add all files from export directory to archive
+      await for (final entity in exportDir.list(recursive: true)) {
+        if (entity is File) {
+          final relativePath = path.relative(entity.path, from: exportDir.path);
+          final fileData = await entity.readAsBytes();
+          archive.addFile(ArchiveFile(relativePath, fileData.length, fileData));
+        }
+      }
+      
+      // Write the ZIP archive as .mcpack file
+      final zipData = ZipEncoder().encode(archive);
+      if (zipData != null) {
+        await mcpackFile.writeAsBytes(zipData);
+        print('✅ Created .mcpack file: $mcpackPath');
+      } else {
+        print('❌ Failed to create .mcpack file');
+      }
+    } catch (e) {
+      print('❌ Error creating .mcpack file: $e');
+    }
   }
 }

@@ -132,23 +132,178 @@ class _Simple3DPreviewState extends State<Simple3DPreview>
     final hasFlames = widget.creatureAttributes.glowEffect == GlowEffect.flames;
     final hasGlow = widget.creatureAttributes.glowEffect != GlowEffect.none;
 
-    // Generate model based on type
-    if (baseType.contains('sword') || baseType.contains('weapon')) {
-      return _buildSwordModel(size, primaryColor, hasFlames, hasGlow);
-    } else if (baseType.contains('dragon') || baseType.contains('creature')) {
-      return _buildDragonModel(size, primaryColor, secondaryColor, hasWings, hasFlames);
-    } else if (baseType.contains('furniture') || baseType.contains('chair') || baseType.contains('couch')) {
+    // COMPREHENSIVE MODEL DETECTION - ALL POSSIBLE TYPES
+    
+    // WEAPONS & SWORDS
+    if (_isWeapon(baseType)) {
+      return _buildWeaponModel(baseType, size, primaryColor, hasFlames, hasGlow);
+    }
+    
+    // CREATURES & ANIMALS
+    else if (_isCreature(baseType)) {
+      return _buildCreatureModel(baseType, size, primaryColor, secondaryColor, hasWings, hasFlames);
+    }
+    
+    // FURNITURE & DECORATION
+    else if (_isFurniture(baseType)) {
       return _buildFurnitureModel(baseType, size, primaryColor, secondaryColor);
-    } else if (baseType.contains('armor') || baseType.contains('helmet')) {
+    }
+    
+    // ARMOR & CLOTHING
+    else if (_isArmor(baseType)) {
       return _buildArmorModel(baseType, size, primaryColor, hasGlow);
-    } else if (baseType.contains('tool') || baseType.contains('pickaxe')) {
+    }
+    
+    // TOOLS & EQUIPMENT
+    else if (_isTool(baseType)) {
       return _buildToolModel(baseType, size, primaryColor, hasGlow);
-    } else {
+    }
+    
+    // VEHICLES & TRANSPORT
+    else if (_isVehicle(baseType)) {
+      return _buildVehicleModel(baseType, size, primaryColor, secondaryColor);
+    }
+    
+    // FOOD & CONSUMABLES
+    else if (_isFood(baseType)) {
+      return _buildFoodModel(baseType, size, primaryColor, secondaryColor);
+    }
+    
+    // BLOCKS & BUILDING MATERIALS
+    else if (_isBlock(baseType)) {
+      return _buildBlockModel(baseType, size, primaryColor, secondaryColor);
+    }
+    
+    // MAGICAL ITEMS
+    else if (_isMagical(baseType)) {
+      return _buildMagicalModel(baseType, size, primaryColor, secondaryColor, hasGlow);
+    }
+    
+    // DEFAULT FALLBACK
+    else {
       return _buildGenericModel(baseType, size, primaryColor, secondaryColor);
     }
   }
+  
+  // COMPREHENSIVE TYPE DETECTION METHODS
+  
+  bool _isWeapon(String baseType) {
+    final weapons = [
+      'sword', 'weapon', 'blade', 'knife', 'dagger', 'axe', 'mace', 'club',
+      'spear', 'lance', 'bow', 'crossbow', 'gun', 'rifle', 'pistol', 'cannon',
+      'staff', 'wand', 'scythe', 'halberd', 'trident', 'hammer', 'flail'
+    ];
+    return weapons.any((weapon) => baseType.contains(weapon));
+  }
+  
+  bool _isCreature(String baseType) {
+    final creatures = [
+      'dragon', 'creature', 'animal', 'beast', 'monster', 'pet',
+      'cat', 'dog', 'cow', 'pig', 'chicken', 'sheep', 'horse', 'unicorn',
+      'bird', 'eagle', 'owl', 'parrot', 'penguin', 'duck', 'goose',
+      'bear', 'wolf', 'fox', 'rabbit', 'mouse', 'rat', 'hamster',
+      'lion', 'tiger', 'leopard', 'cheetah', 'panther', 'jaguar',
+      'elephant', 'rhino', 'hippo', 'giraffe', 'zebra', 'deer', 'elk',
+      'monkey', 'ape', 'gorilla', 'chimpanzee', 'sloth', 'koala',
+      'snake', 'lizard', 'gecko', 'iguana', 'turtle', 'tortoise',
+      'frog', 'toad', 'salamander', 'newt', 'fish', 'shark', 'whale',
+      'dolphin', 'seal', 'walrus', 'otter', 'beaver', 'squirrel',
+      'chipmunk', 'hedgehog', 'porcupine', 'skunk', 'raccoon', 'opossum',
+      'kangaroo', 'wallaby', 'wombat', 'platypus', 'echidna',
+      'dinosaur', 'dino', 't-rex', 'triceratops', 'stegosaurus',
+      'pterodactyl', 'pterosaur', 'raptor', 'velociraptor'
+    ];
+    return creatures.any((creature) => baseType.contains(creature));
+  }
+  
+  bool _isFurniture(String baseType) {
+    final furniture = [
+      'furniture', 'chair', 'couch', 'sofa', 'table', 'desk', 'bed',
+      'wardrobe', 'closet', 'cabinet', 'shelf', 'bookcase', 'dresser',
+      'stool', 'bench', 'seat', 'cushion', 'pillow', 'mattress',
+      'lamp', 'light', 'chandelier', 'mirror', 'frame', 'painting',
+      'rug', 'carpet', 'curtain', 'blind', 'shade', 'screen',
+      'door', 'window', 'gate', 'fence', 'wall', 'floor', 'ceiling'
+    ];
+    return furniture.any((item) => baseType.contains(item));
+  }
+  
+  bool _isArmor(String baseType) {
+    final armor = [
+      'armor', 'armour', 'helmet', 'hat', 'cap', 'crown', 'tiara',
+      'chestplate', 'breastplate', 'vest', 'jacket', 'coat', 'robe',
+      'pants', 'trousers', 'leggings', 'shorts', 'skirt', 'dress',
+      'boots', 'shoes', 'sneakers', 'sandals', 'slippers', 'socks',
+      'gloves', 'gauntlets', 'mittens', 'bracelet', 'watch', 'ring',
+      'necklace', 'pendant', 'amulet', 'charm', 'talisman', 'medallion',
+      'shield', 'buckler', 'armguard', 'greaves', 'pauldrons'
+    ];
+    return armor.any((item) => baseType.contains(item));
+  }
+  
+  bool _isTool(String baseType) {
+    final tools = [
+      'tool', 'pickaxe', 'axe', 'shovel', 'hoe', 'rake', 'fork',
+      'hammer', 'mallet', 'sledgehammer', 'chisel', 'file', 'rasp',
+      'saw', 'drill', 'screwdriver', 'wrench', 'pliers', 'clamp',
+      'scissors', 'shears', 'knife', 'blade', 'cutter', 'slicer',
+      'scraper', 'brush', 'broom', 'mop', 'sponge', 'cloth',
+      'bucket', 'pail', 'container', 'box', 'crate', 'barrel',
+      'bag', 'sack', 'pouch', 'purse', 'wallet', 'backpack'
+    ];
+    return tools.any((tool) => baseType.contains(tool));
+  }
+  
+  bool _isVehicle(String baseType) {
+    final vehicles = [
+      'vehicle', 'car', 'truck', 'bus', 'van', 'jeep', 'suv',
+      'motorcycle', 'bike', 'bicycle', 'scooter', 'skateboard',
+      'boat', 'ship', 'yacht', 'canoe', 'kayak', 'raft', 'submarine',
+      'plane', 'airplane', 'helicopter', 'jet', 'rocket', 'spaceship',
+      'train', 'locomotive', 'tram', 'subway', 'metro', 'trolley',
+      'tank', 'tractor', 'bulldozer', 'excavator', 'crane', 'forklift'
+    ];
+    return vehicles.any((vehicle) => baseType.contains(vehicle));
+  }
+  
+  bool _isFood(String baseType) {
+    final food = [
+      'food', 'fruit', 'apple', 'banana', 'orange', 'grape', 'berry',
+      'vegetable', 'carrot', 'potato', 'tomato', 'onion', 'lettuce',
+      'meat', 'beef', 'pork', 'chicken', 'fish', 'salmon', 'tuna',
+      'bread', 'cake', 'cookie', 'pie', 'pizza', 'sandwich', 'burger',
+      'soup', 'stew', 'salad', 'pasta', 'rice', 'noodle', 'spaghetti',
+      'drink', 'juice', 'soda', 'water', 'milk', 'coffee', 'tea',
+      'candy', 'chocolate', 'candy', 'lollipop', 'gum', 'mint'
+    ];
+    return food.any((item) => baseType.contains(item));
+  }
+  
+  bool _isBlock(String baseType) {
+    final blocks = [
+      'block', 'brick', 'stone', 'rock', 'pebble', 'boulder',
+      'wood', 'log', 'plank', 'board', 'beam', 'post', 'pole',
+      'metal', 'iron', 'steel', 'copper', 'bronze', 'brass',
+      'gold', 'silver', 'platinum', 'diamond', 'gem', 'crystal',
+      'glass', 'crystal', 'ice', 'snow', 'sand', 'dirt', 'mud',
+      'clay', 'ceramic', 'porcelain', 'marble', 'granite', 'limestone'
+    ];
+    return blocks.any((block) => baseType.contains(block));
+  }
+  
+  bool _isMagical(String baseType) {
+    final magical = [
+      'magic', 'magical', 'spell', 'enchant', 'enchantment', 'curse',
+      'potion', 'elixir', 'potion', 'philter', 'brew', 'concoction',
+      'wand', 'staff', 'rod', 'scepter', 'orb', 'crystal', 'gem',
+      'amulet', 'talisman', 'charm', 'relic', 'artifact', 'treasure',
+      'scroll', 'book', 'tome', 'grimoire', 'spellbook', 'manual',
+      'rune', 'symbol', 'sigil', 'mark', 'seal', 'emblem', 'badge'
+    ];
+    return magical.any((item) => baseType.contains(item));
+  }
 
-  Widget _buildSwordModel(CreatureSize size, Color primaryColor, bool hasFlames, bool hasGlow) {
+  Widget _buildWeaponModel(String baseType, CreatureSize size, Color primaryColor, bool hasFlames, bool hasGlow) {
     final scale = _getSizeScale(size);
     
     return Stack(
@@ -230,23 +385,42 @@ class _Simple3DPreviewState extends State<Simple3DPreview>
     );
   }
 
-  Widget _buildDragonModel(CreatureSize size, Color primaryColor, Color secondaryColor, bool hasWings, bool hasFlames) {
+  Widget _buildCreatureModel(String baseType, CreatureSize size, Color primaryColor, Color secondaryColor, bool hasWings, bool hasFlames) {
     final scale = _getSizeScale(size);
+    
+    // Different body shapes for different creatures
+    double bodyWidth = 60;
+    double bodyHeight = 40;
+    double headSize = 30;
+    
+    if (baseType.contains('cat') || baseType.contains('dog')) {
+      bodyWidth = 50;
+      bodyHeight = 35;
+      headSize = 25;
+    } else if (baseType.contains('cow') || baseType.contains('horse')) {
+      bodyWidth = 70;
+      bodyHeight = 45;
+      headSize = 35;
+    } else if (baseType.contains('chicken') || baseType.contains('pig')) {
+      bodyWidth = 45;
+      bodyHeight = 30;
+      headSize = 20;
+    }
     
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Dragon body
+        // Creature body
         Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
             ..scale(scale),
           child: Container(
-            width: 60,
-            height: 40,
+            width: bodyWidth,
+            height: bodyHeight,
             decoration: BoxDecoration(
               color: primaryColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(bodyHeight / 2),
               boxShadow: [
                 BoxShadow(
                   color: primaryColor.withOpacity(0.3),
@@ -257,63 +431,94 @@ class _Simple3DPreviewState extends State<Simple3DPreview>
             ),
           ),
         ),
-        // Dragon head
+        // Creature head
         Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
-            ..translate(-scale * 25, -scale * 15)
+            ..translate(-scale * (bodyWidth / 2 + 10), -scale * 10)
             ..scale(scale),
           child: Container(
-            width: 30,
-            height: 25,
+            width: headSize,
+            height: headSize * 0.8,
             decoration: BoxDecoration(
               color: primaryColor,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(headSize / 2),
             ),
           ),
         ),
-        // Dragon tail
+        // Creature tail
         Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
-            ..translate(scale * 30, scale * 10)
+            ..translate(scale * (bodyWidth / 2 + 5), scale * 5)
             ..scale(scale),
           child: Container(
-            width: 20,
-            height: 30,
+            width: 15,
+            height: 25,
             decoration: BoxDecoration(
               color: secondaryColor,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
         ),
-        // Wings
-        if (hasWings) ...[
+        // Ears for cats/dogs
+        if (baseType.contains('cat') || baseType.contains('dog')) ...[
           Transform(
             alignment: Alignment.center,
             transform: Matrix4.identity()
-              ..translate(-scale * 20, -scale * 5)
+              ..translate(-scale * (bodyWidth / 2 + 15), -scale * 20)
               ..scale(scale),
             child: Container(
-              width: 40,
-              height: 20,
+              width: 8,
+              height: 12,
               decoration: BoxDecoration(
-                color: secondaryColor.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(10),
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(4),
               ),
             ),
           ),
           Transform(
             alignment: Alignment.center,
             transform: Matrix4.identity()
-              ..translate(scale * 20, -scale * 5)
+              ..translate(-scale * (bodyWidth / 2 + 5), -scale * 20)
               ..scale(scale),
             child: Container(
-              width: 40,
-              height: 20,
+              width: 8,
+              height: 12,
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        ],
+        // Wings for flying creatures
+        if (hasWings) ...[
+          Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..translate(-scale * 25, -scale * 5)
+              ..scale(scale),
+            child: Container(
+              width: 35,
+              height: 15,
               decoration: BoxDecoration(
                 color: secondaryColor.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..translate(scale * 25, -scale * 5)
+              ..scale(scale),
+            child: Container(
+              width: 35,
+              height: 15,
+              decoration: BoxDecoration(
+                color: secondaryColor.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
           ),
@@ -323,18 +528,18 @@ class _Simple3DPreviewState extends State<Simple3DPreview>
           Transform(
             alignment: Alignment.center,
             transform: Matrix4.identity()
-              ..translate(-scale * 35, -scale * 20)
+              ..translate(-scale * (bodyWidth / 2 + 20), -scale * 25)
               ..scale(scale),
             child: Container(
-              width: 15,
-              height: 25,
+              width: 12,
+              height: 20,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [Colors.orange, Colors.red],
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(6),
               ),
             ),
           ),
@@ -605,6 +810,184 @@ class _Simple3DPreviewState extends State<Simple3DPreview>
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  // VEHICLE MODEL BUILDER
+  Widget _buildVehicleModel(String baseType, CreatureSize size, Color primaryColor, Color secondaryColor) {
+    final scale = _getSizeScale(size);
+    
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Vehicle body
+        Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..scale(scale),
+          child: Container(
+            width: 80,
+            height: 40,
+            decoration: BoxDecoration(
+              color: primaryColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
+        // Wheels
+        ...List.generate(4, (index) {
+          final angle = (index * math.pi / 2);
+          final x = math.cos(angle) * 25;
+          final y = math.sin(angle) * 15;
+          return Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..translate(x * scale, y * scale)
+              ..scale(scale),
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                shape: BoxShape.circle,
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+  
+  // FOOD MODEL BUILDER
+  Widget _buildFoodModel(String baseType, CreatureSize size, Color primaryColor, Color secondaryColor) {
+    final scale = _getSizeScale(size);
+    
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Food item
+        Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..scale(scale),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: primaryColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
+        // Food details
+        Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..translate(0, -scale * 10)
+            ..scale(scale),
+          child: Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: secondaryColor,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  
+  // BLOCK MODEL BUILDER
+  Widget _buildBlockModel(String baseType, CreatureSize size, Color primaryColor, Color secondaryColor) {
+    final scale = _getSizeScale(size);
+    
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Block
+        Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..scale(scale),
+          child: Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: primaryColor,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 5,
+                  offset: const Offset(2, 2),
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Block texture
+        Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..scale(scale),
+          child: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: secondaryColor.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  
+  // MAGICAL MODEL BUILDER
+  Widget _buildMagicalModel(String baseType, CreatureSize size, Color primaryColor, Color secondaryColor, bool hasGlow) {
+    final scale = _getSizeScale(size);
+    
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Magical item
+        Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..scale(scale),
+          child: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: primaryColor,
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: hasGlow ? [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.8),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
+              ] : null,
+            ),
+          ),
+        ),
+        // Magical aura
+        if (hasGlow)
+          Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..scale(scale * 1.5),
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: secondaryColor.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+          ),
       ],
     );
   }

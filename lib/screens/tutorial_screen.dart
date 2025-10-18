@@ -77,17 +77,20 @@ class _TutorialScreenState extends State<TutorialScreen>
           children: [
             _buildHeader(progress),
             Expanded(
-              child: AnimatedBuilder(
-                animation: _animationController,
-                builder: (context, child) {
-                  return FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: SlideTransition(
-                      position: _slideAnimation,
-                      child: _buildTutorialContent(currentStep),
-                    ),
-                  );
-                },
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) {
+                    return FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SlideTransition(
+                        position: _slideAnimation,
+                        child: _buildTutorialContent(currentStep),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             _buildNavigationButtons(currentStep),

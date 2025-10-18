@@ -335,6 +335,19 @@ When creating/updating docs:
   - FIXES_AND_IMPROVEMENTS_SUMMARY.md - Fixes completed
   - SYNTAX_FIX_SUMMARY.md - Syntax fixes summary
 
+- **v1.5.0** (2024-10-18) - TTS Personality & Advanced Customization
+  - Advanced Creature Customization - 5-tab interface for colors, size, personality, abilities, accessories
+  - TTS Personality Enhancement - Warm, friendly, funny voice (no more robotic!)
+  - Microphone Sensitivity Fix - Improved voice detection and confidence thresholds
+  - Language Mixing Fix - Proper Swedish/English separation in voice recognition
+  - Swedish UI Translation - Complete translation for all menus and features
+  - Customization Scrolling - Fixed scrolling in all customization screens
+  - Smart Text Enhancement - Automatic personality injection in TTS responses
+  - Encouragement System - Positive reinforcement and funny reactions
+  - Language-Aware Responses - Swedish vs English personality messages
+  - ADVANCED_CUSTOMIZATION_IMPLEMENTATION_SUMMARY.md - Advanced customization features
+  - TTS_PERSONALITY_IMPROVEMENTS_SUMMARY.md - TTS personality enhancements
+
 ## Need Help?
 
 Can't find what you're looking for?

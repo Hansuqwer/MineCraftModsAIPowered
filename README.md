@@ -18,11 +18,12 @@
 
 ### Key Features
 
-- **Voice-First Design**: Kids talk to Crafta, Crafta responds with voice
+- **Voice-First Design**: Kids talk to Crafta, Crafta responds with warm, funny voice
 - **AI-Powered Creativity**: Multiple AI providers (OpenAI, Groq, Hugging Face, Ollama) with intelligent fallbacks
+- **Advanced Creature Customization**: Colors, size, personality, abilities, accessories with 5-tab interface
 - **3D Creature Preview**: See your creation come to life in real-time with Babylon.js WebView
 - **Enhanced AI Suggestions**: Contextual and age-appropriate suggestions for continued creativity
-- **Multi-Language Support**: English and Swedish with voice support
+- **Multi-Language Support**: Complete English and Swedish translation with voice support
 - **Child Safety**: Built-in content filtering and parental controls
 - **Privacy-First**: COPPA/GDPR compliant, no personal data collection
 - **Export to Minecraft**: Download ready-to-use Minecraft mod files (.mcpack format)
@@ -31,6 +32,7 @@
 - **Performance Optimized**: LRU caching, LOD rendering, particle pooling
 - **Mobile-First**: Touch-friendly interface optimized for iOS/Android
 - **Responsive Design**: Optimized for phones, tablets, and foldable devices
+- **Warm TTS Personality**: Encouraging, funny, child-friendly voice responses
 
 ## Architecture
 

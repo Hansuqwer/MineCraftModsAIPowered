@@ -4,6 +4,7 @@ import '../services/enhanced_ai_service.dart';
 import '../services/speech_service.dart';
 import '../services/tts_service.dart';
 import '../services/app_localizations.dart';
+import '../services/achievement_service.dart';
 import '../models/conversation.dart';
 import '../models/enhanced_creature_attributes.dart';
 import '../theme/minecraft_theme.dart';
@@ -123,6 +124,20 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> with TickerPr
           false
         );
       });
+
+      // Track achievement progress
+      await AchievementService.updateProgress(RequirementType.creaturesCreated, 1);
+      
+      // Track specific creature types
+      if (enhancedAttributes.baseType.toLowerCase().contains('dragon')) {
+        await AchievementService.updateProgress(RequirementType.dragonsCreated, 1);
+      }
+      
+      // Track colors used
+      final colorsUsed = _extractColorsFromAttributes(enhancedAttributes);
+      for (final color in colorsUsed) {
+        await AchievementService.updateStats('color_$color', 1);
+      }
 
       await _ttsService.speak('I created ${enhancedAttributes.customName}! ${enhancedAttributes.fullDescription}');
       await Future.delayed(const Duration(milliseconds: 500));
@@ -472,5 +487,39 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> with TickerPr
         ),
       ),
     );
+  }
+
+  /// Extract colors from creature attributes for achievement tracking
+  List<String> _extractColorsFromAttributes(EnhancedCreatureAttributes attributes) {
+    final colors = <String>[];
+    
+    // Extract primary color
+    colors.add(_colorToString(attributes.primaryColor));
+    
+    // Extract secondary color
+    colors.add(_colorToString(attributes.secondaryColor));
+    
+    // Extract accent color
+    colors.add(_colorToString(attributes.accentColor));
+    
+    return colors;
+  }
+
+  /// Convert Color to string for tracking
+  String _colorToString(Color color) {
+    // Convert color to a simple string representation
+    if (color == Colors.red) return 'red';
+    if (color == Colors.blue) return 'blue';
+    if (color == Colors.green) return 'green';
+    if (color == Colors.yellow) return 'yellow';
+    if (color == Colors.purple) return 'purple';
+    if (color == Colors.orange) return 'orange';
+    if (color == Colors.pink) return 'pink';
+    if (color == Colors.cyan) return 'cyan';
+    if (color == Colors.brown) return 'brown';
+    if (color == Colors.grey) return 'grey';
+    if (color == Colors.black) return 'black';
+    if (color == Colors.white) return 'white';
+    return 'custom';
   }
 }

@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'offline_ai_service.dart';
+import 'secure_api_key_manager.dart';
+import 'error_handling_service.dart';
 
 /// Groq AI Service - Fast and free cloud AI
 /// Uses Groq API with free tier (14,400 requests/day)
 class GroqAIService {
   static const String _baseUrl = 'https://api.groq.com/openai/v1';
-  static const String _apiKey = 'gsk_1cc920fd9ea7409ea79eecb18e4717f8.eMxPRRsSJJ9FSuGTLRDFCHFK'; // Your Groq API key
   static const String _model = 'llama2-70b-4096'; // Fast model
   
   /// Offline fallback service
@@ -16,11 +17,18 @@ class GroqAIService {
   /// Get Crafta's response using Groq
   Future<String> getCraftaResponse(String userMessage, {int age = 6}) async {
     try {
+      // Get API key securely
+      final apiKey = await SecureAPIKeyManager.getAPIKey('GROQ_API_KEY');
+      if (apiKey == null) {
+        print('⚠️ Groq API key not configured, using offline mode');
+        return _offlineService.getOfflineResponse(userMessage, age: age);
+      }
+
       final response = await http.post(
         Uri.parse('$_baseUrl/chat/completions'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_apiKey',
+          'Authorization': 'Bearer $apiKey',
         },
         body: jsonEncode({
           'model': _model,
@@ -46,14 +54,14 @@ class GroqAIService {
         
         return _cleanResponse(aiResponse);
       } else if (response.statusCode == 429) {
-        print('⚠️ Groq rate limit exceeded');
+        ErrorHandlingService().handleAIError('Rate limit exceeded', context: 'Groq API');
         return 'Let\'s take a little break and try again soon!';
       } else {
-        print('⚠️ Groq error: ${response.statusCode}');
+        ErrorHandlingService().handleAIError('HTTP ${response.statusCode}', context: 'Groq API');
         return _offlineService.getOfflineResponse(userMessage, age: age);
       }
     } catch (e) {
-      print('🔄 Groq error: $e, using offline mode');
+      ErrorHandlingService().handleAIError(e, context: 'Groq API');
       return _offlineService.getOfflineResponse(userMessage, age: age);
     }
   }

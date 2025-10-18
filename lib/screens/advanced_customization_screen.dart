@@ -36,6 +36,39 @@ class _AdvancedCustomizationScreenState extends State<AdvancedCustomizationScree
     {'name': 'Rainbow', 'nameS': 'Regnbåge', 'color': MinecraftTheme.goldOre},
   ];
 
+  // Size options
+  final List<Map<String, dynamic>> _sizeOptions = [
+    {'name': 'Tiny', 'nameS': 'Liten', 'size': CreatureSize.tiny, 'icon': '🐭'},
+    {'name': 'Small', 'nameS': 'Liten', 'size': CreatureSize.small, 'icon': '🐰'},
+    {'name': 'Medium', 'nameS': 'Medium', 'size': CreatureSize.medium, 'icon': '🐕'},
+    {'name': 'Large', 'nameS': 'Stor', 'size': CreatureSize.large, 'icon': '🐻'},
+    {'name': 'Giant', 'nameS': 'Jätte', 'size': CreatureSize.giant, 'icon': '🐉'},
+  ];
+
+  // Personality options
+  final List<Map<String, dynamic>> _personalityOptions = [
+    {'name': 'Friendly', 'nameS': 'Vänlig', 'personality': PersonalityType.friendly, 'icon': '😊'},
+    {'name': 'Playful', 'nameS': 'Lekfull', 'personality': PersonalityType.playful, 'icon': '😄'},
+    {'name': 'Brave', 'nameS': 'Modig', 'personality': PersonalityType.brave, 'icon': '🦁'},
+    {'name': 'Shy', 'nameS': 'Blyg', 'personality': PersonalityType.shy, 'icon': '😊'},
+    {'name': 'Curious', 'nameS': 'Nyfiken', 'personality': PersonalityType.curious, 'icon': '🤔'},
+  ];
+
+  // Special abilities
+  final List<Map<String, dynamic>> _abilityOptions = [
+    {'name': 'Flying', 'nameS': 'Flygning', 'ability': SpecialAbility.flying, 'icon': '🕊️'},
+    {'name': 'Swimming', 'nameS': 'Simning', 'ability': SpecialAbility.swimming, 'icon': '🐠'},
+    {'name': 'Healing', 'nameS': 'Läkning', 'ability': SpecialAbility.healing, 'icon': '💚'},
+    {'name': 'Invisibility', 'nameS': 'Osynlighet', 'ability': SpecialAbility.invisibility, 'icon': '👻'},
+    {'name': 'Super Speed', 'nameS': 'Supersnabbhet', 'ability': SpecialAbility.superSpeed, 'icon': '💨'},
+  ];
+
+  // Accessories
+  final List<Map<String, dynamic>> _accessoryOptions = [
+    {'name': 'Hat', 'nameS': 'Hatt', 'accessory': AccessoryType.hat, 'icon': '🎩'},
+    {'name': 'Glasses', 'nameS': 'Glasögon', 'accessory': AccessoryType.glasses, 'icon': '👓'},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -398,4 +431,5 @@ class _AdvancedCustomizationScreenState extends State<AdvancedCustomizationScree
       ],
     );
   }
+
 }

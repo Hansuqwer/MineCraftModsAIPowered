@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'services/language_service.dart';
 import 'services/debug_service.dart';
+import 'services/secure_api_key_manager.dart';
+import 'services/error_handling_service.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/creator_screen_simple.dart';
 import 'screens/complete_screen.dart';
@@ -16,7 +18,12 @@ import 'screens/creature_sharing_screen.dart';
 import 'screens/dragon_couch_preview.dart';
 import 'screens/ai_setup_screen.dart';
 import 'screens/minecraft_3d_viewer_screen.dart';
+import 'screens/enhanced_modern_screen.dart';
+import 'screens/community_gallery_screen.dart';
 import 'models/enhanced_creature_attributes.dart';
+import 'services/google_cloud_service.dart';
+import 'services/enhanced_voice_ai_service.dart';
+import 'services/community_service.dart';
 
 /// Main entry point for Crafta app
 /// Loads environment variables and initializes the app
@@ -27,6 +34,22 @@ Future<void> main() async {
     // Load environment variables from .env file
     await dotenv.load(fileName: ".env");
     print('✅ Environment variables loaded successfully');
+    
+    // Initialize secure API key manager
+    await SecureAPIKeyManager.initialize();
+    print('✅ Secure API key manager initialized');
+    
+    // Initialize error handling
+    GlobalErrorHandler.initialize();
+    print('✅ Error handling system initialized');
+    
+    // Initialize Google Cloud service
+    await GoogleCloudService.initialize();
+    print('✅ Google Cloud service initialized');
+    
+    // Initialize Enhanced Voice AI service
+    await EnhancedVoiceAIService.getCurrentPersonality();
+    print('✅ Enhanced Voice AI service initialized');
   } catch (e) {
     print('⚠️ Warning: Could not load .env file. Make sure to create one from .env.example');
     print('   Error: $e');
@@ -96,6 +119,8 @@ class CraftaApp extends StatelessWidget {
             creatureName: args['creatureName'],
           );
         },
+        '/enhanced-modern': (context) => const EnhancedModernScreen(),
+        '/community-gallery': (context) => const CommunityGalleryScreen(),
             },
     );
   }

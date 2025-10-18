@@ -53,6 +53,7 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
     
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setUserAgent('Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36')
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {
@@ -62,12 +63,23 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
             _loadModel();
           },
           onWebResourceError: (WebResourceError error) {
+            print('WebView Error: ${error.description}');
             setState(() {
               _errorMessage = 'Failed to load 3D preview: ${error.description}';
               _isLoading = false;
             });
           },
+          onNavigationRequest: (NavigationRequest request) {
+            // Allow all navigation requests
+            return NavigationDecision.navigate;
+          },
         ),
+      )
+      ..addJavaScriptChannel(
+        'FlutterChannel',
+        onMessageReceived: (JavaScriptMessage message) {
+          print('JavaScript Message: ${message.message}');
+        },
       )
       ..loadHtmlString(_generateHTML());
   }
@@ -95,15 +107,150 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
         #renderCanvas { width: 100%; height: 100%; touch-action: none; }
         .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                    color: white; font-family: Arial; font-size: 18px; }
+        .error { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                 color: red; font-family: Arial; font-size: 16px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="loading" id="loading">Loading 3D Preview...</div>
+    <div class="error" id="error" style="display: none;">Failed to load 3D preview</div>
     <canvas id="renderCanvas"></canvas>
     
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <script src="https://cdn.babylonjs.com/materials/babylonjs.materials.min.js"></script>
+    <script>
+        // Fallback 3D preview without external dependencies
+        let engine, scene, camera;
+        let isLoaded = false;
+        
+        function initFallbackPreview() {
+            try {
+                // Create a simple 3D representation using CSS 3D transforms
+                const canvas = document.getElementById('renderCanvas');
+                const container = document.createElement('div');
+                container.style.cssText = \`
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 200px;
+                    height: 200px;
+                    perspective: 1000px;
+                \`;
+                
+                const cube = document.createElement('div');
+                cube.style.cssText = \`
+                    width: 100px;
+                    height: 100px;
+                    background: linear-gradient(45deg, #FFD700, #FFA500);
+                    transform-style: preserve-3d;
+                    animation: rotate 4s infinite linear;
+                    border: 2px solid #333;
+                    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+                \`;
+                
+                // Add CSS animation
+                const style = document.createElement('style');
+                style.textContent = \`
+                    @keyframes rotate {
+                        0% { transform: rotateY(0deg) rotateX(0deg); }
+                        100% { transform: rotateY(360deg) rotateX(360deg); }
+                    }
+                \`;
+                document.head.appendChild(style);
+                
+                container.appendChild(cube);
+                canvas.parentNode.appendChild(container);
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                isLoaded = true;
+                
+                // Report success to Flutter
+                if (window.FlutterChannel) {
+                    window.FlutterChannel.postMessage('3D Preview loaded successfully');
+                }
+                
+            } catch (error) {
+                console.error('Fallback preview error:', error);
+                showError('Failed to create 3D preview');
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').textContent = message;
+            document.getElementById('error').style.display = 'block';
+            
+            // Report error to Flutter
+            if (window.FlutterChannel) {
+                window.FlutterChannel.postMessage('Error: ' + message);
+            }
+        }
+        
+        // Try to load Babylon.js with fallback
+        function loadBabylonJS() {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.babylonjs.com/babylon.js';
+            script.onload = function() {
+                try {
+                    initBabylonPreview();
+                } catch (error) {
+                    console.error('Babylon.js error:', error);
+                    initFallbackPreview();
+                }
+            };
+            script.onerror = function() {
+                console.warn('Babylon.js failed to load, using fallback');
+                initFallbackPreview();
+            };
+            document.head.appendChild(script);
+        }
+        
+        function initBabylonPreview() {
+            try {
+                const canvas = document.getElementById('renderCanvas');
+                engine = new BABYLON.Engine(canvas, true);
+                scene = new BABYLON.Scene(engine);
+                
+                // Create camera
+                camera = new BABYLON.ArcRotateCamera('camera', 0, Math.PI / 3, 5, BABYLON.Vector3.Zero(), scene);
+                camera.attachControls(canvas, true);
+                
+                // Create lighting
+                const light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 1, 0), scene);
+                light.intensity = 0.8;
+                
+                // Create the model
+                const model = createMinecraftModel();
+                if (model) {
+                    // Hide loading
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    // Start render loop
+                    engine.runRenderLoop(() => {
+                        scene.render();
+                    });
+                    
+                    // Handle resize
+                    window.addEventListener('resize', () => {
+                        engine.resize();
+                    });
+                    
+                    isLoaded = true;
+                    
+                    // Report success to Flutter
+                    if (window.FlutterChannel) {
+                        window.FlutterChannel.postMessage('3D Preview loaded successfully');
+                    }
+                }
+            } catch (error) {
+                console.error('Babylon.js initialization error:', error);
+                initFallbackPreview();
+            }
+        }
+        
+        // Start loading
+        loadBabylonJS();
+    </script>
     
     <script>
         // Minecraft-style 3D preview with Babylon.js
@@ -252,6 +399,114 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
             }
             
             return sword;
+        }
+        
+        function createMinecraftFurniture(creatureType, color, size) {
+            const scale = size === 'giant' ? 2.0 : size === 'tiny' ? 0.5 : 1.0;
+            let furniture;
+            
+            if (creatureType.includes('couch') || creatureType.includes('sofa')) {
+                // Create couch with half white, half gold
+                const seat = BABYLON.MeshBuilder.CreateBox('seat', {
+                    width: 2 * scale, 
+                    height: 0.3 * scale, 
+                    depth: 1 * scale
+                }, scene);
+                
+                const back = BABYLON.MeshBuilder.CreateBox('back', {
+                    width: 2 * scale, 
+                    height: 0.8 * scale, 
+                    depth: 0.2 * scale
+                }, scene);
+                
+                // Create left side (white)
+                const leftSide = BABYLON.MeshBuilder.CreateBox('leftSide', {
+                    width: 0.2 * scale, 
+                    height: 0.8 * scale, 
+                    depth: 1 * scale
+                }, scene);
+                
+                // Create right side (gold)
+                const rightSide = BABYLON.MeshBuilder.CreateBox('rightSide', {
+                    width: 0.2 * scale, 
+                    height: 0.8 * scale, 
+                    depth: 1 * scale
+                }, scene);
+                
+                // Position parts
+                seat.position.y = 0.15 * scale;
+                back.position.y = 0.7 * scale;
+                back.position.z = -0.4 * scale;
+                leftSide.position.set(-0.9 * scale, 0.4 * scale, 0);
+                rightSide.position.set(0.9 * scale, 0.4 * scale, 0);
+                
+                // Create parent mesh
+                furniture = BABYLON.MeshBuilder.CreateBox('couch', {width: 0.1, height: 0.1, depth: 0.1}, scene);
+                furniture.isVisible = false;
+                seat.parent = furniture;
+                back.parent = furniture;
+                leftSide.parent = furniture;
+                rightSide.parent = furniture;
+                
+                // Apply materials
+                const whiteMaterial = new BABYLON.StandardMaterial('whiteMaterial', scene);
+                whiteMaterial.diffuseColor = new BABYLON.Color3(0.95, 0.95, 0.95);
+                leftSide.material = whiteMaterial;
+                seat.material = whiteMaterial;
+                
+                const goldMaterial = new BABYLON.StandardMaterial('goldMaterial', scene);
+                goldMaterial.diffuseColor = new BABYLON.Color3(1, 0.84, 0);
+                goldMaterial.emissiveColor = new BABYLON.Color3(0.1, 0.08, 0);
+                rightSide.material = goldMaterial;
+                back.material = goldMaterial;
+                
+            } else if (creatureType.includes('chair')) {
+                // Create chair
+                const seat = BABYLON.MeshBuilder.CreateBox('seat', {width: 1 * scale, height: 0.2 * scale, depth: 1 * scale}, scene);
+                const back = BABYLON.MeshBuilder.CreateBox('back', {width: 1 * scale, height: 1 * scale, depth: 0.2 * scale}, scene);
+                const leg1 = BABYLON.MeshBuilder.CreateBox('leg1', {width: 0.1 * scale, height: 0.8 * scale, depth: 0.1 * scale}, scene);
+                const leg2 = BABYLON.MeshBuilder.CreateBox('leg2', {width: 0.1 * scale, height: 0.8 * scale, depth: 0.1 * scale}, scene);
+                const leg3 = BABYLON.MeshBuilder.CreateBox('leg3', {width: 0.1 * scale, height: 0.8 * scale, depth: 0.1 * scale}, scene);
+                const leg4 = BABYLON.MeshBuilder.CreateBox('leg4', {width: 0.1 * scale, height: 0.8 * scale, depth: 0.1 * scale}, scene);
+                
+                seat.position.y = 0.4 * scale;
+                back.position.y = 0.9 * scale;
+                back.position.z = -0.4 * scale;
+                leg1.position.set(-0.4 * scale, 0, -0.4 * scale);
+                leg2.position.set(0.4 * scale, 0, -0.4 * scale);
+                leg3.position.set(-0.4 * scale, 0, 0.4 * scale);
+                leg4.position.set(0.4 * scale, 0, 0.4 * scale);
+                
+                furniture = BABYLON.MeshBuilder.CreateBox('chair', {width: 0.1, height: 0.1, depth: 0.1}, scene);
+                furniture.isVisible = false;
+                seat.parent = furniture;
+                back.parent = furniture;
+                leg1.parent = furniture;
+                leg2.parent = furniture;
+                leg3.parent = furniture;
+                leg4.parent = furniture;
+            } else {
+                // Generic furniture
+                furniture = BABYLON.MeshBuilder.CreateBox('furniture', {width: 1 * scale, height: 1 * scale, depth: 1 * scale}, scene);
+            }
+            
+            // Apply color if not already set
+            if (!furniture.material) {
+                const material = new BABYLON.StandardMaterial('furnitureMaterial', scene);
+                if (color === 'wood' || color === 'brown') {
+                    material.diffuseColor = new BABYLON.Color3(0.6, 0.4, 0.2);
+                } else if (color === 'white') {
+                    material.diffuseColor = new BABYLON.Color3(0.9, 0.9, 0.9);
+                } else if (color === 'gold' || color === 'golden') {
+                    material.diffuseColor = new BABYLON.Color3(1, 0.84, 0);
+                    material.emissiveColor = new BABYLON.Color3(0.1, 0.08, 0);
+                } else {
+                    material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+                }
+                furniture.material = material;
+            }
+            
+            return furniture;
         }
         
         function createDragon(color, hasWings, hasFlames) {

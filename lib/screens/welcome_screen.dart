@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/startup_service.dart';
 import '../services/app_localizations.dart';
+import '../services/tutorial_service.dart';
 import '../theme/minecraft_theme.dart';
+import 'tutorial_screen.dart';
 
 /// Minecraft-inspired Welcome Screen
 class WelcomeScreen extends StatefulWidget {
@@ -26,6 +28,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     // Initialize startup services (deferred to first build)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeStartup();
+      _checkTutorialStatus();
     });
 
     // Glow animation for title (like enchanted items)
@@ -76,6 +79,49 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
     if (mounted) {
       Navigator.pushReplacementNamed(context, '/creator');
+    }
+  }
+
+  Future<void> _startTutorial() async {
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TutorialScreen(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _checkTutorialStatus() async {
+    final shouldShowTutorial = await TutorialService.shouldShowTutorial();
+    if (shouldShowTutorial && mounted) {
+      // Show a dialog asking if they want to start the tutorial
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Welcome to Crafta!'),
+          content: const Text(
+            'Would you like to take a quick tutorial to learn how to use Crafta? It only takes a few minutes!',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                TutorialService.markTutorialSkipped();
+              },
+              child: const Text('Skip'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _startTutorial();
+              },
+              child: const Text('Start Tutorial'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -259,6 +305,43 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         color: MinecraftTheme.emerald,
                         icon: Icons.play_arrow,
                         height: 64,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Tutorial button
+                      MinecraftButton(
+                        text: 'TUTORIAL',
+                        onPressed: _startTutorial,
+                        color: MinecraftTheme.diamond,
+                        icon: Icons.school,
+                        height: 56,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Enhanced Modern Features button
+                      MinecraftButton(
+                        text: 'ENHANCED FEATURES',
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/enhanced-modern');
+                        },
+                        color: MinecraftTheme.goldOre,
+                        icon: Icons.auto_awesome,
+                        height: 56,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Community Gallery button
+                      MinecraftButton(
+                        text: 'COMMUNITY GALLERY',
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/community-gallery');
+                        },
+                        color: MinecraftTheme.emerald,
+                        icon: Icons.people,
+                        height: 56,
                       ),
 
                       const SizedBox(height: 16),

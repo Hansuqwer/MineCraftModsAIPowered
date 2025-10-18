@@ -670,6 +670,47 @@ class _Simple3DPreviewState extends State<Simple3DPreview>
           }),
         ],
       );
+    } else if (baseType.contains('table') || baseType.contains('desk')) {
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          // Table top
+          Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..translate(0, -scale * 15)
+              ..scale(scale),
+            child: Container(
+              width: 80,
+              height: 8,
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          // Table legs
+          ...List.generate(4, (index) {
+            final angle = (index * math.pi / 2);
+            final x = math.cos(angle) * 25;
+            final y = math.sin(angle) * 25;
+            return Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..translate(x * scale, y * scale + scale * 5)
+                ..scale(scale),
+              child: Container(
+                width: 6,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: secondaryColor,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            );
+          }),
+        ],
+      );
     }
     
     return _buildGenericModel(baseType, size, primaryColor, secondaryColor);

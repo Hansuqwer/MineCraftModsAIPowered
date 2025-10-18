@@ -101,14 +101,25 @@ Crafta follows a layered architecture pattern optimized for Flutter mobile devel
 #### Core Services
 
 1. **AIService** (`ai_service.dart`)
-   - **Purpose**: OpenAI GPT-4o-mini integration
+   - **Purpose**: OpenAI GPT-4o-mini integration with offline fallback
    - **Key Methods**:
      - `getCraftaResponse(String message)`: Get AI response
      - `parseCreatureAttributes(String response)`: Extract creature data
-   - **Dependencies**: http package
+     - `isOnline()`: Check connectivity status
+   - **Dependencies**: http package, OfflineAIService
    - **Configuration**: API key, model parameters
+   - **Features**: Automatic offline fallback, intelligent caching
 
-2. **SpeechService** (`speech_service.dart`)
+2. **OfflineAIService** (`offline_ai_service.dart`)
+   - **Purpose**: Offline AI responses with 60+ cached creatures
+   - **Key Methods**:
+     - `getOfflineResponse(String message)`: Get cached response
+     - `getRandomSuggestion()`: Age-appropriate suggestions
+     - `getCreatureResponse(String type)`: Creature-specific responses
+   - **Features**: 60+ creature types, child-friendly responses
+   - **Coverage**: Cows, pigs, chickens, dragons, unicorns, phoenixes
+
+3. **SpeechService** (`speech_service.dart`)
    - **Purpose**: Speech-to-Text functionality
    - **Key Methods**:
      - `initialize()`: Setup speech recognition
@@ -117,7 +128,7 @@ Crafta follows a layered architecture pattern optimized for Flutter mobile devel
    - **Dependencies**: speech_to_text package
    - **Platform Support**: Android/iOS only
 
-3. **TTSService** (`tts_service.dart`)
+4. **TTSService** (`tts_service.dart`)
    - **Purpose**: Text-to-Speech output
    - **Key Methods**:
      - `speak(String text)`: Convert text to voice
@@ -126,16 +137,16 @@ Crafta follows a layered architecture pattern optimized for Flutter mobile devel
    - **Dependencies**: flutter_tts package
    - **Features**: Pitch, rate, volume control
 
-4. **3DRendererService** (`3d_renderer_service.dart`)
-   - **Purpose**: 3D creature rendering
+5. **3DRendererService** (`3d_renderer_service.dart`)
+   - **Purpose**: 3D creature rendering with performance optimization
    - **Key Methods**:
      - `render(CreatureData data)`: Generate 3D model
      - `applyTransform(Matrix4 transform)`: Apply transformations
      - `updateLighting()`: Lighting calculations
-   - **Dependencies**: vector_math
-   - **Features**: Custom mesh generation, texture mapping
+   - **Dependencies**: vector_math, RenderingOptimizer
+   - **Features**: LOD system, particle pooling, performance monitoring
 
-5. **AnimationService** (`animation_service.dart`)
+6. **AnimationService** (`animation_service.dart`)
    - **Purpose**: UI animations and effects
    - **Key Methods**:
      - `playSparkleEffect()`: Sparkle animations
@@ -146,30 +157,62 @@ Crafta follows a layered architecture pattern optimized for Flutter mobile devel
 
 #### Production & Support Services
 
-6. **ProductionService** (`production_service.dart`)
-   - Deployment utilities
-   - Environment configuration
-   - Build management
+7. **ConnectivityService** (`connectivity_service.dart`)
+   - **Purpose**: Network connectivity monitoring
+   - **Key Methods**:
+     - `checkConnectivity()`: Check network status
+     - `getConnectivityQuality()`: Get signal quality
+     - `isOnline()`: Boolean connectivity status
+   - **Features**: Real-time monitoring, quality indicators
 
-7. **MonitoringService** (`monitoring_service.dart`)
-   - Analytics tracking
-   - Error monitoring
-   - Performance metrics
-   - User session tracking
+8. **LocalStorageService** (`local_storage_service.dart`)
+   - **Purpose**: Data persistence and caching
+   - **Key Methods**:
+     - `saveCreature(Map data)`: Save creature data
+     - `loadCreatures()`: Load all creatures
+     - `cacheAPIResponse(String, String)`: Cache API responses
+     - `exportAllData()`: Export user data
+   - **Features**: LRU cache, conversation history, settings persistence
 
-8. **PerformanceService** (`performance_service.dart`)
-   - Memory optimization
-   - Battery usage monitoring
-   - Network efficiency
-   - Frame rate tracking
+9. **PerformanceMonitor** (`performance_monitor.dart`)
+   - **Purpose**: Performance tracking and optimization
+   - **Key Methods**:
+     - `measureAsync(String, Function)`: Measure async operations
+     - `getStats(String)`: Get performance statistics
+     - `trackFPS()`: Frame rate monitoring
+   - **Features**: Percentile calculations, performance warnings
 
-9. **SecurityService** (`security_service.dart`)
-   - Content filtering
-   - Input validation
-   - Safe AI response verification
-   - Child protection measures
+10. **MemoryOptimizer** (`utils/memory_optimizer.dart`)
+    - **Purpose**: Memory management and optimization
+    - **Key Methods**:
+      - `LRUCache<K, V>`: Generic LRU cache implementation
+      - `BoundedList<T>`: Memory-efficient list with size limits
+      - `ImageCache`: Specialized image caching
+    - **Features**: Automatic cleanup, TTL support, cache statistics
 
-10. **SupportService** (`support_service.dart`)
+11. **RenderingOptimizer** (`utils/rendering_optimizer.dart`)
+    - **Purpose**: 3D rendering performance optimization
+    - **Key Methods**:
+      - `getLODLevel(double distance)`: Level of detail calculation
+      - `getOptimalParticleCount(int desired)`: Particle optimization
+      - `adjustQualityBasedOnFPS()`: Dynamic quality adjustment
+    - **Features**: LOD system, particle pooling, FPS-based quality
+
+12. **MinecraftExportService** (`minecraft/minecraft_export_service.dart`)
+    - **Purpose**: Minecraft addon generation
+    - **Key Methods**:
+      - `exportCreature(Map attributes)`: Single creature export
+      - `exportMultipleCreatures(List creatures)`: Batch export
+      - `generateAddonPackage()`: Complete .mcpack generation
+    - **Features**: Behavior packs, resource packs, texture export
+
+13. **SecurityService** (`security_service.dart`)
+    - Content filtering
+    - Input validation
+    - Safe AI response verification
+    - Child protection measures
+
+14. **SupportService** (`support_service.dart`)
     - User feedback collection
     - Help documentation
     - Error reporting

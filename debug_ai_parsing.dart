@@ -1,14 +1,14 @@
 import 'lib/services/ai_service.dart';
 
-void main() {
+void main() async {
   print('🧠 Testing AI Service Parsing...');
-  
+
   final aiService = AIService();
-  
+
   // Test basic parsing
   final testPhrase = 'I want to create a rainbow cow with sparkles';
-  final attributes = aiService.parseCreatureRequest(testPhrase);
-  
+  final attributes = await aiService.parseCreatureRequest(testPhrase);
+
   print('📊 Parsed attributes: $attributes');
   print('🎯 Creature Type: ${attributes['creatureType']}');
   print('🌈 Color: ${attributes['color']}');
@@ -45,7 +45,7 @@ void main() {
   
   print('\n🎯 Testing Different Creature Types:');
   for (final testCase in testCases) {
-    final result = aiService.parseCreatureRequest(testCase);
+    final result = await aiService.parseCreatureRequest(testCase);
     print('📝 Input: "$testCase"');
     print('📊 Result: ${result['creatureType']} (${result['color']}) with ${result['effects']}');
     

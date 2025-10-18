@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/startup_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -65,6 +66,70 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     _sparkleController.dispose();
     _bounceController.dispose();
     super.dispose();
+  }
+
+  /// Show language selection dialog
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.language, color: Color(0xFF98D8C8)),
+              SizedBox(width: 8),
+              Text('Choose Language'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Text('🇺🇸', style: TextStyle(fontSize: 32)),
+                title: const Text('English'),
+                onTap: () async {
+                  await _setLanguage(context, 'en');
+                },
+              ),
+              ListTile(
+                leading: const Text('🇸🇪', style: TextStyle(fontSize: 32)),
+                title: const Text('Svenska (Swedish)'),
+                onTap: () async {
+                  await _setLanguage(context, 'sv');
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Set the language and refresh the app
+  Future<void> _setLanguage(BuildContext context, String languageCode) async {
+    try {
+      // Import the language service
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('selected_language', languageCode);
+
+      // Show confirmation
+      if (context.mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              languageCode == 'en'
+                ? 'Language set to English'
+                : 'Språk inställt på Svenska',
+            ),
+            backgroundColor: const Color(0xFF98D8C8),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error setting language: $e');
+    }
   }
 
   @override
@@ -200,7 +265,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   // Language Button
                   TextButton.icon(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/parent-settings');
+                      _showLanguageDialog(context);
                     },
                     icon: const Icon(Icons.language, size: 16),
                     label: const Text(

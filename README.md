@@ -19,11 +19,18 @@
 ### Key Features
 
 - **Voice-First Design**: Kids talk to Crafta, Crafta responds with voice
-- **AI-Powered Creativity**: GPT-4o-mini creates personalized, child-safe responses
-- **3D Creature Preview**: See your creation come to life in real-time
+- **AI-Powered Creativity**: Multiple AI providers (OpenAI, Groq, Hugging Face, Ollama) with intelligent fallbacks
+- **3D Creature Preview**: See your creation come to life in real-time with Babylon.js WebView
+- **Enhanced AI Suggestions**: Contextual and age-appropriate suggestions for continued creativity
+- **Multi-Language Support**: English and Swedish with voice support
 - **Child Safety**: Built-in content filtering and parental controls
 - **Privacy-First**: COPPA/GDPR compliant, no personal data collection
-- **Export to Minecraft**: Download ready-to-use Minecraft mod files
+- **Export to Minecraft**: Download ready-to-use Minecraft mod files (.mcpack format)
+- **Offline Mode**: 60+ cached creature responses, works without internet
+- **Creature Sharing**: Cloud sharing with 8-character share codes
+- **Performance Optimized**: LRU caching, LOD rendering, particle pooling
+- **Mobile-First**: Touch-friendly interface optimized for iOS/Android
+- **Responsive Design**: Optimized for phones, tablets, and foldable devices
 
 ## Architecture
 
@@ -31,10 +38,12 @@
 
 - **Framework**: Flutter 3.5.4
 - **Language**: Dart 3.5.4
-- **AI Backend**: OpenAI GPT-4o-mini
-- **Voice**: speech_to_text, flutter_tts
-- **3D Rendering**: vector_math, Custom renderer
+- **AI Backend**: OpenAI GPT-4o-mini, Groq, Hugging Face, Ollama (with fallbacks)
+- **Voice**: speech_to_text, flutter_tts (multi-language support)
+- **3D Rendering**: Babylon.js via WebView, vector_math
 - **State Management**: Provider pattern
+- **Localization**: flutter_localizations, intl
+- **WebView**: webview_flutter for 3D previews
 
 ### Project Structure
 
@@ -49,33 +58,70 @@ crafta/
 │   │   ├── creature_preview_screen.dart # 3D visualization
 │   │   ├── parent_settings_screen.dart  # Safety controls
 │   │   ├── creation_history_screen.dart # History tracking
-│   │   └── export_management_screen.dart # Mod downloads
-│   ├── services/                    # Business logic (10 services)
+│   │   ├── export_management_screen.dart # Mod downloads
+│   │   ├── export_minecraft_screen.dart # Minecraft export UI
+│   │   └── minecraft_settings_screen.dart # Minecraft settings
+│   ├── services/                    # Business logic (20+ services)
 │   │   ├── ai_service.dart          # OpenAI integration
+│   │   ├── enhanced_ai_service.dart # Enhanced AI suggestions
+│   │   ├── groq_ai_service.dart     # Groq AI integration
+│   │   ├── huggingface_ai_service.dart # Hugging Face integration
+│   │   ├── ollama_ai_service.dart   # Ollama integration
+│   │   ├── offline_ai_service.dart # Offline AI cache (60+ creatures)
 │   │   ├── speech_service.dart      # Speech-to-Text
 │   │   ├── tts_service.dart         # Text-to-Speech
-│   │   ├── 3d_renderer_service.dart # 3D rendering
-│   │   ├── animation_service.dart   # Visual effects
-│   │   ├── production_service.dart  # Deployment utilities
-│   │   ├── monitoring_service.dart  # Analytics & metrics
-│   │   ├── performance_service.dart # Performance optimization
-│   │   ├── security_service.dart    # Security & safety
-│   │   └── support_service.dart     # User support
+│   │   ├── language_service.dart    # Multi-language support
+│   │   ├── swedish_ai_service.dart  # Swedish AI responses
+│   │   ├── responsive_service.dart  # Responsive design
+│   │   ├── startup_service.dart     # App initialization
+│   │   ├── updater_service.dart    # App updates
+│   │   ├── debug_service.dart       # Remote debugging
+│   │   ├── connectivity_service.dart # Network monitoring
+│   │   ├── local_storage_service.dart # Data persistence
+│   │   ├── performance_monitor.dart # Performance tracking
+│   │   ├── minecraft/               # Minecraft export services
+│   │   │   ├── minecraft_export_service.dart
+│   │   │   ├── entity_behavior_generator.dart
+│   │   │   ├── entity_client_generator.dart
+│   │   │   ├── texture_generator.dart
+│   │   │   ├── geometry_generator.dart
+│   │   │   └── manifest_generator.dart
+│   │   └── utils/                   # Utility services
+│   │       ├── memory_optimizer.dart # LRU cache, memory management
+│   │       └── rendering_optimizer.dart # LOD, particle pooling
 │   ├── widgets/                     # Reusable UI components
-│   │   ├── creature_3d_preview.dart
-│   │   ├── creature_preview.dart
-│   │   └── enhanced_creature_preview.dart
-│   └── models/                      # Data models
-│       └── conversation.dart        # Chat history model
-├── test/                            # Unit & widget tests
+│   │   ├── minecraft_3d_preview.dart # 3D WebView preview
+│   │   ├── language_selector.dart   # Language switching
+│   │   ├── update_dialog.dart       # App update dialog
+│   │   ├── furniture_renderer.dart   # Furniture visualization
+│   │   └── offline_indicator.dart   # Connectivity status
+│   ├── models/                      # Data models
+│   │   ├── conversation.dart        # Chat history model
+│   │   └── minecraft/               # Minecraft data models
+│   │       ├── addon_package.dart
+│   │       ├── addon_metadata.dart
+│   │       ├── behavior_pack.dart
+│   │       ├── resource_pack.dart
+│   │       └── addon_file.dart
+│   └── core/                        # Core utilities
+│       └── result.dart              # Result pattern for error handling
+├── test/                            # Unit & widget tests (57+ tests)
+│   ├── services/                    # Service tests
+│   ├── screens/                     # Widget tests
+│   └── helpers/                     # Test utilities
 ├── docs/                            # Documentation
 │   ├── PRODUCTION_DEPLOYMENT.md     # Deployment guide
-│   └── SPEECH_TESTING_ALTERNATIVES.md # Testing strategies
+│   ├── SPEECH_TESTING_ALTERNATIVES.md # Testing strategies
+│   ├── ARCHITECTURE.md              # System architecture
+│   ├── API_REFERENCE.md             # API documentation
+│   ├── DEVELOPMENT_GUIDE.md         # Development workflow
+│   ├── SECURITY_AND_IMPROVEMENTS.md # Security & roadmap
+│   └── INDEX.md                     # Documentation index
 ├── android/                         # Android-specific config
 ├── ios/                             # iOS-specific config
 └── pubspec.yaml                     # Dependencies
 
-~8,000 lines of Dart code
+~10,200 lines of Dart code
 ```
 
 ## Getting Started
@@ -253,14 +299,22 @@ Crafta is designed with a specific personality:
 
 ### Current Status: Production-Ready ✅
 
+### ✅ Completed Features
+- **Offline Mode**: 60+ cached creature responses, works without internet
+- **Performance Optimization**: LRU caching, LOD rendering, particle pooling
+- **Minecraft Export**: Complete .mcpack file generation
+- **Creature Sharing**: Cloud sharing with share codes
+- **Behavior Mapping**: Complete Minecraft components integration
+- **Mobile Optimization**: Touch-friendly interface for iOS/Android
+- **Comprehensive Testing**: 57+ test cases with 100% offline service coverage
+
 ### Future Enhancements
-- [ ] Add more creature types (currently: Cow, Pig, Chicken)
+- [ ] Add more creature types (currently: 60+ offline creatures)
 - [ ] Multiplayer creature sharing
 - [ ] Tutorial/onboarding flow
-- [ ] Offline mode support
 - [ ] More customization options
 - [ ] Achievement system
-- [ ] Improved 3D rendering performance
+- [ ] Advanced 3D rendering features
 
 ## Documentation
 

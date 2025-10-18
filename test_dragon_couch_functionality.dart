@@ -3,7 +3,7 @@ import 'lib/services/ai_service.dart';
 import 'lib/widgets/furniture_renderer.dart';
 
 /// Test the dragon couch functionality
-void main() {
+void main() async {
   runApp(const DragonCouchTestApp());
 }
 

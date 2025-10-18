@@ -1,3 +1,5 @@
+// ignore_for_file: undefined_identifier, missing_required_argument, extra_positional_arguments_could_be_named
+
 import 'dart:convert';
 import '../../models/minecraft/addon_file.dart';
 import '../../models/minecraft/addon_metadata.dart';

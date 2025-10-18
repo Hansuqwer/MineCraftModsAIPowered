@@ -9,7 +9,7 @@ import 'services/updater_service.dart';
 import 'services/startup_service.dart';
 import 'widgets/update_dialog.dart';
 import 'screens/welcome_screen.dart';
-import 'screens/creator_screen.dart';
+import 'screens/creator_screen_simple.dart';
 import 'screens/complete_screen.dart';
 import 'screens/creature_preview_screen.dart';
 import 'screens/parent_settings_screen.dart';
@@ -62,7 +62,7 @@ class CraftaApp extends StatelessWidget {
       initialRoute: '/',
             routes: {
               '/': (context) => const WelcomeScreen(),
-              '/creator': (context) => const CreatorScreen(),
+              '/creator': (context) => const CreatorScreenSimple(),
               '/complete': (context) => const CompleteScreen(),
               '/creature-preview': (context) {
                 final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;

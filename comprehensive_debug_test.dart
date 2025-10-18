@@ -1,10 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'lib/main.dart';
 import 'lib/services/ai_service.dart';
 import 'lib/services/speech_service.dart';
 import 'lib/services/tts_service.dart';
-import 'lib/screens/creator_screen.dart';
 import 'lib/screens/creature_preview_screen.dart';
 import 'lib/widgets/creature_preview.dart';
 
@@ -55,11 +55,11 @@ void main() {
 
     testWidgets('🧠 AI Service Debug Test', (WidgetTester tester) async {
       print('🧠 Testing AI Service...');
-      
+
       // Test basic parsing
       final testPhrase = 'I want to create a rainbow cow with sparkles';
-      final attributes = aiService.parseCreatureRequest(testPhrase);
-      
+      final attributes = await aiService.parseCreatureRequest(testPhrase);
+
       print('📊 Parsed attributes: $attributes');
       expect(attributes['creatureType'], equals('cow'));
       expect(attributes['color'], equals('rainbow'));
@@ -92,7 +92,7 @@ void main() {
       print('🎤 Speech service initialized: $speechSuccess');
       
       // Test platform detection
-      print('📱 Platform: ${Platform.isAndroid ? 'Android' : 'iOS' : 'Desktop'}');
+      print('📱 Platform: ${Platform.isAndroid ? 'Android' : (Platform.isIOS ? 'iOS' : 'Desktop')}');
       
       print('✅ Speech Service Test PASSED!');
     });
@@ -262,9 +262,9 @@ void main() {
       
       // Test multiple rapid operations
       final startTime = DateTime.now();
-      
+
       for (int i = 0; i < 10; i++) {
-        final attributes = aiService.parseCreatureRequest('A rainbow dragon with sparkles');
+        final attributes = await aiService.parseCreatureRequest('A rainbow dragon with sparkles');
         expect(attributes['creatureType'], equals('dragon'));
       }
       

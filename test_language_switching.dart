@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'services/language_service.dart';
-import 'services/swedish_ai_service.dart';
-import 'services/ai_service.dart';
+import 'lib/services/language_service.dart';
+import 'lib/services/swedish_ai_service.dart';
+import 'lib/services/ai_service.dart';
 
 /// Test language switching functionality
 void main() async {

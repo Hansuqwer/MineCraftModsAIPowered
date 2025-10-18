@@ -1,5 +1,6 @@
-import 'services/language_service.dart';
-import 'services/swedish_ai_service.dart';
+import 'package:flutter/material.dart';
+import 'lib/services/language_service.dart';
+import 'lib/services/swedish_ai_service.dart';
 
 /// Simple language test
 void main() async {

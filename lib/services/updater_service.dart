@@ -7,8 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service for checking and handling app updates
 class UpdaterService {
-  static const String _versionCheckUrl = 'https://api.github.com/repos/yourusername/crafta/releases/latest';
-  static const String _downloadUrl = 'https://github.com/yourusername/crafta/releases/latest';
+  // TODO: Replace with actual repository URLs when GitHub repository is created
+  static const String _versionCheckUrl = 'https://api.github.com/repos/crafta-app/crafta/releases/latest';
+  static const String _downloadUrl = 'https://github.com/crafta-app/crafta/releases/latest';
   static const String _lastCheckKey = 'last_update_check';
   static const String _skipVersionKey = 'skip_version';
   
@@ -66,6 +67,9 @@ class UpdaterService {
             isUpdateAvailable: false,
           );
         }
+      } else if (response.statusCode == 404) {
+        print('📝 Repository not found - update checking disabled until repository is created');
+        return null;
       } else {
         print('❌ Failed to check for updates: ${response.statusCode}');
         return null;

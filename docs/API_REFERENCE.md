@@ -7,10 +7,17 @@ This document provides detailed API documentation for all services and key compo
 ## Table of Contents
 
 - [AIService](#aiservice)
+- [OfflineAIService](#offlineaiservice)
 - [SpeechService](#speechservice)
 - [TTSService](#ttsservice)
 - [3DRendererService](#3drendererservice)
 - [AnimationService](#animationservice)
+- [ConnectivityService](#connectivityservice)
+- [LocalStorageService](#localstorageservice)
+- [PerformanceMonitor](#performancemonitor)
+- [MemoryOptimizer](#memoryoptimizer)
+- [RenderingOptimizer](#renderingoptimizer)
+- [MinecraftExportService](#minecraftexportservice)
 - [SecurityService](#securityservice)
 - [MonitoringService](#monitoringservice)
 
@@ -97,6 +104,70 @@ The AI uses a custom system prompt that enforces:
 - Positive, encouraging tone
 - Safety filters (no violence, fear, negativity)
 - Crafta personality traits
+
+---
+
+## OfflineAIService
+
+**File**: `lib/services/offline_ai_service.dart`
+
+Offline AI service with 60+ cached creature responses for when internet is unavailable.
+
+### Methods
+
+#### getOfflineResponse
+
+Get offline AI response for user input.
+
+```dart
+Future<String> getOfflineResponse(String userMessage)
+```
+
+**Parameters**:
+- `userMessage` (String): User's voice input text
+
+**Returns**:
+- `Future<String>`: Offline AI response
+
+**Example**:
+```dart
+final offlineAI = OfflineAIService();
+final response = await offlineAI.getOfflineResponse('rainbow cow');
+print(response); // "Wow! A rainbow cow sounds amazing! That will be so colorful and fun!"
+```
+
+#### getRandomSuggestion
+
+Get age-appropriate suggestion for continued creativity.
+
+```dart
+String getRandomSuggestion()
+```
+
+**Returns**:
+- `String`: Encouraging suggestion
+
+**Example**:
+```dart
+final suggestion = offlineAI.getRandomSuggestion();
+print(suggestion); // "How about adding some sparkles to make it extra magical?"
+```
+
+#### getCreatureResponse
+
+Get creature-specific response by type.
+
+```dart
+String getCreatureResponse(String creatureType)
+```
+
+**Parameters**:
+- `creatureType` (String): "cow", "pig", "chicken", "dragon", "unicorn", etc.
+
+**Returns**:
+- `String`: Creature-specific response
+
+**Supported Creatures**: 60+ types including cows, pigs, chickens, dragons, unicorns, phoenixes, griffins, cats, dogs
 
 ---
 
@@ -564,6 +635,185 @@ void trackPerformance(String metric, double value)
 - `"3d_render_time"`: 3D rendering time in ms
 - `"speech_recognition_time"`: STT processing time in ms
 - `"app_launch_time"`: App startup time in ms
+
+---
+
+## ConnectivityService
+
+**File**: `lib/services/connectivity_service.dart`
+
+Network connectivity monitoring service.
+
+### Methods
+
+#### checkConnectivity
+
+Check current network connectivity status.
+
+```dart
+Future<bool> checkConnectivity()
+```
+
+**Returns**:
+- `Future<bool>`: `true` if connected to internet
+
+#### getConnectivityQuality
+
+Get network quality indicator.
+
+```dart
+Future<String> getConnectivityQuality()
+```
+
+**Returns**:
+- `Future<String>`: "good", "fair", "poor", or "none"
+
+---
+
+## LocalStorageService
+
+**File**: `lib/services/local_storage_service.dart`
+
+Data persistence and caching service.
+
+### Methods
+
+#### saveCreature
+
+Save creature data to local storage.
+
+```dart
+Future<void> saveCreature(Map<String, dynamic> creatureData)
+```
+
+#### loadCreatures
+
+Load all saved creatures.
+
+```dart
+Future<List<Map<String, dynamic>>> loadCreatures()
+```
+
+#### cacheAPIResponse
+
+Cache API response for offline use.
+
+```dart
+Future<void> cacheAPIResponse(String message, String response)
+```
+
+---
+
+## PerformanceMonitor
+
+**File**: `lib/services/performance_monitor.dart`
+
+Performance tracking and optimization service.
+
+### Methods
+
+#### measureAsync
+
+Measure async operation performance.
+
+```dart
+Future<T> measureAsync<T>(String operationName, Future<T> Function() operation)
+```
+
+#### getStats
+
+Get performance statistics for an operation.
+
+```dart
+Map<String, dynamic> getStats(String operationName)
+```
+
+---
+
+## MemoryOptimizer
+
+**File**: `lib/utils/memory_optimizer.dart`
+
+Memory management and optimization utilities.
+
+### Classes
+
+#### LRUCache
+
+Generic LRU cache implementation.
+
+```dart
+class LRUCache<K, V> {
+  LRUCache(int maxSize);
+  void put(K key, V value);
+  V? get(K key);
+  void clear();
+}
+```
+
+#### BoundedList
+
+Memory-efficient list with size limits.
+
+```dart
+class BoundedList<T> {
+  BoundedList(int maxSize);
+  void add(T item);
+  List<T> toList();
+}
+```
+
+---
+
+## RenderingOptimizer
+
+**File**: `lib/utils/rendering_optimizer.dart`
+
+3D rendering performance optimization.
+
+### Methods
+
+#### getLODLevel
+
+Get level of detail based on distance.
+
+```dart
+LODLevel getLODLevel(double distance)
+```
+
+#### getOptimalParticleCount
+
+Get optimal particle count based on performance.
+
+```dart
+int getOptimalParticleCount(int desiredCount)
+```
+
+---
+
+## MinecraftExportService
+
+**File**: `lib/services/minecraft/minecraft_export_service.dart`
+
+Minecraft addon generation service.
+
+### Methods
+
+#### exportCreature
+
+Export single creature to Minecraft addon.
+
+```dart
+Future<AddonPackage> exportCreature(Map<String, dynamic> creatureAttributes)
+```
+
+#### exportMultipleCreatures
+
+Export multiple creatures to single addon.
+
+```dart
+Future<AddonPackage> exportMultipleCreatures(List<Map<String, dynamic>> creatures)
+```
 
 ---
 

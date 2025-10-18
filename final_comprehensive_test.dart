@@ -57,8 +57,8 @@ void main() {
       // Test expanded creature parsing
       print('Testing expanded creature parsing...');
       final dragonRequest = 'I want to create a massive rainbow dragon with fire and lightning effects';
-      final dragonAttributes = aiService.parseCreatureRequest(dragonRequest);
-      
+      final dragonAttributes = await aiService.parseCreatureRequest(dragonRequest);
+
       expect(dragonAttributes['creatureType'], equals('dragon'));
       expect(dragonAttributes['color'], equals('rainbow'));
       expect(dragonAttributes['size'], equals('massive'));

@@ -16,8 +16,8 @@ void main() async {
   print('-' * 30);
   
   final testPhrase = 'I want to create a rainbow cow with sparkles';
-  final attributes = aiService.parseCreatureRequest(testPhrase);
-  
+  final attributes = await aiService.parseCreatureRequest(testPhrase);
+
   print('📊 Parsed attributes: $attributes');
   print('🎯 Creature Type: ${attributes['creatureType']}');
   print('🌈 Color: ${attributes['color']}');
@@ -65,7 +65,7 @@ void main() async {
   ];
   
   for (final testCase in testCases) {
-    final result = aiService.parseCreatureRequest(testCase);
+    final result = await aiService.parseCreatureRequest(testCase);
     print('📝 Input: "$testCase"');
     print('📊 Result: ${result['creatureType']} (${result['color']}) with ${result['effects']}');
     
@@ -98,7 +98,7 @@ void main() async {
   final startTime = DateTime.now();
   
   for (int i = 0; i < 100; i++) {
-    final attributes = aiService.parseCreatureRequest('A rainbow dragon with sparkles');
+    final attributes = await aiService.parseCreatureRequest('A rainbow dragon with sparkles');
     // Simulate processing
     attributes['processed'] = true;
   }
@@ -124,7 +124,7 @@ void main() async {
   
   for (final edgeCase in edgeCases) {
     print('📝 Edge case: "$edgeCase"');
-    final result = aiService.parseCreatureRequest(edgeCase);
+    final result = await aiService.parseCreatureRequest(edgeCase);
     final isAppropriate = aiService.validateContentForAge(edgeCase, 6);
     print('📊 Result: ${result['creatureType']} (${result['color']})');
     print('👶 Age appropriate: $isAppropriate');

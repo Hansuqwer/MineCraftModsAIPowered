@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/language_selector.dart';
+import '../services/ai_service.dart';
+import '../services/app_localizations.dart';
 
 class ParentSettingsScreen extends StatefulWidget {
   const ParentSettingsScreen({super.key});
@@ -65,13 +67,15 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFF9F0), // Crafta cream background
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF6B9D), // Crafta pink
-        title: const Text(
-          'Parent Settings',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        title: Text(
+          l10n.parentSettings,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -104,26 +108,26 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                           ),
                         ],
                       ),
-                      child: const Column(
+                      child: Column(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.security,
                             size: 48,
                             color: Colors.white,
                           ),
-                          SizedBox(height: 12),
+                          const SizedBox(height: 12),
                           Text(
-                            'Child Safety First',
-                            style: TextStyle(
+                            l10n.safetyFirst,
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
-                            'Keep your child safe while they create',
-                            style: TextStyle(
+                            l10n.craftaIsSafe,
+                            style: const TextStyle(
                               fontSize: 16,
                               color: Colors.white,
                             ),
@@ -138,46 +142,46 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
               const SizedBox(height: 32),
 
               // Safety Controls
-              const Text(
-                'Safety Controls',
-                style: TextStyle(
+              Text(
+                l10n.featureToggles,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF333333),
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               _buildSafetyCard(
-                'Speech Recognition',
-                'Allow voice input',
+                l10n.speechRecognition,
+                l10n.speechRecognition,
                 _speechEnabled,
                 (value) => setState(() => _speechEnabled = value),
                 Icons.mic,
               ),
               const SizedBox(height: 12),
-              
+
               _buildSafetyCard(
-                'Text-to-Speech',
-                'Allow voice responses',
+                l10n.textToSpeech,
+                l10n.textToSpeech,
                 _ttsEnabled,
                 (value) => setState(() => _ttsEnabled = value),
                 Icons.volume_up,
               ),
               const SizedBox(height: 12),
-              
+
               _buildSafetyCard(
-                'AI Assistant',
-                'Allow AI conversations',
+                l10n.aiCreation,
+                l10n.aiCreation,
                 _aiEnabled,
                 (value) => setState(() => _aiEnabled = value),
                 Icons.psychology,
               ),
               const SizedBox(height: 12),
-              
+
               _buildSafetyCard(
-                'Export Features',
-                'Allow mod downloads',
+                l10n.minecraftExportFeature,
+                l10n.minecraftExportFeature,
                 _exportEnabled,
                 (value) => setState(() => _exportEnabled = value),
                 Icons.download,
@@ -185,9 +189,9 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
               const SizedBox(height: 32),
 
               // Age Group Selection
-              const Text(
-                'Age Group',
-                style: TextStyle(
+              Text(
+                l10n.ageGroup,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF333333),
@@ -218,16 +222,16 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
               const SizedBox(height: 32),
 
               // Safety Level
-              const Text(
-                'Safety Level',
-                style: TextStyle(
+              Text(
+                l10n.safetyLevel,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF333333),
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -240,10 +244,10 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                   value: _selectedSafetyLevel,
                   isExpanded: true,
                   underline: const SizedBox(),
-                  items: const [
-                    DropdownMenuItem(value: 'High', child: Text('High Safety')),
-                    DropdownMenuItem(value: 'Medium', child: Text('Medium Safety')),
-                    DropdownMenuItem(value: 'Low', child: Text('Low Safety')),
+                  items: [
+                    DropdownMenuItem(value: 'High', child: Text(l10n.high)),
+                    DropdownMenuItem(value: 'Medium', child: Text(l10n.medium)),
+                    DropdownMenuItem(value: 'Low', child: Text(l10n.low)),
                   ],
                   onChanged: (value) => setState(() => _selectedSafetyLevel = value ?? 'High'),
                 ),
@@ -278,18 +282,18 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                             color: Colors.white,
                           ),
                           const SizedBox(height: 12),
-                          const Text(
-                            'Creation History',
-                            style: TextStyle(
+                          Text(
+                            l10n.creationHistory,
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'View your child\'s creations',
-                            style: TextStyle(
+                          Text(
+                            l10n.creationHistory,
+                            style: const TextStyle(
                               fontSize: 16,
                               color: Colors.white,
                             ),
@@ -307,9 +311,9 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                                   borderRadius: BorderRadius.circular(24),
                                 ),
                               ),
-                              child: const Text(
-                                'View History',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.viewHistory,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),

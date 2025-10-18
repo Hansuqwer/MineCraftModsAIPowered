@@ -8,6 +8,10 @@ class ConversationMessage {
     required this.isFromUser,
     required this.timestamp,
   });
+
+  // Add getters for compatibility
+  String get content => text;
+  bool get isFromAI => !isFromUser;
 }
 
 class Conversation {

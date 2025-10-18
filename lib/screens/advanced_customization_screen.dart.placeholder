@@ -1,0 +1,78 @@
+import 'package:flutter/material.dart';
+import '../models/enhanced_creature_attributes.dart';
+
+/// Placeholder for Advanced Customization Screen
+/// This screen is not yet implemented
+class AdvancedCustomizationScreen extends StatelessWidget {
+  final EnhancedCreatureAttributes initialAttributes;
+  final Function(EnhancedCreatureAttributes)? onAttributesChanged;
+
+  const AdvancedCustomizationScreen({
+    super.key,
+    required this.initialAttributes,
+    this.onAttributesChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF98D8C8),
+        title: const Text(
+          'Advanced Customization',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.construction,
+                size: 80,
+                color: Color(0xFF98D8C8),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Coming Soon!',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF333333),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Advanced customization features are under development.\n\nFor now, you can create amazing creatures using voice or text input!',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF666666),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF98D8C8),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                ),
+                child: const Text(
+                  'Go Back',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

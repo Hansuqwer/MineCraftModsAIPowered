@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:ui' as ui;
 
 /// Minecraft-style 3D preview widget using Babylon.js
 /// Renders AI-generated models with custom textures and effects
@@ -42,6 +43,14 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
   }
 
   void _initializeWebView() {
+    // Skip WebView initialization on desktop platforms
+    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+    
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -70,6 +79,9 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
     final hasFlames = effects.contains('flames') || effects.contains('fire');
     final hasGlow = effects.contains('glow') || effects.contains('magic');
     final hasWings = effects.contains('wings') || effects.contains('flying');
+    final size = widget.creatureAttributes['size'] ?? 'normal';
+    final abilities = widget.creatureAttributes['abilities'] ?? [];
+    final personality = widget.creatureAttributes['personality'] ?? 'friendly';
 
     return '''
 <!DOCTYPE html>
@@ -142,65 +154,96 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
             const hasFlames = ${hasFlames};
             const hasGlow = ${hasGlow};
             const hasWings = ${hasWings};
+            const size = '${size}';
+            const abilities = ${abilities};
+            const personality = '${personality}';
             
             let model;
             
-            // Create different models based on type
-            if (creatureType.includes('sword') || creatureType.includes('weapon')) {
-                model = createSword(color, hasFlames, hasGlow);
+            // Create different models based on type - EXACTLY as they will appear in Minecraft
+            if (creatureType.includes('sword') || creatureType.includes('weapon') || creatureType.includes('fish')) {
+                model = createMinecraftSword(color, hasFlames, hasGlow, size);
             } else if (creatureType.includes('dragon') || creatureType.includes('creature')) {
-                model = createDragon(color, hasWings, hasFlames);
-            } else if (creatureType.includes('furniture') || creatureType.includes('chair')) {
-                model = createFurniture(creatureType, color);
+                model = createMinecraftDragon(color, hasWings, hasFlames, size);
+            } else if (creatureType.includes('furniture') || creatureType.includes('chair') || creatureType.includes('couch')) {
+                model = createMinecraftFurniture(creatureType, color, size);
+            } else if (creatureType.includes('armor') || creatureType.includes('helmet')) {
+                model = createMinecraftArmor(creatureType, color, hasGlow, size);
+            } else if (creatureType.includes('tool') || creatureType.includes('pickaxe')) {
+                model = createMinecraftTool(creatureType, color, hasGlow, size);
             } else {
-                model = createGenericCreature(creatureType, color, hasWings);
+                model = createMinecraftCreature(creatureType, color, hasWings, size);
             }
             
             return model;
         }
         
-        function createSword(color, hasFlames, hasGlow) {
-            // Create sword blade
-            const blade = BABYLON.MeshBuilder.CreateBox('blade', {width: 0.2, height: 2, depth: 0.1}, scene);
+        function createMinecraftSword(color, hasFlames, hasGlow, size) {
+            // Create Minecraft-accurate sword with proper proportions
+            const scale = size === 'giant' ? 2.0 : size === 'tiny' ? 0.5 : 1.0;
+            
+            // Create sword blade (Minecraft sword proportions)
+            const blade = BABYLON.MeshBuilder.CreateBox('blade', {
+                width: 0.15 * scale, 
+                height: 1.8 * scale, 
+                depth: 0.08 * scale
+            }, scene);
             const bladeMaterial = new BABYLON.StandardMaterial('bladeMaterial', scene);
             
-            // Set color based on input
+            // Minecraft-accurate colors
             if (color === 'golden' || color === 'gold') {
-                bladeMaterial.diffuseColor = new BABYLON.Color3(1, 0.8, 0);
-                bladeMaterial.emissiveColor = new BABYLON.Color3(0.2, 0.1, 0);
+                bladeMaterial.diffuseColor = new BABYLON.Color3(1, 0.84, 0); // Minecraft gold
+                bladeMaterial.emissiveColor = new BABYLON.Color3(0.1, 0.08, 0);
             } else if (color === 'diamond' || color === 'blue') {
-                bladeMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.8, 1);
-                bladeMaterial.emissiveColor = new BABYLON.Color3(0.1, 0.2, 0.3);
+                bladeMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.8, 1); // Minecraft diamond
+                bladeMaterial.emissiveColor = new BABYLON.Color3(0.05, 0.1, 0.15);
             } else if (color === 'iron' || color === 'gray') {
-                bladeMaterial.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
+                bladeMaterial.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.8); // Minecraft iron
+            } else if (color === 'netherite' || color === 'black') {
+                bladeMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.25); // Minecraft netherite
+                bladeMaterial.emissiveColor = new BABYLON.Color3(0.02, 0.02, 0.03);
             } else {
                 bladeMaterial.diffuseColor = new BABYLON.Color3(0.8, 0.4, 0.2); // Default orange
             }
             
             blade.material = bladeMaterial;
-            blade.position.y = 1;
+            blade.position.y = 0.9 * scale;
             
-            // Create handle
-            const handle = BABYLON.MeshBuilder.CreateBox('handle', {width: 0.1, height: 0.8, depth: 0.1}, scene);
+            // Create handle (Minecraft sword handle)
+            const handle = BABYLON.MeshBuilder.CreateBox('handle', {
+                width: 0.08 * scale, 
+                height: 0.6 * scale, 
+                depth: 0.08 * scale
+            }, scene);
             const handleMaterial = new BABYLON.StandardMaterial('handleMaterial', scene);
-            handleMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.2, 0.1); // Brown
+            handleMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.2, 0.1); // Brown wood
             handle.material = handleMaterial;
-            handle.position.y = -0.4;
+            handle.position.y = -0.3 * scale;
+            
+            // Create guard (crossguard)
+            const guard = BABYLON.MeshBuilder.CreateBox('guard', {
+                width: 0.3 * scale, 
+                height: 0.05 * scale, 
+                depth: 0.05 * scale
+            }, scene);
+            guard.material = bladeMaterial;
+            guard.position.y = 0.1 * scale;
             
             // Create parent mesh
             const sword = BABYLON.MeshBuilder.CreateBox('sword', {width: 0.1, height: 0.1, depth: 0.1}, scene);
             sword.isVisible = false;
             blade.parent = sword;
             handle.parent = sword;
+            guard.parent = sword;
             
-            // Add flame effects
+            // Add flame effects (like enchanted sword)
             if (hasFlames) {
-                addFlameEffect(sword, 'black');
+                addMinecraftFlameEffect(sword, color);
             }
             
-            // Add glow effect
+            // Add glow effect (like enchanted items)
             if (hasGlow) {
-                addGlowEffect(sword);
+                addMinecraftGlowEffect(sword, color);
             }
             
             return sword;
@@ -338,41 +381,66 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
             return body;
         }
         
-        function addFlameEffect(parent, flameColor) {
-            // Create flame particles
-            const particleSystem = new BABYLON.ParticleSystem('flames', 2000, scene);
+        function addMinecraftFlameEffect(parent, flameColor) {
+            // Create Minecraft-style flame particles (like enchanted items)
+            const particleSystem = new BABYLON.ParticleSystem('minecraftFlames', 1500, scene);
             particleSystem.particleTexture = new BABYLON.Texture('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', scene);
             
             particleSystem.emitter = parent;
-            particleSystem.minEmitBox = new BABYLON.Vector3(-0.1, 0, -0.1);
-            particleSystem.maxEmitBox = new BABYLON.Vector3(0.1, 0, 0.1);
+            particleSystem.minEmitBox = new BABYLON.Vector3(-0.05, 0, -0.05);
+            particleSystem.maxEmitBox = new BABYLON.Vector3(0.05, 0, 0.05);
             
-            particleSystem.color1 = flameColor === 'black' ? new BABYLON.Color4(0.1, 0.1, 0.1, 1) : new BABYLON.Color4(1, 0.3, 0, 1);
-            particleSystem.color2 = flameColor === 'black' ? new BABYLON.Color4(0.2, 0.2, 0.2, 0.8) : new BABYLON.Color4(1, 0.6, 0, 0.8);
+            // Minecraft-style flame colors
+            if (flameColor === 'black' || flameColor === 'netherite') {
+                particleSystem.color1 = new BABYLON.Color4(0.1, 0.05, 0.1, 1);
+                particleSystem.color2 = new BABYLON.Color4(0.2, 0.1, 0.2, 0.8);
+            } else if (flameColor === 'diamond' || flameColor === 'blue') {
+                particleSystem.color1 = new BABYLON.Color4(0.2, 0.4, 0.8, 1);
+                particleSystem.color2 = new BABYLON.Color4(0.4, 0.6, 1, 0.8);
+            } else {
+                particleSystem.color1 = new BABYLON.Color4(1, 0.3, 0, 1);
+                particleSystem.color2 = new BABYLON.Color4(1, 0.6, 0, 0.8);
+            }
             particleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0);
             
-            particleSystem.minSize = 0.1;
-            particleSystem.maxSize = 0.3;
-            particleSystem.minLifeTime = 0.3;
-            particleSystem.maxLifeTime = 1.0;
-            particleSystem.emitRate = 1000;
-            particleSystem.gravity = new BABYLON.Vector3(0, -2, 0);
-            particleSystem.direction1 = new BABYLON.Vector3(-0.5, 1, -0.5);
-            particleSystem.direction2 = new BABYLON.Vector3(0.5, 1, 0.5);
+            particleSystem.minSize = 0.05;
+            particleSystem.maxSize = 0.15;
+            particleSystem.minLifeTime = 0.5;
+            particleSystem.maxLifeTime = 1.5;
+            particleSystem.emitRate = 800;
+            particleSystem.gravity = new BABYLON.Vector3(0, -1, 0);
+            particleSystem.direction1 = new BABYLON.Vector3(-0.3, 0.8, -0.3);
+            particleSystem.direction2 = new BABYLON.Vector3(0.3, 0.8, 0.3);
             particleSystem.minAngularSpeed = 0;
-            particleSystem.maxAngularSpeed = Math.PI;
-            particleSystem.minEmitPower = 1;
-            particleSystem.maxEmitPower = 3;
-            particleSystem.updateSpeed = 0.025;
+            particleSystem.maxAngularSpeed = Math.PI / 2;
+            particleSystem.minEmitPower = 0.5;
+            particleSystem.maxEmitPower = 1.5;
+            particleSystem.updateSpeed = 0.02;
             
             particleSystem.start();
         }
         
-        function addGlowEffect(parent) {
-            // Add emissive glow
+        function addMinecraftGlowEffect(parent, glowColor) {
+            // Add Minecraft-style enchantment glow
             if (parent.material) {
-                parent.material.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+                if (glowColor === 'diamond' || glowColor === 'blue') {
+                    parent.material.emissiveColor = new BABYLON.Color3(0.1, 0.2, 0.4);
+                } else if (glowColor === 'gold' || glowColor === 'golden') {
+                    parent.material.emissiveColor = new BABYLON.Color3(0.3, 0.25, 0.1);
+                } else {
+                    parent.material.emissiveColor = new BABYLON.Color3(0.2, 0.1, 0.2);
+                }
             }
+        }
+        
+        function addFlameEffect(parent, flameColor) {
+            // Legacy function for backward compatibility
+            addMinecraftFlameEffect(parent, flameColor);
+        }
+        
+        function addGlowEffect(parent) {
+            // Legacy function for backward compatibility
+            addMinecraftGlowEffect(parent, 'default');
         }
         
         // Load the model
@@ -414,6 +482,11 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
 
   @override
   Widget build(BuildContext context) {
+    // Use fallback for desktop platforms where WebView doesn't work well
+    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+      return _buildDesktopFallback();
+    }
+    
     if (_errorMessage != null) {
       return Container(
         width: widget.size,
@@ -465,7 +538,9 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
         borderRadius: BorderRadius.circular(12),
         child: Stack(
           children: [
-            WebViewWidget(controller: _webViewController),
+            (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+                ? _buildDesktopFallback()
+                : WebViewWidget(controller: _webViewController),
             if (_isLoading)
               Container(
                 color: const Color(0xFF87CEEB), // Minecraft sky color
@@ -493,5 +568,130 @@ class _Minecraft3DPreviewState extends State<Minecraft3DPreview> {
         ),
       ),
     );
+  }
+
+  Widget _buildDesktopFallback() {
+    final creatureType = widget.creatureAttributes['creatureType'] ?? 'sword';
+    final color = widget.creatureAttributes['color'] ?? 'golden';
+    final effects = widget.creatureAttributes['effects'] ?? [];
+    final hasFlames = effects.contains('flames') || effects.contains('fire');
+    final hasGlow = effects.contains('glow') || effects.contains('magic');
+    final hasWings = effects.contains('wings') || effects.contains('flying');
+    final size = widget.creatureAttributes['size'] ?? 'normal';
+    
+    return Container(
+      width: widget.size,
+      height: widget.size,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300, width: 2),
+        borderRadius: BorderRadius.circular(8),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.blue.shade100,
+            Colors.blue.shade200,
+          ],
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            _getCreatureIcon(creatureType),
+            size: 80,
+            color: _getColorFromString(color),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '${_capitalize(creatureType)} Preview',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Color: ${_capitalize(color)}',
+            style: const TextStyle(fontSize: 14),
+          ),
+          if (hasFlames) ...[
+            const SizedBox(height: 4),
+            const Text('🔥 Flames', style: TextStyle(fontSize: 12)),
+          ],
+          if (hasGlow) ...[
+            const SizedBox(height: 4),
+            const Text('✨ Glow', style: TextStyle(fontSize: 12)),
+          ],
+          if (hasWings) ...[
+            const SizedBox(height: 4),
+            const Text('🕊️ Wings', style: TextStyle(fontSize: 12)),
+          ],
+          const SizedBox(height: 16),
+          const Text(
+            '3D Preview\n(Desktop Fallback)',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getCreatureIcon(String creatureType) {
+    switch (creatureType.toLowerCase()) {
+      case 'sword':
+      case 'weapon':
+        return Icons.sports_martial_arts;
+      case 'dragon':
+      case 'creature':
+        return Icons.pets;
+      case 'furniture':
+      case 'chair':
+      case 'couch':
+        return Icons.chair;
+      case 'armor':
+      case 'helmet':
+        return Icons.shield;
+      case 'tool':
+      case 'pickaxe':
+        return Icons.build;
+      default:
+        return Icons.auto_awesome;
+    }
+  }
+
+  Color _getColorFromString(String color) {
+    switch (color.toLowerCase()) {
+      case 'blue':
+        return Colors.blue;
+      case 'red':
+        return Colors.red;
+      case 'green':
+        return Colors.green;
+      case 'golden':
+      case 'gold':
+        return Colors.amber;
+      case 'purple':
+        return Colors.purple;
+      case 'orange':
+        return Colors.orange;
+      case 'pink':
+        return Colors.pink;
+      case 'black':
+        return Colors.black;
+      case 'white':
+        return Colors.white;
+      default:
+        return Colors.blue;
+    }
+  }
+
+  String _capitalize(String text) {
+    if (text.isEmpty) return text;
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
 }

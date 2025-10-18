@@ -1,18 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/procedural_creature_renderer.dart';
-import '../widgets/furniture_renderer.dart';
-import '../widgets/minecraft_3d_preview.dart';
-import '../services/ai_service.dart';
-import '../services/enhanced_ai_service.dart';
-import '../models/enhanced_creature_attributes.dart';
-import '../utils/screen_utils.dart';
-import '../services/minecraft/minecraft_export_service.dart';
-import '../models/minecraft/addon_metadata.dart';
-import '../models/minecraft/addon_package.dart';
-import '../models/minecraft/behavior_pack.dart';
-import '../models/minecraft/resource_pack.dart';
-import '../models/minecraft/addon_file.dart';
+import '../services/app_localizations.dart';
+import '../theme/minecraft_theme.dart';
 
+/// Minecraft-inspired Complete Screen - Looks like achievement unlocked!
 class CompleteScreen extends StatefulWidget {
   const CompleteScreen({super.key});
 
@@ -22,766 +12,406 @@ class CompleteScreen extends StatefulWidget {
 
 class _CompleteScreenState extends State<CompleteScreen>
     with TickerProviderStateMixin {
-  late AnimationController _celebrationController;
-  late AnimationController _bounceController;
-  late AnimationController _sparkleController;
-  late AnimationController _pulseController;
-  late Animation<double> _celebrationAnimation;
-  late Animation<double> _bounceAnimation;
-  late Animation<double> _sparkleAnimation;
-  late Animation<double> _pulseAnimation;
-  
-  // Current suggestion state
-  String _currentSuggestion = '';
-  final AIService _aiService = AIService();
-  bool _isSuggestionTapped = false;
-  
-  // Enhanced visual states
-  bool _showSuccessAnimation = false;
-  bool _showExportAnimation = false;
-  bool _isExporting = false;
-  bool _show3DPreview = false;
-  
-  // Creature data
-  String creatureName = 'Rainbow Cow';
-  String creatureType = 'Cow';
-  Map<String, dynamic> creatureAttributes = {};
+  late AnimationController _achievementController;
+  late AnimationController _glowController;
+  late Animation<double> _achievementAnimation;
+  late Animation<double> _glowAnimation;
 
   @override
   void initState() {
     super.initState();
-    
-    // Initialize creature data from arguments
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      if (args != null) {
-        setState(() {
-          creatureName = args['creatureName'] ?? 'Rainbow Cow';
-          creatureType = args['creatureType'] ?? 'Cow';
-          creatureAttributes = args['creatureAttributes'] ?? {};
-        });
-      }
-    });
-    
-    // Celebration animation for success
-    _celebrationController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat();
-    
-    _celebrationAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.2,
-    ).animate(CurvedAnimation(
-      parent: _celebrationController,
-      curve: Curves.easeInOut,
-    ));
-    
-    // Bounce animation for buttons
-    _bounceController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    )..repeat(reverse: true);
-    
-    _bounceAnimation = Tween<double>(
-      begin: 0.95,
-      end: 1.05,
-    ).animate(CurvedAnimation(
-      parent: _bounceController,
-      curve: Curves.elasticInOut,
-    ));
-    
-    // Sparkle animation for success
-    _sparkleController = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    )..repeat();
-    
-    _sparkleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _sparkleController,
-      curve: Curves.easeInOut,
-    ));
-    
-    // Pulse animation for export
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+
+    // Achievement pop-in animation
+    _achievementController = AnimationController(
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
-    _pulseAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.2,
+    _achievementAnimation = CurvedAnimation(
+      parent: _achievementController,
+      curve: Curves.elasticOut,
+    );
+    _achievementController.forward();
+
+    // Glow animation (like enchanted items)
+    _glowController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _glowAnimation = Tween<double>(
+      begin: 0.6,
+      end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _pulseController,
+      parent: _glowController,
       curve: Curves.easeInOut,
     ));
-    
-    // Start success animation
-    _showSuccessAnimation = true;
-    _sparkleController.forward();
   }
 
   @override
   void dispose() {
-    _celebrationController.dispose();
-    _bounceController.dispose();
-    _sparkleController.dispose();
-    _pulseController.dispose();
+    _achievementController.dispose();
+    _glowController.dispose();
     super.dispose();
-  }
-
-  /// Check if the creature type is furniture
-  bool _isFurniture(String creatureType) {
-    const furnitureTypes = [
-      'couch', 'sofa', 'chair', 'table', 'bed', 'desk', 'bookshelf',
-      'lamp', 'floor_lamp', 'table_lamp', 'cabinet', 'dresser', 'wardrobe',
-      'shelf', 'stool', 'bench', 'ottoman', 'armchair', 'recliner',
-      'rocking_chair', 'dining_table', 'coffee_table', 'nightstand',
-      'chest', 'trunk', 'mirror', 'rug', 'carpet', 'curtain', 'blinds',
-      'plant', 'flower_pot', 'vase', 'clock', 'picture', 'frame'
-    ];
-    return furnitureTypes.contains(creatureType.toLowerCase());
-  }
-
-  /// Get AI suggestion for the created item
-  String _getAISuggestion() {
-    if (_currentSuggestion.isEmpty) {
-      // Get contextual suggestions based on current creation
-      final enhancedAttributes = EnhancedCreatureAttributes.fromBasic(
-        baseType: creatureAttributes['creatureType'] ?? 'creature',
-        color: creatureAttributes['color'],
-        size: creatureAttributes['size'],
-        effects: creatureAttributes['effects'],
-        theme: creatureAttributes['theme'],
-      );
-      final contextualSuggestions = EnhancedAIService.getContextualSuggestions(enhancedAttributes);
-      if (contextualSuggestions.isNotEmpty) {
-        _currentSuggestion = contextualSuggestions.first;
-      } else {
-        // Fallback to age-appropriate suggestions
-        final ageSuggestions = EnhancedAIService.getEnhancedAgeSuggestions(6); // Default age
-        if (ageSuggestions.isNotEmpty) {
-          _currentSuggestion = ageSuggestions.first;
-        } else {
-          _currentSuggestion = 'Try creating something new!';
-        }
-      }
-    }
-    return _currentSuggestion;
-  }
-
-  /// Handle suggestion tap - navigate back to creator with the suggestion
-  void _handleSuggestionTap() {
-    setState(() {
-      _isSuggestionTapped = true;
-    });
-    
-    // Show enhanced feedback
-    _showSuccessFeedback('Great idea! Let\'s create that!');
-    
-    // Navigate back to creator with the suggestion
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/creator',
-        (route) => false,
-        arguments: {
-          'suggestion': _currentSuggestion,
-          'fromSuggestion': true,
-        },
-      );
-    });
-  }
-
-  /// Show success feedback with animation
-  void _showSuccessFeedback(String message) {
-    setState(() {
-      _showSuccessAnimation = true;
-    });
-    
-    _bounceController.forward().then((_) {
-      _bounceController.reverse();
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 8),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: const Color(0xFF4CAF50),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
-    
-    Future.delayed(const Duration(milliseconds: 2000), () {
-      if (mounted) {
-        setState(() {
-          _showSuccessAnimation = false;
-        });
-      }
-    });
-  }
-
-  /// Show error feedback with animation
-  void _showErrorFeedback(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 8),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: const Color(0xFFFF6B6B),
-        duration: const Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
-  }
-
-  /// Show world creation dialog
-  Future<void> _showWorldCreationDialog() async {
-    setState(() {
-      _isExporting = true;
-      _showExportAnimation = true;
-    });
-    
-    // Start export animation
-    _pulseController.repeat(reverse: true);
-    
-    // Create a mock addon package for the dialog
-    final metadata = AddonMetadata(
-      name: creatureName,
-      description: 'A $creatureType created with Crafta',
-      author: 'Crafta User',
-      version: '1.0.0',
-      namespace: 'crafta',
-      generateSpawnEggs: true,
-      includeScriptAPI: true,
-    );
-
-    // Create mock behavior and resource packs for the dialog
-    final mockManifest = AddonFile.json('manifest.json', '{}');
-    
-    final mockBehaviorPack = BehaviorPack(
-      uuid: 'mock-uuid',
-      moduleUuid: 'mock-module-uuid',
-      manifest: mockManifest,
-      entities: [],
-      scripts: [],
-      texts: [],
-    );
-    
-    final mockResourcePack = ResourcePack(
-      uuid: 'mock-uuid',
-      moduleUuid: 'mock-module-uuid',
-      manifest: mockManifest,
-      entityClients: [],
-      renderControllers: [],
-      animationControllers: [],
-      animations: [],
-      textures: [],
-      models: [],
-      texts: [],
-      packIcon: null,
-    );
-
-    final addon = AddonPackage(
-      metadata: metadata,
-      behaviorPack: mockBehaviorPack,
-      resourcePack: mockResourcePack,
-      createdAt: DateTime.now(),
-    );
-
-    try {
-      // Actually export the creature
-      print('🚀 Exporting creature: $creatureName');
-      final exportedAddon = await MinecraftExportService.exportCreature(
-        creatureAttributes: creatureAttributes,
-        metadata: metadata,
-      );
-      
-      print('✅ Creature exported successfully');
-      
-      // Show world creation dialog with real addon
-      await MinecraftExportService.showWorldCreationDialog(context, exportedAddon);
-      
-      // Show success feedback
-      _showSuccessFeedback('Export completed successfully!');
-    } catch (e) {
-      print('❌ Export error: $e');
-      // Show error feedback
-      _showErrorFeedback('Export failed: $e');
-    } finally {
-      setState(() {
-        _isExporting = false;
-        _showExportAnimation = false;
-      });
-      
-      // Stop export animation
-      _pulseController.stop();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get arguments passed from navigation
+    final l10n = AppLocalizations.of(context);
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final creatureName = args?['creatureName'] ?? 'Rainbow Cow';
     final creatureType = args?['creatureType'] ?? 'Cow';
-    final creatureAttributes = args?['creatureAttributes'] ?? 'rainbow colors and sparkles';
-    
-    // Responsive design
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final isTablet = screenWidth > 600;
-    final isFoldable = screenWidth > 800;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF9F0), // Crafta cream background
+      backgroundColor: MinecraftTheme.coalBlack,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF98D8C8), // Crafta mint
-        title: const Text(
-          'Your Creation is Ready!',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        backgroundColor: MinecraftTheme.deepStone,
+        elevation: 0,
+        title: MinecraftText(
+          l10n.creationReady.toUpperCase(),
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: MinecraftTheme.goldOre,
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Container(
+            margin: const EdgeInsets.all(8),
+            decoration: MinecraftTheme.minecraftButton(),
+            child: Icon(
+              Icons.arrow_back,
+              color: MinecraftTheme.textLight,
+            ),
+          ),
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(isTablet ? 32.0 : 24.0),
-          child: Column(
-            children: [
-              // Success Animation/Icon
-              Expanded(
-                flex: 2,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Animated Success Icon
-                    AnimatedBuilder(
-                      animation: _celebrationAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _celebrationAnimation.value,
-                          child: Container(
-                            width: 120,
-                            height: 120,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF98D8C8), // Crafta mint
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF98D8C8).withOpacity(0.4),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.auto_awesome,
-                              size: 60,
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    
-                    // Success Message
-                    const Text(
-                      'Amazing!',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF333333),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              MinecraftTheme.deepStone,
+              MinecraftTheme.dirtBrown,
+              MinecraftTheme.grassGreen.withOpacity(0.6),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 20),
+
+                // Achievement Banner
+                ScaleTransition(
+                  scale: _achievementAnimation,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          MinecraftTheme.goldOre,
+                          MinecraftTheme.goldOre.withOpacity(0.7),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Your creation is ready to go to Minecraft!',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Color(0xFF666666),
+                      border: Border.all(
+                        color: MinecraftTheme.coalBlack,
+                        width: 3,
                       ),
-                      textAlign: TextAlign.center,
+                      boxShadow: [
+                        BoxShadow(
+                          color: MinecraftTheme.goldOre.withOpacity(0.5),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              
-              // Creation Preview
-              Expanded(
-                flex: 2,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                    child: Column(
+                      children: [
+                        MinecraftText(
+                          'ACHIEVEMENT UNLOCKED!',
+                          fontSize: 14,
+                          color: MinecraftTheme.coalBlack,
+                          fontWeight: FontWeight.bold,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        MinecraftText(
+                          l10n.amazing.toUpperCase(),
+                          fontSize: 24,
+                          color: MinecraftTheme.coalBlack,
+                          fontWeight: FontWeight.w900,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      // 3D Preview Toggle Button
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              setState(() {
-                                _show3DPreview = !_show3DPreview;
-                              });
-                            },
-                            icon: Icon(_show3DPreview ? Icons.view_agenda : Icons.view_in_ar),
-                            label: Text(_show3DPreview ? '2D View' : '3D View'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _show3DPreview ? Colors.orange : const Color(0xFF98D8C8),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Creature Display (like an item frame)
+                AnimatedBuilder(
+                  animation: _glowAnimation,
+                  builder: (context, child) {
+                    return Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: MinecraftTheme.oakWood,
+                        border: Border.all(
+                          color: MinecraftTheme.deepStone,
+                          width: 4,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: MinecraftTheme.emerald.withOpacity(_glowAnimation.value * 0.6),
+                            blurRadius: 20,
+                            spreadRadius: 3,
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.6),
+                            offset: const Offset(5, 5),
+                            blurRadius: 0,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      
-                      // Animated Creature Preview Image
-                      AnimatedBuilder(
-                        animation: _celebrationAnimation,
-                        builder: (context, child) {
-                          return Transform.scale(
-                            scale: _celebrationAnimation.value * 0.8 + 0.2,
-                            child: Container(
-                              width: 200,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 15,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: _show3DPreview
-                                  ? Minecraft3DPreview(
-                                      creatureAttributes: creatureAttributes,
-                                      modelPath: 'assets/models/${creatureType.toLowerCase()}.glb',
-                                      texturePath: 'assets/textures/${creatureType.toLowerCase()}.png',
-                                      size: 200,
-                                      enableRotation: true,
-                                      enableZoom: true,
-                                      enableEffects: true,
-                                    )
-                                  : _isFurniture(creatureType)
-                                    ? FurnitureRenderer(
-                                        furnitureAttributes: creatureAttributes,
-                                        size: 200,
-                                        isAnimated: true,
-                                      )
-                                    : ProceduralCreatureRenderer(
-                                        creatureAttributes: creatureAttributes,
-                                        size: 200,
-                                        isAnimated: true,
-                                      ),
+                      child: Column(
+                        children: [
+                          // Creature icon (enchanted look)
+                          Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: MinecraftTheme.emerald,
+                              border: Border.all(
+                                color: MinecraftTheme.goldOre,
+                                width: 3,
                               ),
                             ),
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    _getCreatureIcon(creatureType),
+                                    size: 70,
+                                    color: MinecraftTheme.textLight,
+                                  ),
+                                ),
+                                // Enchantment glimmer
+                                Positioned(
+                                  top: 10,
+                                  right: 10,
+                                  child: Opacity(
+                                    opacity: _glowAnimation.value,
+                                    child: Icon(
+                                      Icons.auto_awesome,
+                                      color: MinecraftTheme.goldOre,
+                                      size: 25,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          MinecraftText(
+                            creatureName.toUpperCase(),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: MinecraftTheme.goldOre,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          MinecraftText(
+                            l10n.readyForMinecraft,
+                            fontSize: 14,
+                            color: MinecraftTheme.textDark,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 32),
+
+                // Action Buttons (like hotbar slots)
+                MinecraftPanel(
+                  backgroundColor: MinecraftTheme.hotbarBackground,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // View in 3D button (NEW - shows exactly how it will look in Minecraft)
+                      MinecraftButton(
+                        text: 'VIEW IN 3D',
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/minecraft-3d-viewer',
+                            arguments: {
+                              'creatureAttributes': _getCreatureAttributesFromArgs(args),
+                              'creatureName': creatureName,
+                            },
                           );
                         },
+                        color: MinecraftTheme.diamond,
+                        icon: Icons.view_in_ar,
+                        height: 60,
                       ),
-                      const SizedBox(height: 16),
-                      
-                      // Creation Details
-                      Text(
-                        creatureName,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF333333),
-                        ),
+
+                      const SizedBox(height: 12),
+
+                      // Export to Minecraft button
+                      MinecraftButton(
+                        text: l10n.exportToMinecraft.toUpperCase(),
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/export-minecraft',
+                            arguments: args,
+                          );
+                        },
+                        color: MinecraftTheme.grassGreen,
+                        icon: Icons.upload_file,
+                        height: 56,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Share button
+                      MinecraftButton(
+                        text: l10n.shareCreature.toUpperCase(),
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/creature-sharing',
+                            arguments: args,
+                          );
+                        },
+                        color: MinecraftTheme.diamond,
+                        icon: Icons.share,
+                        height: 56,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Make another button
+                      MinecraftButton(
+                        text: l10n.makeAnother.toUpperCase(),
+                        onPressed: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/creator',
+                            (route) => route.isFirst,
+                          );
+                        },
+                        color: MinecraftTheme.buttonBackground,
+                        icon: Icons.add_circle_outline,
+                        height: 56,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Next creature suggestion (like villager trade)
+                MinecraftPanel(
+                  backgroundColor: MinecraftTheme.oakWood.withOpacity(0.8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.lightbulb,
+                            color: MinecraftTheme.goldOre,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          MinecraftText(
+                            l10n.tryThisNext.toUpperCase(),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: MinecraftTheme.textDark,
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'A $creatureType with $creatureAttributes',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF666666),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      
-                      // AI Suggestions
-                      GestureDetector(
-                        onTap: () => _handleSuggestionTap(),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: _isSuggestionTapped 
-                              ? const Color(0xFFE8F5E8) 
-                              : const Color(0xFFF0F8FF),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: _isSuggestionTapped 
-                                ? const Color(0xFF4CAF50) 
-                                : const Color(0xFF98D8C8),
-                              width: _isSuggestionTapped ? 2 : 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: (_isSuggestionTapped 
-                                  ? const Color(0xFF4CAF50) 
-                                  : const Color(0xFF98D8C8)).withOpacity(0.3),
-                                blurRadius: _isSuggestionTapped ? 12 : 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Icon(
-                                _isSuggestionTapped ? Icons.check_circle : Icons.lightbulb_outline,
-                                color: _isSuggestionTapped ? const Color(0xFF4CAF50) : const Color(0xFF98D8C8),
-                                size: 24,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _getAISuggestion(),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: _isSuggestionTapped ? const Color(0xFF2E7D32) : const Color(0xFF333333),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _isSuggestionTapped ? 'Creating...' : 'Tap to create!',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: _isSuggestionTapped ? const Color(0xFF4CAF50) : const Color(0xFF98D8C8),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: MinecraftTheme.minecraftSlot(isSelected: true),
+                        child: MinecraftText(
+                          _getRandomSuggestion(),
+                          fontSize: 14,
+                          color: MinecraftTheme.textDark,
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              
-              // Action Buttons
-              Expanded(
-                flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Animated Share Button
-                    AnimatedBuilder(
-                      animation: _bounceAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _bounceAnimation.value,
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Navigate to creature sharing screen
-                                Navigator.pushNamed(
-                                  context,
-                                  '/creature-sharing',
-                                  arguments: {
-                                    'creatureAttributes': args ?? {},
-                                    'creatureName': creatureName,
-                                  },
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange.shade600,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(28),
-                                ),
-                                elevation: 8,
-                                shadowColor: Colors.orange.withOpacity(0.3),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.share,
-                                    size: 24,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Share Creature',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    
-                    // Enhanced Send to Minecraft Button
-                    AnimatedBuilder(
-                      animation: Listenable.merge([_bounceAnimation, _pulseAnimation]),
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _isExporting 
-                            ? _pulseAnimation.value
-                            : _bounceAnimation.value * 0.9 + 0.1,
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed: _isExporting ? null : () async {
-                                // Show world creation dialog
-                                await _showWorldCreationDialog();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _isExporting
-                                  ? const Color(0xFFFF6B9D)
-                                  : _showSuccessAnimation
-                                    ? const Color(0xFF4CAF50)
-                                    : const Color(0xFF98D8C8),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(28),
-                                ),
-                                elevation: _isExporting ? 12 : 8,
-                                shadowColor: (_isExporting
-                                  ? const Color(0xFFFF6B9D)
-                                  : _showSuccessAnimation
-                                    ? const Color(0xFF4CAF50)
-                                    : const Color(0xFF98D8C8)).withOpacity(0.4),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    _isExporting
-                                      ? Icons.hourglass_empty
-                                      : _showSuccessAnimation
-                                        ? Icons.check_circle
-                                        : Icons.download,
-                                    size: 24,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _isExporting
-                                      ? 'Exporting...'
-                                      : 'Send to Minecraft',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    // Animated Make Another Button
-                    AnimatedBuilder(
-                      animation: _bounceAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _bounceAnimation.value * 0.9 + 0.1,
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: OutlinedButton(
-                              onPressed: () {
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  '/creator',
-                                  (route) => false,
-                                );
-                              },
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF98D8C8),
-                                side: const BorderSide(color: Color(0xFF98D8C8), width: 2),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                elevation: 4,
-                                shadowColor: const Color(0xFF98D8C8).withOpacity(0.2),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_circle_outline,
-                                    size: 20,
-                                    color: Color(0xFF98D8C8),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Make Another',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+
+                // Extra padding at bottom
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  IconData _getCreatureIcon(String creatureType) {
+    switch (creatureType.toLowerCase()) {
+      case 'dragon':
+        return Icons.whatshot;
+      case 'unicorn':
+        return Icons.stars;
+      case 'cat':
+        return Icons.pets;
+      case 'dog':
+        return Icons.pets;
+      default:
+        return Icons.favorite;
+    }
+  }
+
+  String _getRandomSuggestion() {
+    final suggestions = [
+      'Flying dragon with fire breath',
+      'Rainbow unicorn with sparkles',
+      'Giant friendly spider',
+      'Tiny phoenix with flames',
+      'Ice dragon with frost powers',
+    ];
+    return suggestions[DateTime.now().millisecond % suggestions.length];
+  }
+
+  Map<String, dynamic> _getCreatureAttributesFromArgs(Map<String, dynamic>? args) {
+    if (args == null) {
+      return {
+        'creatureType': 'sword',
+        'color': 'golden',
+        'effects': ['glow'],
+        'size': 'normal',
+        'abilities': [],
+        'personality': 'friendly',
+      };
+    }
+
+    return {
+      'creatureType': args['creatureType'] ?? 'sword',
+      'color': args['color'] ?? 'golden',
+      'effects': args['effects'] ?? ['glow'],
+      'size': args['size'] ?? 'normal',
+      'abilities': args['abilities'] ?? [],
+      'personality': args['personality'] ?? 'friendly',
+    };
   }
 }

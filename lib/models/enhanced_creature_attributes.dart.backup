@@ -8,7 +8,7 @@ class EnhancedCreatureAttributes {
   final Color accentColor;
   final CreatureSize size;
   final List<SpecialAbility> abilities;
-  final List<AccessoryType> accessories;
+  final List<Accessory> accessories;
   final PersonalityType personality;
   final List<Pattern> patterns;
   final TextureType texture;
@@ -33,76 +33,6 @@ class EnhancedCreatureAttributes {
     required this.customName,
     required this.description,
   });
-
-  /// Convert to map for serialization
-  Map<String, dynamic> toMap() {
-    return {
-      'baseType': baseType,
-      'primaryColor': primaryColor.value,
-      'secondaryColor': secondaryColor.value,
-      'accentColor': accentColor.value,
-      'size': size.name,
-      'abilities': abilities.map((a) => a.name).toList(),
-      'accessories': accessories.map((a) => a.name).toList(),
-      'personality': personality.name,
-      'patterns': patterns.map((p) => p.name).toList(),
-      'texture': texture.name,
-      'glowEffect': glowEffect.name,
-      'animationStyle': animationStyle.name,
-      'customName': customName,
-      'description': description,
-    };
-  }
-
-  /// Create from map for deserialization
-  factory EnhancedCreatureAttributes.fromMap(Map<String, dynamic> map) {
-    return EnhancedCreatureAttributes(
-      baseType: map['baseType'] ?? 'creature',
-      primaryColor: Color(map['primaryColor'] ?? Colors.blue.value),
-      secondaryColor: Color(map['secondaryColor'] ?? Colors.blue.shade300.value),
-      accentColor: Color(map['accentColor'] ?? Colors.blue.shade100.value),
-      size: CreatureSize.values.firstWhere(
-        (e) => e.name == map['size'],
-        orElse: () => CreatureSize.medium,
-      ),
-      abilities: (map['abilities'] as List<dynamic>?)
-          ?.map((a) => SpecialAbility.values.firstWhere(
-                (e) => e.name == a,
-                orElse: () => SpecialAbility.none,
-              ))
-          .toList() ?? [],
-      accessories: (map['accessories'] as List<dynamic>?)
-          ?.map((a) => AccessoryType.values.firstWhere(
-                (e) => e.name == a,
-                orElse: () => AccessoryType.hat,
-              ))
-          .toList() ?? [],
-      personality: PersonalityType.values.firstWhere(
-        (e) => e.name == map['personality'],
-        orElse: () => PersonalityType.friendly,
-      ),
-      patterns: (map['patterns'] as List<dynamic>?)
-          ?.map((p) => Pattern.values.firstWhere(
-                (e) => e.name == p,
-                orElse: () => Pattern.none,
-              ))
-          .toList() ?? [],
-      texture: TextureType.values.firstWhere(
-        (e) => e.name == map['texture'],
-        orElse: () => TextureType.smooth,
-      ),
-      glowEffect: GlowEffect.values.firstWhere(
-        (e) => e.name == map['glowEffect'],
-        orElse: () => GlowEffect.none,
-      ),
-      animationStyle: CreatureAnimationStyle.values.firstWhere(
-        (e) => e.name == map['animationStyle'],
-        orElse: () => CreatureAnimationStyle.natural,
-      ),
-      customName: map['customName'] ?? 'Creature',
-      description: map['description'] ?? 'A magical creature',
-    );
-  }
 
   /// Create from basic attributes (backward compatibility)
   factory EnhancedCreatureAttributes.fromBasic({
@@ -149,7 +79,7 @@ class EnhancedCreatureAttributes {
     Color? accentColor,
     CreatureSize? size,
     List<SpecialAbility>? abilities,
-    List<AccessoryType>? accessories,
+    List<Accessory>? accessories,
     PersonalityType? personality,
     List<Pattern>? patterns,
     TextureType? texture,
@@ -220,52 +150,12 @@ class EnhancedCreatureAttributes {
     return accessories.map((a) => a.name).join(', ');
   }
 
-  /// Get effects list (for backward compatibility)
-  List<GlowEffect> get effects {
-    return [glowEffect];
-  }
-
   /// Get full creature description
   String get fullDescription {
     return '$customName is a $size ${personality.name} $baseType. '
            '$personalityDescription '
            '$abilitiesDescription. '
            '$accessoriesDescription.';
-  }
-
-  /// Create a copy with updated values
-  EnhancedCreatureAttributes copy({
-    String? baseType,
-    Color? primaryColor,
-    Color? secondaryColor,
-    Color? accentColor,
-    CreatureSize? size,
-    List<SpecialAbility>? abilities,
-    List<AccessoryType>? accessories,
-    PersonalityType? personality,
-    List<Pattern>? patterns,
-    TextureType? texture,
-    GlowEffect? glowEffect,
-    CreatureAnimationStyle? animationStyle,
-    String? customName,
-    String? description,
-  }) {
-    return EnhancedCreatureAttributes(
-      baseType: baseType ?? this.baseType,
-      primaryColor: primaryColor ?? this.primaryColor,
-      secondaryColor: secondaryColor ?? this.secondaryColor,
-      accentColor: accentColor ?? this.accentColor,
-      size: size ?? this.size,
-      abilities: abilities ?? this.abilities,
-      accessories: accessories ?? this.accessories,
-      personality: personality ?? this.personality,
-      patterns: patterns ?? this.patterns,
-      texture: texture ?? this.texture,
-      glowEffect: glowEffect ?? this.glowEffect,
-      animationStyle: animationStyle ?? this.animationStyle,
-      customName: customName ?? this.customName,
-      description: description ?? this.description,
-    );
   }
 
   // Helper methods
@@ -384,7 +274,6 @@ enum CreatureSize {
 
 /// Special abilities creatures can have
 enum SpecialAbility {
-  none,
   flying,
   swimming,
   fireBreath,
@@ -402,8 +291,6 @@ enum SpecialAbility {
 extension SpecialAbilityExtension on SpecialAbility {
   String get name {
     switch (this) {
-      case SpecialAbility.none:
-        return 'None';
       case SpecialAbility.flying:
         return 'Flying';
       case SpecialAbility.swimming:
@@ -433,8 +320,6 @@ extension SpecialAbilityExtension on SpecialAbility {
 
   String get description {
     switch (this) {
-      case SpecialAbility.none:
-        return 'No special abilities';
       case SpecialAbility.flying:
         return 'Can fly through the air';
       case SpecialAbility.swimming:
@@ -464,8 +349,6 @@ extension SpecialAbilityExtension on SpecialAbility {
 
   String get icon {
     switch (this) {
-      case SpecialAbility.none:
-        return '⚪';
       case SpecialAbility.flying:
         return '🕊️';
       case SpecialAbility.swimming:
@@ -593,7 +476,6 @@ enum AccessoryType {
 
 /// Patterns that can be applied to creatures
 enum Pattern {
-  none,
   stripes,
   spots,
   sparkles,
@@ -605,8 +487,6 @@ enum Pattern {
 extension PatternExtension on Pattern {
   String get name {
     switch (this) {
-      case Pattern.none:
-        return 'None';
       case Pattern.stripes:
         return 'Stripes';
       case Pattern.spots:
@@ -624,8 +504,6 @@ extension PatternExtension on Pattern {
 
   String get icon {
     switch (this) {
-      case Pattern.none:
-        return '⚪';
       case Pattern.stripes:
         return '〰️';
       case Pattern.spots:
@@ -659,9 +537,6 @@ enum GlowEffect {
   bright,
   pulsing,
   rainbow,
-  flames,
-  wings,
-  magical,
 }
 
 /// Animation styles for creatures
@@ -674,3 +549,58 @@ enum CreatureAnimationStyle {
 }
 
   /// Factory constructor to create from Map
+  factory EnhancedCreatureAttributes.fromMap(Map<String, dynamic> map) {
+    return EnhancedCreatureAttributes(
+      baseType: map['baseType'] ?? 'cow',
+      primaryColor: map['primaryColor'] != null 
+        ? Color(map['primaryColor']) 
+        : Colors.brown,
+      secondaryColor: map['secondaryColor'] != null 
+        ? Color(map['secondaryColor']) 
+        : Colors.white,
+      accentColor: map['accentColor'] != null 
+        ? Color(map['accentColor']) 
+        : Colors.pink,
+      size: CreatureSize.values.firstWhere(
+        (e) => e.toString() == 'CreatureSize.${map['size'] ?? 'medium'}',
+        orElse: () => CreatureSize.medium,
+      ),
+      abilities: (map['abilities'] as List<dynamic>? ?? [])
+          .map((e) => SpecialAbility.values.firstWhere(
+            (a) => a.toString() == 'SpecialAbility.$e',
+            orElse: () => SpecialAbility.none,
+          ))
+          .toList(),
+      accessories: (map['accessories'] as List<dynamic>? ?? [])
+          .map((e) => Accessory.values.firstWhere(
+            (a) => a.toString() == 'Accessory.$e',
+            orElse: () => Accessory.none,
+          ))
+          .toList(),
+      personality: PersonalityType.values.firstWhere(
+        (e) => e.toString() == 'PersonalityType.${map['personality'] ?? 'friendly'}',
+        orElse: () => PersonalityType.friendly,
+      ),
+      patterns: (map['patterns'] as List<dynamic>? ?? [])
+          .map((e) => Pattern.values.firstWhere(
+            (p) => p.toString() == 'Pattern.$e',
+            orElse: () => Pattern.none,
+          ))
+          .toList(),
+      texture: TextureType.values.firstWhere(
+        (e) => e.toString() == 'TextureType.${map['texture'] ?? 'normal'}',
+        orElse: () => TextureType.normal,
+      ),
+      glowEffect: GlowEffect.values.firstWhere(
+        (e) => e.toString() == 'GlowEffect.${map['glowEffect'] ?? 'none'}',
+        orElse: () => GlowEffect.none,
+      ),
+      animationStyle: CreatureAnimationStyle.values.firstWhere(
+        (e) => e.toString() == 'CreatureAnimationStyle.${map['animationStyle'] ?? 'natural'}',
+        orElse: () => CreatureAnimationStyle.natural,
+      ),
+      customName: map['customName'] ?? '',
+      description: map['description'] ?? '',
+    );
+  }
+}

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/startup_service.dart';
+import '../services/app_localizations.dart';
+import '../theme/minecraft_theme.dart';
 
+/// Minecraft-inspired Welcome Screen
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
@@ -11,333 +14,328 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen>
     with TickerProviderStateMixin {
-  late AnimationController _sparkleController;
-  late AnimationController _bounceController;
-  late Animation<double> _sparkleAnimation;
-  late Animation<double> _bounceAnimation;
+  late AnimationController _glowController;
+  late AnimationController _floatController;
+  late Animation<double> _glowAnimation;
+  late Animation<double> _floatAnimation;
 
   @override
   void initState() {
     super.initState();
-    
-    // Initialize startup services
-    _initializeStartup();
-    
-    // Sparkle animation for the rainbow emoji
-    _sparkleController = AnimationController(
+
+    // Initialize startup services (deferred to first build)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeStartup();
+    });
+
+    // Glow animation for title (like enchanted items)
+    _glowController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    )..repeat();
-    
-    _sparkleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.2,
+    )..repeat(reverse: true);
+
+    _glowAnimation = Tween<double>(
+      begin: 0.7,
+      end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _sparkleController,
+      parent: _glowController,
       curve: Curves.easeInOut,
     ));
-    
-    // Bounce animation for the start button
-    _bounceController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+
+    // Float animation for creature icon
+    _floatController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     )..repeat(reverse: true);
-    
-    _bounceAnimation = Tween<double>(
-      begin: 0.95,
-      end: 1.05,
+
+    _floatAnimation = Tween<double>(
+      begin: -10,
+      end: 10,
     ).animate(CurvedAnimation(
-      parent: _bounceController,
-      curve: Curves.elasticInOut,
+      parent: _floatController,
+      curve: Curves.easeInOut,
     ));
   }
 
-  /// Initialize startup services
   Future<void> _initializeStartup() async {
-    try {
+    if (mounted) {
       await StartupService.initialize(context);
-    } catch (e) {
-      print('❌ Startup initialization failed: $e');
     }
   }
 
   @override
   void dispose() {
-    _sparkleController.dispose();
-    _bounceController.dispose();
+    _glowController.dispose();
+    _floatController.dispose();
     super.dispose();
   }
 
-  /// Show language selection dialog
-  void _showLanguageDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.language, color: Color(0xFF98D8C8)),
-              SizedBox(width: 8),
-              Text('Choose Language'),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Text('🇺🇸', style: TextStyle(fontSize: 32)),
-                title: const Text('English'),
-                onTap: () async {
-                  await _setLanguage(context, 'en');
-                },
-              ),
-              ListTile(
-                leading: const Text('🇸🇪', style: TextStyle(fontSize: 32)),
-                title: const Text('Svenska (Swedish)'),
-                onTap: () async {
-                  await _setLanguage(context, 'sv');
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  Future<void> _startCreating() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasSeenWelcome', true);
 
-  /// Set the language and refresh the app
-  Future<void> _setLanguage(BuildContext context, String languageCode) async {
-    try {
-      // Import the language service
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('selected_language', languageCode);
-
-      // Show confirmation
-      if (context.mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              languageCode == 'en'
-                ? 'Language set to English'
-                : 'Språk inställt på Svenska',
-            ),
-            backgroundColor: const Color(0xFF98D8C8),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      print('Error setting language: $e');
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/creator');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF9F0), // Crafta cream background
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Animated Crafta Logo/Title
-              AnimatedBuilder(
-                animation: _sparkleAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _sparkleAnimation.value,
-                    child: const Text(
-                      '🌈 Crafta',
-                      style: TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFFF6B9D), // Crafta pink
-                        shadows: [
-                          Shadow(
-                            color: Color(0xFFFF6B9D),
-                            blurRadius: 10,
-                            offset: Offset(0, 0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'AI-Powered Minecraft Mod Creator',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Color(0xFF666666),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 48),
-              
-              // Welcome Message
-              const Text(
-                'Welcome to Crafta!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF333333),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Tell me what you want to create, and I\'ll help you make it!',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF666666),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 48),
-              
-              // Animated Start Creating Button
-              AnimatedBuilder(
-                animation: _bounceAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _bounceAnimation.value,
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/creator');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF98D8C8), // Crafta mint
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                          elevation: 8,
-                          shadowColor: const Color(0xFF98D8C8).withOpacity(0.3),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.auto_awesome,
-                              size: 24,
-                              color: Colors.white,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Start Creating!',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              MinecraftTheme.grassGreen.withOpacity(0.6),
+              MinecraftTheme.dirtBrown.withOpacity(0.8),
+              MinecraftTheme.coalBlack.withOpacity(0.9),
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Container(
+              constraints: BoxConstraints(minHeight: screenHeight - 48),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Top section: Logo and title
+                  Column(
+                    children: [
+                      const SizedBox(height: 40),
+
+                      // Animated creature icon (like a Minecraft mob)
+                      AnimatedBuilder(
+                        animation: _floatAnimation,
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(0, _floatAnimation.value),
+                            child: Container(
+                              width: 140,
+                              height: 140,
+                              decoration: BoxDecoration(
+                                color: MinecraftTheme.emerald,
+                                border: Border.all(
+                                  color: MinecraftTheme.deepStone,
+                                  width: 4,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.6),
+                                    offset: const Offset(5, 5),
+                                    blurRadius: 0,
+                                  ),
+                                ],
+                              ),
+                              child: Stack(
+                                children: [
+                                  // Pixelated creature representation
+                                  Center(
+                                    child: Icon(
+                                      Icons.pets,
+                                      size: 80,
+                                      color: MinecraftTheme.textLight,
+                                    ),
+                                  ),
+                                  // Sparkle effect
+                                  Positioned(
+                                    top: 10,
+                                    right: 10,
+                                    child: AnimatedBuilder(
+                                      animation: _glowAnimation,
+                                      builder: (context, child) {
+                                        return Opacity(
+                                          opacity: _glowAnimation.value,
+                                          child: Icon(
+                                            Icons.auto_awesome,
+                                            color: MinecraftTheme.goldOre,
+                                            size: 30,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Title with Minecraft-style glow
+                      AnimatedBuilder(
+                        animation: _glowAnimation,
+                        builder: (context, child) {
+                          return Text(
+                            'CRAFTA',
+                            style: TextStyle(
+                              fontSize: 56,
+                              fontWeight: FontWeight.w900,
+                              color: MinecraftTheme.goldOre,
+                              fontFamily: 'monospace',
+                              letterSpacing: 4,
+                              shadows: [
+                                Shadow(
+                                  color: MinecraftTheme.coalBlack,
+                                  offset: const Offset(4, 4),
+                                  blurRadius: 0,
+                                ),
+                                Shadow(
+                                  color: MinecraftTheme.goldOre.withOpacity(_glowAnimation.value * 0.5),
+                                  offset: const Offset(0, 0),
+                                  blurRadius: 20,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Subtitle in Minecraft panel style
+                      MinecraftPanel(
+                        backgroundColor: MinecraftTheme.slotBackground.withOpacity(0.8),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        child: MinecraftText(
+                          l10n.welcomeSubtitle,
+                          fontSize: 16,
+                          color: MinecraftTheme.textLight,
+                          fontWeight: FontWeight.w600,
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              
-              // Test Speech Button (for development)
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/creator');
-                },
-                child: const Text(
-                  'Test Speech Recognition',
-                  style: TextStyle(
-                    color: Color(0xFF666666),
-                    fontSize: 14,
+                    ],
                   ),
-                ),
-              ),
-              
-              // Quick Access Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Language Button
-                  TextButton.icon(
-                    onPressed: () {
-                      _showLanguageDialog(context);
-                    },
-                    icon: const Icon(Icons.language, size: 16),
-                    label: const Text(
-                      'Language',
-                      style: TextStyle(
-                        color: Color(0xFF666666),
-                        fontSize: 14,
-                      ),
+
+                  // Middle section: Feature highlights
+                  MinecraftPanel(
+                    backgroundColor: MinecraftTheme.deepStone.withOpacity(0.85),
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        _buildFeature(
+                          icon: Icons.record_voice_over,
+                          title: l10n.voiceFirst,
+                          description: l10n.voiceFirstDesc,
+                          color: MinecraftTheme.diamond,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildFeature(
+                          icon: Icons.auto_awesome,
+                          title: l10n.aiPowered,
+                          description: l10n.aiPoweredDesc,
+                          color: MinecraftTheme.netherPortal,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildFeature(
+                          icon: Icons.extension,
+                          title: l10n.minecraftExport,
+                          description: l10n.minecraftExportDesc,
+                          color: MinecraftTheme.grassGreen,
+                        ),
+                      ],
                     ),
                   ),
-                  // Parent Settings Button
-                  TextButton.icon(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/parent-settings');
-                    },
-                    icon: const Icon(Icons.settings, size: 16),
-                    label: const Text(
-                      'Settings',
-                      style: TextStyle(
-                        color: Color(0xFF666666),
-                        fontSize: 14,
+
+                  // Bottom section: Buttons
+                  Column(
+                    children: [
+                      // Main start button
+                      MinecraftButton(
+                        text: l10n.getStarted.toUpperCase(),
+                        onPressed: _startCreating,
+                        color: MinecraftTheme.emerald,
+                        icon: Icons.play_arrow,
+                        height: 64,
                       ),
-                    ),
+
+                      const SizedBox(height: 16),
+
+                      // Parent settings button
+                      MinecraftButton(
+                        text: l10n.parentSettings.toUpperCase(),
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/parent-settings');
+                        },
+                        color: MinecraftTheme.buttonBackground,
+                        icon: Icons.settings,
+                        height: 56,
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Version info (like Minecraft)
+                      MinecraftText(
+                        'Crafta v1.5.0',
+                        fontSize: 12,
+                        color: MinecraftTheme.stoneGray,
+                      ),
+                    ],
                   ),
                 ],
               ),
-              
-              const SizedBox(height: 16),
-              
-              // Quick Tips
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0F8FF),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: const Color(0xFF98D8C8),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.lightbulb_outline,
-                      color: Color(0xFF98D8C8),
-                      size: 24,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      '💡 Quick Tips',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF333333),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      '• Say "I want a dragon" to create creatures\n• Try "make me a chair" for furniture\n• Use colors like "blue", "rainbow", "gold"\n• Add effects like "wings", "sparkles", "glow"',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF666666),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeature({
+    required IconData icon,
+    required String title,
+    required String description,
+    required Color color,
+  }) {
+    return Row(
+      children: [
+        // Icon in a slot
+        Container(
+          width: 48,
+          height: 48,
+          decoration: MinecraftTheme.minecraftSlot(),
+          child: Center(
+            child: Icon(
+              icon,
+              color: color,
+              size: 28,
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        // Text
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MinecraftText(
+                title,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+              const SizedBox(height: 4),
+              MinecraftText(
+                description,
+                fontSize: 14,
+                color: MinecraftTheme.stoneGray,
               ),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 }

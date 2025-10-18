@@ -337,19 +337,14 @@ Always be safe, kind, and imaginative. Focus on positive, creative attributes.
     return result;
   }
 
-  static List<Accessory> _parseAccessories(List<dynamic>? accessories) {
+  static List<AccessoryType> _parseAccessories(List<dynamic>? accessories) {
     if (accessories == null) return [];
     
-    List<Accessory> result = [];
+    List<AccessoryType> result = [];
     for (String accessory in accessories) {
-      final found = Accessory.allAccessories.firstWhere(
+      final found = AccessoryType.values.firstWhere(
         (a) => a.name.toLowerCase() == accessory.toLowerCase(),
-        orElse: () => Accessory(
-          name: accessory,
-          icon: '🎩',
-          type: AccessoryType.hat,
-          description: 'Custom accessory',
-        ),
+        orElse: () => AccessoryType.hat,
       );
       result.add(found);
     }

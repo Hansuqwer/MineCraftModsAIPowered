@@ -35,6 +35,63 @@ class SpeechService {
     }
   }
 
+  /// Simple listen method that returns the result
+  Future<String?> listen() async {
+    if (!_isAvailable) {
+      print('Speech recognition not available');
+      return null;
+    }
+
+    try {
+      _isListening = true;
+      print('Starting speech recognition...');
+      
+      // Get current language for speech recognition
+      final currentLocale = await LanguageService.getCurrentLanguage();
+      final localeId = currentLocale.languageCode == 'sv' ? 'sv_SE' : 'en_US';
+      print('Using speech recognition locale: $localeId');
+      
+      String? result;
+      bool isComplete = false;
+      
+      await _speech.listen(
+        onResult: (speechResult) {
+          print('Speech result: ${speechResult.recognizedWords} (confidence: ${speechResult.confidence})');
+          _lastWords = speechResult.recognizedWords;
+          
+          // Only process results with reasonable confidence
+          if (speechResult.confidence > 0.3) {
+            if (speechResult.finalResult) {
+              print('Final result: $_lastWords (confidence: ${speechResult.confidence})');
+              result = _lastWords;
+              isComplete = true;
+            }
+          } else {
+            print('Low confidence result ignored: ${speechResult.confidence}');
+          }
+        },
+        listenFor: const Duration(seconds: 15), // Increased listening time
+        pauseFor: const Duration(seconds: 2), // Reduced pause time
+        partialResults: true,
+        localeId: localeId,
+        listenMode: ListenMode.confirmation, // Better for single commands
+        cancelOnError: false, // Don't cancel on minor errors
+      );
+      
+      // Wait for completion
+      while (_isListening && !isComplete) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+      
+      _isListening = false;
+      return result;
+    } catch (e) {
+      print('Speech listening error: $e');
+      _isListening = false;
+      return null;
+    }
+  }
+
   /// Start listening for speech
   Future<void> startListening({
     required Function(String) onResult,

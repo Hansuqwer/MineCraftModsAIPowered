@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:crafta/main.dart' as app;
-import 'package:crafta/services/ai_service.dart';
-import 'package:crafta/services/language_service.dart';
-import 'package:crafta/services/offline_ai_service.dart';
-import 'package:crafta/services/minecraft/minecraft_export_service.dart';
+import '../lib/main.dart' as app;
+import '../lib/services/ai_service.dart';
+import '../lib/services/language_service.dart';
+import '../lib/services/offline_ai_service.dart';
+import '../lib/services/minecraft_export_service.dart';
 
 /// Core Features Validation Test Suite
 /// Tests the most critical functionality of Crafta
@@ -47,11 +46,13 @@ void main() {
     test('Language Service switches languages correctly', () async {
       // Test English
       await LanguageService.setLanguage(const Locale('en', 'US'));
-      expect(LanguageService.currentLocale.languageCode, equals('en'));
+      final englishLang = await LanguageService.getCurrentLanguage();
+      expect(englishLang.languageCode, equals('en'));
       
       // Test Swedish
       await LanguageService.setLanguage(const Locale('sv', 'SE'));
-      expect(LanguageService.currentLocale.languageCode, equals('sv'));
+      final swedishLang = await LanguageService.getCurrentLanguage();
+      expect(swedishLang.languageCode, equals('sv'));
     });
     
     test('Offline AI Service has cached creatures', () async {
@@ -83,7 +84,10 @@ void main() {
       };
       
       // Test export generation
-      final exportResult = await exportService.exportCreature(creatureData);
+      final exportResult = await MinecraftExportService.exportCreature(
+        creatureAttributes: creatureData,
+        metadata: null,
+      );
       
       // Verify export was successful
       expect(exportResult, isTrue);

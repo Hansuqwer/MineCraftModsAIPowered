@@ -15,8 +15,6 @@ import 'screens/legal_settings_screen.dart';
 import 'screens/creature_sharing_screen.dart';
 import 'screens/dragon_couch_preview.dart';
 import 'screens/ai_setup_screen.dart';
-import 'screens/minecraft_3d_viewer_screen.dart';
-import 'models/enhanced_creature_attributes.dart';
 
 /// Main entry point for Crafta app
 /// Loads environment variables and initializes the app
@@ -89,13 +87,6 @@ class CraftaApp extends StatelessWidget {
         },
         '/dragon-couch-preview': (context) => const DragonCouchPreviewScreen(),
         '/ai-setup': (context) => const AISetupScreen(),
-        '/minecraft-3d-viewer': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-          return Minecraft3DViewerScreen(
-            creatureAttributes: EnhancedCreatureAttributes.fromMap(args['creatureAttributes']),
-            creatureName: args['creatureName'],
-          );
-        },
             },
     );
   }

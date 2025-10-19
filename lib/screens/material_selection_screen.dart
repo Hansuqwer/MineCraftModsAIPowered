@@ -41,38 +41,38 @@ class _MaterialSelectionScreenState extends State<MaterialSelectionScreen>
     super.dispose();
   }
 
-  List<MaterialType> _getCompatibleMaterials() {
-    return MaterialType.values
+  List<ItemMaterialType> _getCompatibleMaterials() {
+    return ItemMaterialType.values
         .where((material) => material.isCompatibleWith(widget.itemType))
         .toList();
   }
 
-  Color _getMaterialColor(MaterialType material) {
+  Color _getMaterialColor(ItemMaterialType material) {
     switch (material) {
-      case MaterialType.wood:
+      case ItemMaterialType.wood:
         return MinecraftTheme.oakWood;
-      case MaterialType.stone:
+      case ItemMaterialType.stone:
         return MinecraftTheme.stoneGray;
-      case MaterialType.iron:
+      case ItemMaterialType.iron:
         return const Color(0xFFD8D8D8);
-      case MaterialType.gold:
+      case ItemMaterialType.gold:
         return MinecraftTheme.goldOre;
-      case MaterialType.diamond:
+      case ItemMaterialType.diamond:
         return MinecraftTheme.diamond;
-      case MaterialType.netherite:
+      case ItemMaterialType.netherite:
         return MinecraftTheme.coalBlack;
-      case MaterialType.leather:
+      case ItemMaterialType.leather:
         return const Color(0xFF8B4513);
-      case MaterialType.chain:
+      case ItemMaterialType.chain:
         return const Color(0xFFA9A9A9);
-      case MaterialType.glass:
+      case ItemMaterialType.glass:
         return const Color(0xFFE0F6FF);
-      case MaterialType.wool:
+      case ItemMaterialType.wool:
         return const Color(0xFFF5F5F5);
     }
   }
 
-  void _selectMaterial(MaterialType material) {
+  void _selectMaterial(ItemMaterialType material) {
     Navigator.pop(context, material);
   }
 
@@ -184,7 +184,7 @@ class _MaterialSelectionScreenState extends State<MaterialSelectionScreen>
     );
   }
 
-  Widget _buildMaterialCard(MaterialType material) {
+  Widget _buildMaterialCard(ItemMaterialType material) {
     final materialColor = _getMaterialColor(material);
 
     return GestureDetector(
@@ -249,13 +249,6 @@ class _MaterialSelectionScreenState extends State<MaterialSelectionScreen>
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     textAlign: TextAlign.center,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withOpacity(0.5),
-                        offset: const Offset(2, 2),
-                        blurRadius: 0,
-                      ),
-                    ],
                   ),
 
                   const SizedBox(height: 8),
@@ -301,7 +294,7 @@ class _MaterialSelectionScreenState extends State<MaterialSelectionScreen>
     );
   }
 
-  Widget _buildDurabilityBar(MaterialType material) {
+  Widget _buildDurabilityBar(ItemMaterialType material) {
     return Container(
       width: double.infinity,
       height: 8,

@@ -113,7 +113,7 @@ extension ItemTypeExtension on ItemType {
 }
 
 /// Material type for items
-enum MaterialType {
+enum ItemMaterialType {
   wood,
   stone,
   iron,
@@ -126,53 +126,53 @@ enum MaterialType {
   wool,
 }
 
-extension MaterialTypeExtension on MaterialType {
+extension ItemMaterialTypeExtension on ItemMaterialType {
   String get displayName {
     switch (this) {
-      case MaterialType.wood:
+      case ItemMaterialType.wood:
         return 'Wood';
-      case MaterialType.stone:
+      case ItemMaterialType.stone:
         return 'Stone';
-      case MaterialType.iron:
+      case ItemMaterialType.iron:
         return 'Iron';
-      case MaterialType.gold:
+      case ItemMaterialType.gold:
         return 'Gold';
-      case MaterialType.diamond:
+      case ItemMaterialType.diamond:
         return 'Diamond';
-      case MaterialType.netherite:
+      case ItemMaterialType.netherite:
         return 'Netherite';
-      case MaterialType.leather:
+      case ItemMaterialType.leather:
         return 'Leather';
-      case MaterialType.chain:
+      case ItemMaterialType.chain:
         return 'Chain';
-      case MaterialType.glass:
+      case ItemMaterialType.glass:
         return 'Glass';
-      case MaterialType.wool:
+      case ItemMaterialType.wool:
         return 'Wool';
     }
   }
 
   String get emoji {
     switch (this) {
-      case MaterialType.wood:
+      case ItemMaterialType.wood:
         return '🪵';
-      case MaterialType.stone:
+      case ItemMaterialType.stone:
         return '🪨';
-      case MaterialType.iron:
+      case ItemMaterialType.iron:
         return '⚙️';
-      case MaterialType.gold:
+      case ItemMaterialType.gold:
         return '✨';
-      case MaterialType.diamond:
+      case ItemMaterialType.diamond:
         return '💎';
-      case MaterialType.netherite:
+      case ItemMaterialType.netherite:
         return '🌑';
-      case MaterialType.leather:
+      case ItemMaterialType.leather:
         return '🧤';
-      case MaterialType.chain:
+      case ItemMaterialType.chain:
         return '⛓️';
-      case MaterialType.glass:
+      case ItemMaterialType.glass:
         return '🔷';
-      case MaterialType.wool:
+      case ItemMaterialType.wool:
         return '🧶';
     }
   }
@@ -180,25 +180,25 @@ extension MaterialTypeExtension on MaterialType {
   /// Get Minecraft color for material
   String get minecraftColor {
     switch (this) {
-      case MaterialType.wood:
+      case ItemMaterialType.wood:
         return 'brown';
-      case MaterialType.stone:
+      case ItemMaterialType.stone:
         return 'gray';
-      case MaterialType.iron:
+      case ItemMaterialType.iron:
         return 'silver';
-      case MaterialType.gold:
+      case ItemMaterialType.gold:
         return 'golden';
-      case MaterialType.diamond:
+      case ItemMaterialType.diamond:
         return 'cyan';
-      case MaterialType.netherite:
+      case ItemMaterialType.netherite:
         return 'black';
-      case MaterialType.leather:
+      case ItemMaterialType.leather:
         return 'brown';
-      case MaterialType.chain:
+      case ItemMaterialType.chain:
         return 'gray';
-      case MaterialType.glass:
+      case ItemMaterialType.glass:
         return 'transparent';
-      case MaterialType.wool:
+      case ItemMaterialType.wool:
         return 'white';
     }
   }
@@ -206,25 +206,25 @@ extension MaterialTypeExtension on MaterialType {
   /// Durability rating (1-10)
   int get durability {
     switch (this) {
-      case MaterialType.wood:
+      case ItemMaterialType.wood:
         return 2;
-      case MaterialType.stone:
+      case ItemMaterialType.stone:
         return 3;
-      case MaterialType.iron:
+      case ItemMaterialType.iron:
         return 6;
-      case MaterialType.gold:
+      case ItemMaterialType.gold:
         return 1;
-      case MaterialType.diamond:
+      case ItemMaterialType.diamond:
         return 9;
-      case MaterialType.netherite:
+      case ItemMaterialType.netherite:
         return 10;
-      case MaterialType.leather:
+      case ItemMaterialType.leather:
         return 2;
-      case MaterialType.chain:
+      case ItemMaterialType.chain:
         return 4;
-      case MaterialType.glass:
+      case ItemMaterialType.glass:
         return 1;
-      case MaterialType.wool:
+      case ItemMaterialType.wool:
         return 1;
     }
   }
@@ -234,24 +234,24 @@ extension MaterialTypeExtension on MaterialType {
     switch (itemType) {
       case ItemType.weapon:
       case ItemType.tool:
-        return this != MaterialType.leather &&
-            this != MaterialType.wool &&
-            this != MaterialType.glass;
+        return this != ItemMaterialType.leather &&
+            this != ItemMaterialType.wool &&
+            this != ItemMaterialType.glass;
       case ItemType.armor:
-        return this != MaterialType.wood &&
-            this != MaterialType.wool &&
-            this != MaterialType.glass;
+        return this != ItemMaterialType.wood &&
+            this != ItemMaterialType.wool &&
+            this != ItemMaterialType.glass;
       case ItemType.furniture:
-        return this == MaterialType.wood ||
-            this == MaterialType.stone ||
-            this == MaterialType.iron ||
-            this == MaterialType.wool;
+        return this == ItemMaterialType.wood ||
+            this == ItemMaterialType.stone ||
+            this == ItemMaterialType.iron ||
+            this == ItemMaterialType.wool;
       case ItemType.decoration:
         return true; // All materials work
       case ItemType.vehicle:
-        return this == MaterialType.iron ||
-            this == MaterialType.wood ||
-            this == MaterialType.gold;
+        return this == ItemMaterialType.iron ||
+            this == ItemMaterialType.wood ||
+            this == ItemMaterialType.gold;
       case ItemType.creature:
         return false; // Creatures don't use materials
     }

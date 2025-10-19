@@ -9,7 +9,7 @@ class EnhancedItemCreationService {
   static String generatePromptForItemType({
     required ItemType itemType,
     required String userInput,
-    MaterialType? material,
+    ItemMaterialType? material,
     String? subtype,
   }) {
     final basePrompt = '''
@@ -45,7 +45,7 @@ IMPORTANT RULES:
   static String _generateWeaponPrompt(
     String base,
     String input,
-    MaterialType? material,
+    ItemMaterialType? material,
     String? subtype,
   ) {
     return '''
@@ -87,7 +87,7 @@ Respond ONLY with valid JSON matching this format.
   static String _generateArmorPrompt(
     String base,
     String input,
-    MaterialType? material,
+    ItemMaterialType? material,
     String? subtype,
   ) {
     return '''
@@ -127,7 +127,7 @@ Respond ONLY with valid JSON matching this format.
   static String _generateFurniturePrompt(
     String base,
     String input,
-    MaterialType? material,
+    ItemMaterialType? material,
     String? subtype,
   ) {
     return '''
@@ -167,7 +167,7 @@ Respond ONLY with valid JSON matching this format.
   static String _generateToolPrompt(
     String base,
     String input,
-    MaterialType? material,
+    ItemMaterialType? material,
     String? subtype,
   ) {
     return '''
@@ -207,7 +207,7 @@ Respond ONLY with valid JSON matching this format.
   static String _generateDecorationPrompt(
     String base,
     String input,
-    MaterialType? material,
+    ItemMaterialType? material,
     String? subtype,
   ) {
     return '''
@@ -242,7 +242,7 @@ Respond ONLY with valid JSON matching this format.
   static String _generateVehiclePrompt(
     String base,
     String input,
-    MaterialType? material,
+    ItemMaterialType? material,
     String? subtype,
   ) {
     return '''
@@ -384,7 +384,7 @@ Respond ONLY with valid JSON matching this format.
   }
 
   /// Get item-specific AI suggestions
-  static List<String> getSuggestionsForItemType(ItemType itemType, MaterialType? material) {
+  static List<String> getSuggestionsForItemType(ItemType itemType, ItemMaterialType? material) {
     switch (itemType) {
       case ItemType.weapon:
         return [

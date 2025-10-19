@@ -658,12 +658,12 @@ Keep responses short and engaging (2-3 sentences max).''';
       
       // Add AI response to conversation
       final finalConversation = updatedConversation.addMessage(aiResponse, false);
-      
+
       // If we have creature attributes, mark conversation as complete
-      if (creatureAttributes.isNotEmpty) {
-        return finalConversation.markComplete(creatureAttributes);
-      }
-      
+      // if (creatureAttributes.isNotEmpty) {
+      //   return finalConversation.markComplete(creatureAttributes);
+      // }
+
       return finalConversation;
     } catch (e) {
       print('Error processing user input: $e');

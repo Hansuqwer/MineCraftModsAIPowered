@@ -363,9 +363,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           final itemType = await Navigator.pushNamed(context, '/item-type-selection');
                           if (itemType != null && mounted) {
                             // If material required, show material selection
-                            MaterialType? material;
+                            ItemMaterialType? material;
                             if (itemType is ItemType && itemType != ItemType.creature && itemType != ItemType.decoration && itemType != ItemType.vehicle) {
-                              material = await Navigator.pushNamed(context, '/material-selection', arguments: itemType) as MaterialType?;
+                              material = await Navigator.pushNamed(context, '/material-selection', arguments: itemType) as ItemMaterialType?;
                               if (material == null) return; // User cancelled material selection
                             }
 

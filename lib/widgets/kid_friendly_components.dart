@@ -489,7 +489,7 @@ class KidFriendlySnackBar extends StatelessWidget {
     required this.message,
     this.backgroundColor,
     this.icon,
-    this.duration = Duration(seconds: 3),
+    this.duration = const Duration(seconds: 3),
   });
 
   @override

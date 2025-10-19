@@ -25,7 +25,10 @@ import 'screens/voice_calibration_screen.dart';
 import 'screens/voice_settings_screen.dart';
 import 'screens/item_type_selection_screen.dart';
 import 'screens/material_selection_screen.dart';
-// import 'screens/enhanced_creator_basic.dart';
+import 'screens/enhanced_creator_basic.dart';
+// import 'screens/enhanced_modern_screen.dart';
+// import 'screens/minecraft_3d_viewer_screen.dart';
+// import 'screens/kid_friendly_screen.dart';
 import 'models/enhanced_creature_attributes.dart';
 import 'models/item_type.dart';
 import 'services/google_cloud_service.dart';
@@ -142,7 +145,7 @@ class CraftaApp extends StatelessWidget {
           final itemType = ModalRoute.of(context)!.settings.arguments;
           return MaterialSelectionScreen(itemType: itemType as ItemType);
         },
-        // '/enhanced-creator': (context) => const EnhancedCreatorBasic(),
+        '/enhanced-creator': (context) => const EnhancedCreatorBasic(),
             },
     );
   }

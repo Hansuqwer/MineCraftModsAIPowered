@@ -9,8 +9,10 @@ import 'package:flutter/material.dart';
 import '../../models/minecraft/addon_metadata.dart';
 import '../../models/minecraft/addon_package.dart';
 import '../../models/minecraft/addon_file.dart';
+import '../../models/item_type.dart';
 import 'simple_script_api_generator.dart';
 import 'geometry_generator.dart';
+import 'item_export_generator.dart';
 import '../../models/minecraft/behavior_pack.dart';
 import '../../models/minecraft/resource_pack.dart';
 import 'manifest_generator.dart';
@@ -20,7 +22,7 @@ import 'geometry_generator.dart';
 import 'texture_generator.dart';
 import '../behavior_mapping_service.dart';
 
-/// Main service for exporting Crafta creatures as Minecraft addons
+/// Main service for exporting Crafta creatures and items as Minecraft addons
 class MinecraftExportService {
   /// Export a single creature as a complete addon
   static Future<AddonPackage> exportCreature({
@@ -46,6 +48,46 @@ class MinecraftExportService {
     // Generate resource pack
     final resourcePack = await _generateResourcePack(
       creature: creatureAttributes,
+      metadata: meta,
+      packUuid: rpUuid,
+      moduleUuid: rpModuleUuid,
+    );
+
+    return AddonPackage(
+      metadata: meta,
+      behaviorPack: behaviorPack,
+      resourcePack: resourcePack,
+      createdAt: DateTime.now(),
+    );
+  }
+
+  /// Export a single item (weapon, armor, tool, furniture) as a complete addon
+  static Future<AddonPackage> exportItem({
+    required Map<String, dynamic> itemAttributes,
+    required ItemType itemType,
+    AddonMetadata? metadata,
+  }) async {
+    final meta = metadata ?? AddonMetadata.defaultMetadata();
+
+    // Generate UUIDs for packs
+    final bpUuid = ManifestGenerator.generateUuid();
+    final bpModuleUuid = ManifestGenerator.generateUuid();
+    final rpUuid = ManifestGenerator.generateUuid();
+    final rpModuleUuid = ManifestGenerator.generateUuid();
+
+    // Generate behavior pack for item
+    final behaviorPack = await _generateItemBehaviorPack(
+      item: itemAttributes,
+      itemType: itemType,
+      metadata: meta,
+      packUuid: bpUuid,
+      moduleUuid: bpModuleUuid,
+    );
+
+    // Generate resource pack for item
+    final resourcePack = await _generateItemResourcePack(
+      item: itemAttributes,
+      itemType: itemType,
       metadata: meta,
       packUuid: rpUuid,
       moduleUuid: rpModuleUuid,
@@ -875,6 +917,178 @@ world.afterEvents.entitySpawn.subscribe((event) => {
           ],
         );
       },
+    );
+  }
+
+  /// Generate behavior pack for an item (weapon, armor, tool, furniture)
+  static Future<BehaviorPack> _generateItemBehaviorPack({
+    required Map<String, dynamic> item,
+    required ItemType itemType,
+    required AddonMetadata metadata,
+    required String packUuid,
+    required String moduleUuid,
+  }) async {
+    // Generate manifest
+    final manifest = ManifestGenerator.generateBehaviorPackManifest(
+      metadata: metadata,
+      packUuid: packUuid,
+      moduleUuid: moduleUuid,
+    );
+
+    // Generate item file based on type
+    final List<AddonFile> itemFiles = [];
+
+    switch (itemType) {
+      case ItemType.weapon:
+        itemFiles.add(ItemExportGenerator.generateWeaponBehavior(
+          itemAttributes: item,
+          metadata: metadata,
+        ));
+        break;
+      case ItemType.armor:
+        itemFiles.add(ItemExportGenerator.generateArmorBehavior(
+          itemAttributes: item,
+          metadata: metadata,
+        ));
+        break;
+      case ItemType.tool:
+        itemFiles.add(ItemExportGenerator.generateToolBehavior(
+          itemAttributes: item,
+          metadata: metadata,
+        ));
+        break;
+      case ItemType.furniture:
+      case ItemType.decoration:
+        itemFiles.add(ItemExportGenerator.generateFurnitureBehavior(
+          itemAttributes: item,
+          metadata: metadata,
+        ));
+        break;
+      case ItemType.vehicle:
+        // Vehicles are decorative entities (use creature export)
+        final entityBehavior = EntityBehaviorGenerator.generateEntityBehavior(
+          creatureAttributes: item,
+          metadata: metadata,
+        );
+        return BehaviorPack(
+          uuid: packUuid,
+          moduleUuid: moduleUuid,
+          manifest: manifest,
+          entities: [entityBehavior],
+          scripts: [],
+          texts: [],
+        );
+      case ItemType.creature:
+        // Should not happen, but handle it
+        throw Exception('Use exportCreature for creatures');
+    }
+
+    // Generate optional crafting recipe
+    if (metadata.generateSpawnEggs) {
+      // For items, spawn eggs translate to crafting recipes
+      itemFiles.add(ItemExportGenerator.generateCraftingRecipe(
+        itemAttributes: item,
+        metadata: metadata,
+      ));
+    }
+
+    // Generate translations
+    final translations = ItemExportGenerator.generateItemTranslations(
+      itemAttributes: item,
+      metadata: metadata,
+    );
+
+    final languageFile = ManifestGenerator.generateLanguageFile(
+      packName: metadata.name,
+      description: metadata.description,
+      translations: translations,
+    );
+
+    final languagesJson = ManifestGenerator.generateLanguagesJson();
+
+    return BehaviorPack(
+      uuid: packUuid,
+      moduleUuid: moduleUuid,
+      manifest: manifest,
+      entities: [], // Items don't need entities
+      scripts: [], // No scripts for simple items
+      texts: [languageFile, languagesJson],
+    );
+  }
+
+  /// Generate resource pack for an item (weapon, armor, tool, furniture)
+  static Future<ResourcePack> _generateItemResourcePack({
+    required Map<String, dynamic> item,
+    required ItemType itemType,
+    required AddonMetadata metadata,
+    required String packUuid,
+    required String moduleUuid,
+  }) async {
+    final manifest = ManifestGenerator.generateResourcePackManifest(
+      metadata: metadata,
+      packUuid: packUuid,
+      moduleUuid: moduleUuid,
+    );
+
+    final List<AddonFile> textureFiles = [];
+    final List<AddonFile> modelFiles = [];
+
+    // Generate appropriate texture and model files
+    switch (itemType) {
+      case ItemType.weapon:
+      case ItemType.armor:
+      case ItemType.tool:
+        // Generate item texture definition
+        textureFiles.add(ItemExportGenerator.generateItemTexture(
+          itemAttributes: item,
+          metadata: metadata,
+        ));
+        break;
+      case ItemType.furniture:
+      case ItemType.decoration:
+        // Generate terrain texture for blocks
+        textureFiles.add(ItemExportGenerator.generateTerrainTexture(
+          itemAttributes: item,
+          metadata: metadata,
+        ));
+        break;
+      case ItemType.vehicle:
+        // Vehicles use entity rendering (similar to creatures)
+        final geometry = GeometryGenerator.generateGeometry(
+          creatureAttributes: item,
+          metadata: metadata,
+        );
+        modelFiles.add(geometry);
+        break;
+      case ItemType.creature:
+        throw Exception('Use exportCreature for creatures');
+    }
+
+    // Generate language files
+    final translations = ItemExportGenerator.generateItemTranslations(
+      itemAttributes: item,
+      metadata: metadata,
+    );
+
+    final languageFile = ManifestGenerator.generateLanguageFile(
+      packName: '${metadata.name} Resources',
+      description: 'Resource pack for ${metadata.description}',
+      translations: translations,
+    );
+
+    final languagesJson = ManifestGenerator.generateLanguagesJson();
+
+    return ResourcePack(
+      uuid: packUuid,
+      moduleUuid: moduleUuid,
+      manifest: manifest,
+      entityClients: [],
+      textures: textureFiles,
+      models: modelFiles,
+      animations: [],
+      animationControllers: [],
+      renderControllers: [],
+      texts: [languageFile, languagesJson],
     );
   }
 }

@@ -89,11 +89,10 @@ class _EnhancedModernScreenState extends State<EnhancedModernScreen>
   Future<void> _loadUserData() async {
     _currentLanguage = await EnhancedVoiceAIService.getCurrentLanguage();
     _currentPersonality = await EnhancedVoiceAIService.getCurrentPersonality();
-    _isSignedIn = await GoogleCloudService.isSignedIn();
     
-    if (_isSignedIn) {
-      _userCreations = await GoogleCloudService.loadUserCreations();
-    }
+    // DISABLED: Google sign-in temporarily to fix app
+    _isSignedIn = false;
+    _userCreations = [];
     
     setState(() {});
   }
@@ -161,28 +160,13 @@ class _EnhancedModernScreenState extends State<EnhancedModernScreen>
   }
 
   Future<void> _signInWithGoogle() async {
-    final result = await GoogleCloudService.signInWithGoogle();
-    
-    if (result.success) {
-      setState(() {
-        _isSignedIn = true;
-      });
-      await _loadUserData();
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        EnhancedModernTheme.modernSnackBar(
-          message: result.message ?? 'Successfully signed in!',
-          backgroundColor: EnhancedModernTheme.successGreen,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        EnhancedModernTheme.modernSnackBar(
-          message: result.error ?? 'Sign in failed',
-          backgroundColor: EnhancedModernTheme.errorRed,
-        ),
-      );
-    }
+    // DISABLED: Google sign-in temporarily to fix app
+    ScaffoldMessenger.of(context).showSnackBar(
+      EnhancedModernTheme.modernSnackBar(
+        message: 'Google sign-in temporarily disabled. App works without it!',
+        backgroundColor: EnhancedModernTheme.warningOrange,
+      ),
+    );
   }
 
   Future<void> _signOut() async {

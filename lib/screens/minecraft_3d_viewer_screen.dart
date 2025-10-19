@@ -7,6 +7,7 @@ import '../services/language_service.dart';
 import '../models/enhanced_creature_attributes.dart';
 import '../widgets/minecraft_3d_preview.dart';
 import '../widgets/simple_3d_preview.dart';
+import '../widgets/enhanced_minecraft_3d_preview.dart';
 import '../theme/minecraft_theme.dart';
 
 /// Minecraft 3D Viewer Screen - Shows items exactly as they will look in Minecraft
@@ -139,6 +140,142 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
         _generateSuggestion();
       }
     });
+  }
+
+  Future<void> _exportToMinecraft() async {
+    try {
+      print('🎮 Starting export to Minecraft...');
+      print('   Item: ${_currentName}');
+      print('   Type: ${_currentAttributes.baseType}');
+      
+      // Show world selection dialog
+      final worldChoice = await _showWorldSelectionDialog();
+      if (worldChoice == null) {
+        print('❌ User cancelled export');
+        return;
+      }
+
+      // Show export progress
+      _showExportProgress();
+
+      // Import the export service
+      final exportService = AIMinecraftExportService();
+      
+      print('📦 Calling export service...');
+      
+      // Export the item
+      final success = await exportService.exportAICreatedItem(
+        itemAttributes: _currentAttributes,
+        itemName: _currentName,
+        customDescription: 'Created with Crafta AI',
+      );
+
+      print('📦 Export result: $success');
+
+      // Hide progress
+      Navigator.of(context).pop();
+
+      if (success) {
+        print('✅ Export successful!');
+        // Show success dialog
+        await _showSuccessDialog();
+        
+        // Launch Minecraft if requested
+        if (worldChoice == 'launch') {
+          print('🚀 Launching Minecraft...');
+          await _launchMinecraft();
+        }
+      } else {
+        print('❌ Export failed!');
+        // Show error dialog
+        await _showErrorDialog();
+      }
+    } catch (e) {
+      print('❌ Export error: $e');
+      Navigator.of(context).pop(); // Hide progress
+      await _showErrorDialog();
+    }
+  }
+
+  Future<String?> _showWorldSelectionDialog() async {
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Put in Game'),
+        content: const Text('Choose how to add your item to Minecraft:'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'export'),
+            child: const Text('Export .mcpack file'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'launch'),
+            child: const Text('Export & Launch Minecraft'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, null),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showExportProgress() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            const Text('Exporting to Minecraft...'),
+            const SizedBox(height: 8),
+            const Text('Creating .mcpack file...'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showSuccessDialog() async {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Success!'),
+        content: const Text('Your item has been exported to Minecraft!\n\nLook for the .mcpack file in your downloads.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showErrorDialog() async {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Export Failed'),
+        content: const Text('Sorry, we couldn\'t export your item to Minecraft.\n\nPlease try again.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchMinecraft() async {
+    // TODO: Implement Minecraft launch functionality
+    // This would use url_launcher to open Minecraft with the .mcpack file
+    print('Launching Minecraft with exported item...');
   }
 
   Future<void> _applySuggestion(String suggestion) async {
@@ -332,13 +469,13 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
                               ),
                             ),
                           )
-                        : Simple3DPreview(
-                            creatureAttributes: _currentAttributes,
-                            creatureName: _currentName,
+                        : EnhancedMinecraft3DPreview(
+                            creatureAttributes: _currentAttributes.toMap(),
                             size: 400,
-                            enableRotation: true,
-                            enableZoom: true,
-                            enableEffects: true,
+                            enableGestures: true,
+                            enableAnimations: true,
+                            showEnvironment: true,
+                            showSizeReference: true,
                           ),
                   ),
                 ),
@@ -447,6 +584,18 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
                     ],
                   ),
                 ),
+
+              // PUT IN GAME Button
+              Container(
+                margin: const EdgeInsets.all(16),
+                child: MinecraftButton(
+                  text: 'PUT IN GAME',
+                  onPressed: _exportToMinecraft,
+                  color: MinecraftTheme.emerald,
+                  icon: Icons.videogame_asset,
+                  height: 56,
+                ),
+              ),
 
               // Voice instructions
               Container(

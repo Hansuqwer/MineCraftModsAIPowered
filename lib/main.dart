@@ -20,7 +20,14 @@ import 'screens/ai_setup_screen.dart';
 import 'screens/minecraft_3d_viewer_screen.dart';
 import 'screens/enhanced_modern_screen.dart';
 import 'screens/community_gallery_screen.dart';
+import 'screens/kid_friendly_screen.dart';
+import 'screens/voice_calibration_screen.dart';
+import 'screens/voice_settings_screen.dart';
+import 'screens/item_type_selection_screen.dart';
+import 'screens/material_selection_screen.dart';
+import 'screens/enhanced_creator_basic.dart';
 import 'models/enhanced_creature_attributes.dart';
+import 'models/item_type.dart';
 import 'services/google_cloud_service.dart';
 import 'services/enhanced_voice_ai_service.dart';
 import 'services/community_service.dart';
@@ -81,7 +88,13 @@ class CraftaApp extends StatelessWidget {
       initialRoute: '/',
             routes: {
               '/': (context) => const WelcomeScreen(),
-              '/creator': (context) => const CreatorScreenSimple(),
+              '/creator': (context) {
+                final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+                return CreatorScreenSimple(
+                  itemType: args?['itemType'] as ItemType?,
+                  material: args?['material'] as MaterialType?,
+                );
+              },
               '/complete': (context) => const CompleteScreen(),
               '/creature-preview': (context) {
                 final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
@@ -121,6 +134,15 @@ class CraftaApp extends StatelessWidget {
         },
         '/enhanced-modern': (context) => const EnhancedModernScreen(),
         '/community-gallery': (context) => const CommunityGalleryScreen(),
+        '/kid-friendly': (context) => const KidFriendlyScreen(),
+        '/voice-calibration': (context) => const VoiceCalibrationScreen(),
+        '/voice-settings': (context) => const VoiceSettingsScreen(),
+        '/item-type-selection': (context) => const ItemTypeSelectionScreen(),
+        '/material-selection': (context) {
+          final itemType = ModalRoute.of(context)!.settings.arguments;
+          return MaterialSelectionScreen(itemType: itemType as ItemType);
+        },
+        '/enhanced-creator': (context) => const EnhancedCreatorBasic(),
             },
     );
   }

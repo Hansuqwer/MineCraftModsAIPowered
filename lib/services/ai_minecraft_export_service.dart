@@ -18,26 +18,49 @@ class AIMinecraftExportService {
     String? customDescription,
   }) async {
     try {
+      print('📦 Starting export for: $itemName');
+      print('   Type: ${itemAttributes.baseType}');
+      print('   Size: ${itemAttributes.size}');
+      print('   Color: ${itemAttributes.primaryColor}');
+      
       // Create export directory structure
       final exportDir = Directory('exports/${itemName.toLowerCase().replaceAll(' ', '_')}');
+      print('📁 Export directory: ${exportDir.path}');
+      
       if (await exportDir.exists()) {
+        print('🗑️ Removing existing export directory');
         await exportDir.delete(recursive: true);
       }
+      
+      print('📁 Creating export directory...');
       await exportDir.create(recursive: true);
+      print('✅ Export directory created');
       
       // Generate Bedrock-compatible files
+      print('📄 Creating manifest...');
       await _createManifest(exportDir, itemName);
+      
+      print('📄 Creating item definition...');
       await _createItemDefinition(exportDir, itemAttributes, itemName);
+      
+      print('📄 Creating entity definition...');
       await _createEntityDefinition(exportDir, itemAttributes, itemName);
+      
+      print('📄 Creating animation files...');
       await _createAnimationFiles(exportDir, itemAttributes, itemName);
+      
+      print('📄 Creating texture files...');
       await _createTextureFiles(exportDir, itemAttributes, itemName);
       
       // Create .mcpack file
+      print('📦 Creating .mcpack file...');
       await _createMcpackFile(exportDir, itemName);
       
+      print('✅ Export completed successfully!');
       return true;
     } catch (e) {
-      print('Error exporting AI item: $e');
+      print('❌ Error exporting AI item: $e');
+      print('❌ Stack trace: ${StackTrace.current}');
       return false;
     }
   }
@@ -309,29 +332,39 @@ class AIMinecraftExportService {
     try {
       final mcpackPath = '${itemName.toLowerCase().replaceAll(' ', '_')}.mcpack';
       final mcpackFile = File(mcpackPath);
+      print('📦 Creating .mcpack file: $mcpackPath');
       
       // Create a ZIP archive of the export directory
       final archive = Archive();
+      print('📁 Adding files to archive...');
       
+      int fileCount = 0;
       // Add all files from export directory to archive
       await for (final entity in exportDir.list(recursive: true)) {
         if (entity is File) {
           final relativePath = path.relative(entity.path, from: exportDir.path);
           final fileData = await entity.readAsBytes();
           archive.addFile(ArchiveFile(relativePath, fileData.length, fileData));
+          fileCount++;
+          print('   Added: $relativePath');
         }
       }
       
+      print('📦 Added $fileCount files to archive');
+      
       // Write the ZIP archive as .mcpack file
+      print('📦 Encoding ZIP archive...');
       final zipData = ZipEncoder().encode(archive);
       if (zipData != null) {
+        print('📦 Writing .mcpack file...');
         await mcpackFile.writeAsBytes(zipData);
-        print('✅ Created .mcpack file: $mcpackPath');
+        print('✅ Created .mcpack file: $mcpackPath (${zipData.length} bytes)');
       } else {
-        print('❌ Failed to create .mcpack file');
+        print('❌ Failed to create .mcpack file - ZIP encoding failed');
       }
     } catch (e) {
       print('❌ Error creating .mcpack file: $e');
+      print('❌ Stack trace: ${StackTrace.current}');
     }
   }
 }

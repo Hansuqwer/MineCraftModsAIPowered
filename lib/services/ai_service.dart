@@ -371,15 +371,15 @@ class AIService {
   
   /// Get system prompt based on age
   String _getSystemPrompt(int age) {
-    final basePrompt = '''You are Crafta, a friendly AI assistant that helps children create Minecraft creatures. 
+    final basePrompt = '''You are Crafta, a friendly AI assistant that helps children create Minecraft items. 
 You are designed for children aged $age and should be:
 - Encouraging and positive
 - Use simple, age-appropriate language
 - Be creative and imaginative
-- Focus on Minecraft creatures and mods
+- Support ALL Minecraft items: creatures, weapons, armor, furniture, vehicles, food, blocks, tools, magical items
 - Always be safe and appropriate
 
-When a child describes a creature they want to create, respond with enthusiasm and ask follow-up questions to help them design it better. 
+When a child describes ANY item they want to create (creature, sword, car, iPhone, armor, table, etc.), respond with enthusiasm and ask follow-up questions to help them design it better. 
 Keep responses short and engaging (2-3 sentences max).''';
 
     if (age <= 6) {
@@ -401,7 +401,7 @@ Keep responses short and engaging (2-3 sentences max).''';
     }
   }
   
-  /// Parse creature request with enhanced error handling
+  /// Parse item request with enhanced error handling (supports all item types)
   Future<Map<String, dynamic>> parseCreatureRequest(String userMessage) async {
     try {
       // Enhanced item parsing with automatic categorization
@@ -471,18 +471,43 @@ Keep responses short and engaging (2-3 sentences max).''';
         itemData['category'] = 'vehicle';
         itemData['baseType'] = 'plane';
       }
-      // Default to creature if no specific category detected
+      // Enhanced detection for ALL item types
       else {
-        itemData['category'] = 'creature';
-        final creatureTypes = ['cow', 'pig', 'chicken', 'sheep', 'horse', 'cat', 'dog', 'dragon', 'unicorn', 'phoenix'];
-        for (final type in creatureTypes) {
-          if (lowerMessage.contains(type)) {
-            itemData['baseType'] = type;
-            break;
+        // Try to detect what type of item they want
+        if (lowerMessage.contains('sword') || lowerMessage.contains('weapon') || lowerMessage.contains('blade')) {
+          itemData['category'] = 'weapon';
+          itemData['baseType'] = 'sword';
+        } else if (lowerMessage.contains('armor') || lowerMessage.contains('helmet') || lowerMessage.contains('chestplate')) {
+          itemData['category'] = 'armor';
+          itemData['baseType'] = 'armor';
+        } else if (lowerMessage.contains('car') || lowerMessage.contains('vehicle') || lowerMessage.contains('boat')) {
+          itemData['category'] = 'vehicle';
+          itemData['baseType'] = 'car';
+        } else if (lowerMessage.contains('table') || lowerMessage.contains('chair') || lowerMessage.contains('furniture')) {
+          itemData['category'] = 'furniture';
+          itemData['baseType'] = 'table';
+        } else if (lowerMessage.contains('phone') || lowerMessage.contains('iphone') || lowerMessage.contains('device')) {
+          itemData['category'] = 'tool';
+          itemData['baseType'] = 'phone';
+        } else if (lowerMessage.contains('food') || lowerMessage.contains('apple') || lowerMessage.contains('bread')) {
+          itemData['category'] = 'food';
+          itemData['baseType'] = 'apple';
+        } else if (lowerMessage.contains('block') || lowerMessage.contains('stone') || lowerMessage.contains('wood')) {
+          itemData['category'] = 'block';
+          itemData['baseType'] = 'block';
+        } else {
+          // Default to creature only if no other type detected
+          itemData['category'] = 'creature';
+          final creatureTypes = ['cow', 'pig', 'chicken', 'sheep', 'horse', 'cat', 'dog', 'dragon', 'unicorn', 'phoenix'];
+          for (final type in creatureTypes) {
+            if (lowerMessage.contains(type)) {
+              itemData['baseType'] = type;
+              break;
+            }
           }
-        }
-        if (!itemData.containsKey('baseType')) {
-          itemData['baseType'] = 'creature'; // Default creature
+          if (!itemData.containsKey('baseType')) {
+            itemData['baseType'] = 'creature'; // Default creature
+          }
         }
       }
       
@@ -628,8 +653,8 @@ Keep responses short and engaging (2-3 sentences max).''';
       // Get AI response with fallback
       final aiResponse = await getCraftaResponse(userMessage);
       
-      // Parse creature attributes from the response
-      final creatureAttributes = await parseCreatureRequest(userMessage);
+      // Parse item attributes from the response (supports all item types)
+      final itemAttributes = await parseCreatureRequest(userMessage);
       
       // Add AI response to conversation
       final finalConversation = updatedConversation.addMessage(aiResponse, false);

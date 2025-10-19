@@ -1,0 +1,470 @@
+import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
+import '../services/enhanced_voice_ai_service.dart';
+import '../services/voice_personality_service.dart';
+import '../services/educational_voice_service.dart';
+import '../theme/kid_friendly_theme.dart';
+
+/// Widget for enhanced conversational voice interaction
+class ConversationalVoiceWidget extends StatefulWidget {
+  final Function(String) onResponse;
+  final Function(String) onError;
+  final bool isEnabled;
+  final VoicePersonality? initialPersonality;
+
+  const ConversationalVoiceWidget({
+    Key? key,
+    required this.onResponse,
+    required this.onError,
+    this.isEnabled = true,
+    this.initialPersonality,
+  }) : super(key: key);
+
+  @override
+  State<ConversationalVoiceWidget> createState() => _ConversationalVoiceWidgetState();
+}
+
+class _ConversationalVoiceWidgetState extends State<ConversationalVoiceWidget>
+    with TickerProviderStateMixin {
+  final EnhancedVoiceAIService _voiceAI = EnhancedVoiceAIService();
+  final VoicePersonalityService _personalityService = VoicePersonalityService();
+  final EducationalVoiceService _educationalService = EducationalVoiceService();
+
+  // Animation controllers
+  late AnimationController _pulseController;
+  late AnimationController _bounceController;
+  late AnimationController _sparkleController;
+  
+  // Animations
+  late Animation<double> _pulseAnimation;
+  late Animation<double> _bounceAnimation;
+  late Animation<double> _sparkleAnimation;
+
+  // State
+  bool _isListening = false;
+  bool _isProcessing = false;
+  bool _isInitialized = false;
+  VoicePersonality _currentPersonality = VoicePersonality.friendlyTeacher;
+  String _currentStatus = 'Tap to start talking!';
+  List<String> _conversationHistory = [];
+
+  // Rive animation controller
+  RiveAnimationController? _riveController;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAnimations();
+    _initializeServices();
+  }
+
+  void _initializeAnimations() {
+    // Pulse animation for listening state
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Bounce animation for button press
+    _bounceController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _bounceAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(
+      parent: _bounceController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Sparkle animation for responses
+    _sparkleController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    _sparkleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _sparkleController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  Future<void> _initializeServices() async {
+    try {
+      await _voiceAI.initialize();
+      if (widget.initialPersonality != null) {
+        _currentPersonality = widget.initialPersonality!;
+        await _personalityService.applyPersonalityVoice(_currentPersonality);
+      }
+      await _voiceAI.startConversation(personality: _currentPersonality);
+      
+      setState(() {
+        _isInitialized = true;
+        _currentStatus = _personalityService.getPersonalityGreeting(_currentPersonality);
+      });
+    } catch (e) {
+      widget.onError('Failed to initialize voice services: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _bounceController.dispose();
+    _sparkleController.dispose();
+    _riveController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _startListening() async {
+    if (!_isInitialized || _isListening || _isProcessing) return;
+
+    setState(() {
+      _isListening = true;
+      _currentStatus = 'Listening... Speak now!';
+    });
+
+    // Start pulse animation
+    _pulseController.repeat(reverse: true);
+
+    try {
+      // Get voice input
+      final userInput = await _voiceAI._speechService.listen();
+      
+      if (userInput != null && userInput.isNotEmpty) {
+        setState(() {
+          _isListening = false;
+          _isProcessing = true;
+          _currentStatus = 'Thinking...';
+        });
+
+        // Stop pulse animation
+        _pulseController.stop();
+        _pulseController.reset();
+
+        // Process the input
+        final response = await _voiceAI.processVoiceInput(userInput);
+        
+        setState(() {
+          _isProcessing = false;
+          _currentStatus = 'Tap to talk again!';
+          _conversationHistory.add('You: $userInput');
+          _conversationHistory.add('Crafta: $response');
+        });
+
+        // Start sparkle animation
+        _sparkleController.forward().then((_) {
+          _sparkleController.reverse();
+        });
+
+        widget.onResponse(response);
+      } else {
+        setState(() {
+          _isListening = false;
+          _currentStatus = 'I didn\'t hear anything. Try again!';
+        });
+        _pulseController.stop();
+        _pulseController.reset();
+      }
+    } catch (e) {
+      setState(() {
+        _isListening = false;
+        _isProcessing = false;
+        _currentStatus = 'Oops! Something went wrong. Try again!';
+      });
+      _pulseController.stop();
+      _pulseController.reset();
+      widget.onError('Voice recognition error: $e');
+    }
+  }
+
+  void _onButtonPress() {
+    _bounceController.forward().then((_) {
+      _bounceController.reverse();
+    });
+    _startListening();
+  }
+
+  Future<void> _changePersonality(VoicePersonality newPersonality) async {
+    if (_currentPersonality == newPersonality) return;
+
+    setState(() {
+      _currentPersonality = newPersonality;
+      _currentStatus = 'Changing personality...';
+    });
+
+    try {
+      await _personalityService.applyPersonalityVoice(newPersonality);
+      await _voiceAI.changePersonality(newPersonality);
+      
+      setState(() {
+        _currentStatus = _personalityService.getPersonalityGreeting(newPersonality);
+      });
+    } catch (e) {
+      widget.onError('Failed to change personality: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Personality selector
+          _buildPersonalitySelector(),
+          
+          const SizedBox(height: 32),
+          
+          // Main voice button
+          _buildVoiceButton(),
+          
+          const SizedBox(height: 24),
+          
+          // Status text
+          _buildStatusText(),
+          
+          const SizedBox(height: 32),
+          
+          // Conversation history
+          if (_conversationHistory.isNotEmpty) _buildConversationHistory(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPersonalitySelector() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: KidFriendlyTheme.primaryBlue.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: KidFriendlyTheme.primaryBlue.withOpacity(0.3),
+          width: 2,
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Choose Crafta\'s Personality:',
+            style: TextStyle(
+              fontSize: KidFriendlyTheme.headingFontSize,
+              fontWeight: FontWeight.bold,
+              color: KidFriendlyTheme.textDark,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: VoicePersonality.values.map((personality) {
+              final isSelected = _currentPersonality == personality;
+              return GestureDetector(
+                onTap: () => _changePersonality(personality),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected 
+                        ? KidFriendlyTheme.primaryColors['purple']!
+                        : KidFriendlyTheme.primaryColors['blue']!.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected 
+                          ? KidFriendlyTheme.primaryColors['purple']!
+                          : KidFriendlyTheme.primaryColors['blue']!,
+                      width: 2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _personalityService.getPersonalityEmoji(personality),
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _personalityService._getPersonalityName(personality),
+                        style: KidFriendlyTheme.textStyles['body'].copyWith(
+                          color: isSelected ? Colors.white : KidFriendlyTheme.primaryColors['blue']!,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVoiceButton() {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_pulseAnimation, _bounceAnimation]),
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _bounceAnimation.value * (_isListening ? _pulseAnimation.value : 1.0),
+          child: GestureDetector(
+            onTap: _isInitialized ? _onButtonPress : null,
+            child: Container(
+              width: 160,
+              height: 160,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: _isListening
+                    ? KidFriendlyTheme.gradients['rainbow']
+                    : KidFriendlyTheme.gradients['ocean'],
+                boxShadow: [
+                  BoxShadow(
+                    color: KidFriendlyTheme.primaryColors['purple']!.withOpacity(0.3),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: Icon(
+                _isListening ? Icons.mic : Icons.mic_none,
+                size: 64,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStatusText() {
+    return AnimatedBuilder(
+      animation: _sparkleAnimation,
+      builder: (context, child) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          decoration: BoxDecoration(
+            color: KidFriendlyTheme.primaryColors['yellow']!.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: KidFriendlyTheme.primaryColors['yellow']!.withOpacity(0.3),
+              width: 2,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_isProcessing) ...[
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      KidFriendlyTheme.primaryColors['purple']!,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
+              Flexible(
+                child: Text(
+                  _currentStatus,
+                  style: KidFriendlyTheme.textStyles['body'].copyWith(
+                    color: KidFriendlyTheme.primaryColors['purple']!,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              if (_sparkleAnimation.value > 0) ...[
+                const SizedBox(width: 8),
+                Text(
+                  '✨',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.yellow.withOpacity(_sparkleAnimation.value),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildConversationHistory() {
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 200),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: KidFriendlyTheme.primaryColors['green']!.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: KidFriendlyTheme.primaryColors['green']!.withOpacity(0.3),
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Conversation:',
+            style: KidFriendlyTheme.textStyles['heading'].copyWith(
+              color: KidFriendlyTheme.primaryColors['green']!,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _conversationHistory.length,
+              itemBuilder: (context, index) {
+                final message = _conversationHistory[index];
+                final isUser = message.startsWith('You:');
+                
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isUser ? '👤' : '🤖',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          message.substring(isUser ? 5 : 8), // Remove "You: " or "Crafta: "
+                          style: KidFriendlyTheme.textStyles['body'].copyWith(
+                            color: isUser 
+                                ? KidFriendlyTheme.primaryColors['blue']!
+                                : KidFriendlyTheme.primaryColors['purple']!,
+                            fontStyle: isUser ? FontStyle.normal : FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

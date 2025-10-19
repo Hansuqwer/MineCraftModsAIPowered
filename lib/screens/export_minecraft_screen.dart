@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/minecraft/minecraft_export_service.dart';
 import '../models/minecraft/addon_metadata.dart';
 import '../models/minecraft/addon_package.dart';
+import '../models/item_type.dart';
 import '../widgets/creature_preview.dart';
 import '../widgets/legal_disclaimer.dart';
 
@@ -440,19 +441,35 @@ class _ExportMinecraftScreenState extends State<ExportMinecraftScreen> {
 
     try {
       final metadata = AddonMetadata(
-        name: _addonNameController.text.isEmpty ? 'Crafta Creature' : _addonNameController.text,
-        description: _addonDescriptionController.text.isEmpty 
-          ? 'AI-generated creature from Crafta' 
+        name: _addonNameController.text.isEmpty ? 'Crafta Item' : _addonNameController.text,
+        description: _addonDescriptionController.text.isEmpty
+          ? 'AI-generated item from Crafta'
           : _addonDescriptionController.text,
         namespace: 'crafta',
         includeScriptAPI: _includeScriptAPI,
         generateSpawnEggs: _generateSpawnEggs,
       );
 
-      final addon = await MinecraftExportService.exportCreature(
-        creatureAttributes: widget.creatureAttributes,
-        metadata: metadata,
-      );
+      // Detect if this is a creature or an item
+      final itemTypeStr = widget.creatureAttributes['itemType'] as String?;
+      final ItemType? itemType = itemTypeStr != null ? _parseItemType(itemTypeStr) : null;
+
+      final AddonPackage addon;
+
+      if (itemType == null || itemType == ItemType.creature) {
+        // Export as creature (original behavior)
+        addon = await MinecraftExportService.exportCreature(
+          creatureAttributes: widget.creatureAttributes,
+          metadata: metadata,
+        );
+      } else {
+        // Export as item (weapon, armor, tool, furniture, etc.)
+        addon = await MinecraftExportService.exportItem(
+          itemAttributes: widget.creatureAttributes,
+          itemType: itemType,
+          metadata: metadata,
+        );
+      }
 
       setState(() {
         _generatedAddon = addon;
@@ -471,6 +488,28 @@ class _ExportMinecraftScreenState extends State<ExportMinecraftScreen> {
         _exportError = 'Failed to generate addon: $e';
         _isExporting = false;
       });
+    }
+  }
+
+  /// Parse string to ItemType enum
+  ItemType? _parseItemType(String itemTypeStr) {
+    switch (itemTypeStr.toLowerCase()) {
+      case 'weapon':
+        return ItemType.weapon;
+      case 'armor':
+        return ItemType.armor;
+      case 'furniture':
+        return ItemType.furniture;
+      case 'tool':
+        return ItemType.tool;
+      case 'decoration':
+        return ItemType.decoration;
+      case 'vehicle':
+        return ItemType.vehicle;
+      case 'creature':
+        return ItemType.creature;
+      default:
+        return null;
     }
   }
 

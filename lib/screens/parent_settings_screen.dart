@@ -188,6 +188,70 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
               ),
               const SizedBox(height: 32),
 
+              // Voice Settings
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF9B59B6).withOpacity(0.1), // Purple tint
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF9B59B6)),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.settings_voice,
+                      size: 48,
+                      color: const Color(0xFF9B59B6),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Voice Settings',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF9B59B6),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Adjust voice speed, calibrate microphone, and customize speech settings',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF666666),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/voice-settings');
+                        },
+                        icon: const Icon(Icons.mic),
+                        label: const Text(
+                          'Configure Voice',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF9B59B6),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+
               // Age Group Selection
               Text(
                 l10n.ageGroup,

@@ -132,56 +132,74 @@ class _Simple3DPreviewState extends State<Simple3DPreview>
     final hasFlames = widget.creatureAttributes.glowEffect == GlowEffect.flames;
     final hasGlow = widget.creatureAttributes.glowEffect != GlowEffect.none;
 
+    // DEBUG: Print what we're trying to detect
+    print('🔍 3D Preview Debug:');
+    print('  baseType: "$baseType"');
+    print('  size: $size');
+    print('  primaryColor: $primaryColor');
+    print('  secondaryColor: $secondaryColor');
+
     // COMPREHENSIVE MODEL DETECTION - ALL POSSIBLE TYPES
     
     // WEAPONS & SWORDS
     if (_isWeapon(baseType)) {
+      print('  ✅ Detected as WEAPON');
       return _buildWeaponModel(baseType, size, primaryColor, hasFlames, hasGlow);
     }
     
     // CREATURES & ANIMALS
     else if (_isCreature(baseType)) {
+      print('  ✅ Detected as CREATURE');
       return _buildCreatureModel(baseType, size, primaryColor, secondaryColor, hasWings, hasFlames);
     }
     
     // FURNITURE & DECORATION
     else if (_isFurniture(baseType)) {
+      print('  ✅ Detected as FURNITURE');
       return _buildFurnitureModel(baseType, size, primaryColor, secondaryColor);
     }
     
     // ARMOR & CLOTHING
     else if (_isArmor(baseType)) {
+      print('  ✅ Detected as ARMOR');
       return _buildArmorModel(baseType, size, primaryColor, hasGlow);
     }
     
     // TOOLS & EQUIPMENT
     else if (_isTool(baseType)) {
+      print('  ✅ Detected as TOOL');
       return _buildToolModel(baseType, size, primaryColor, hasGlow);
     }
     
     // VEHICLES & TRANSPORT
     else if (_isVehicle(baseType)) {
+      print('  ✅ Detected as VEHICLE');
       return _buildVehicleModel(baseType, size, primaryColor, secondaryColor);
     }
     
     // FOOD & CONSUMABLES
     else if (_isFood(baseType)) {
+      print('  ✅ Detected as FOOD');
       return _buildFoodModel(baseType, size, primaryColor, secondaryColor);
     }
     
     // BLOCKS & BUILDING MATERIALS
     else if (_isBlock(baseType)) {
+      print('  ✅ Detected as BLOCK');
       return _buildBlockModel(baseType, size, primaryColor, secondaryColor);
     }
     
     // MAGICAL ITEMS
     else if (_isMagical(baseType)) {
+      print('  ✅ Detected as MAGICAL');
       return _buildMagicalModel(baseType, size, primaryColor, secondaryColor, hasGlow);
     }
     
-    // DEFAULT FALLBACK
+    // DEFAULT FALLBACK - IMPROVED
     else {
-      return _buildGenericModel(baseType, size, primaryColor, secondaryColor);
+      print('  ❌ No specific model detected, using GENERIC');
+      print('  🔧 This is why you see a blue object!');
+      return _buildImprovedGenericModel(baseType, size, primaryColor, secondaryColor);
     }
   }
   
@@ -809,34 +827,57 @@ class _Simple3DPreviewState extends State<Simple3DPreview>
     );
   }
 
-  Widget _buildGenericModel(String baseType, CreatureSize size, Color primaryColor, Color secondaryColor) {
+  Widget _buildImprovedGenericModel(String baseType, CreatureSize size, Color primaryColor, Color secondaryColor) {
     final scale = _getSizeScale(size);
     
+    // Try to make a better guess based on the baseType
+    if (baseType.contains('cat') || baseType.contains('animal') || baseType.contains('creature')) {
+      return _buildCreatureModel(baseType, size, primaryColor, secondaryColor, false, false);
+    } else if (baseType.contains('table') || baseType.contains('chair') || baseType.contains('furniture')) {
+      return _buildFurnitureModel(baseType, size, primaryColor, secondaryColor);
+    } else if (baseType.contains('sword') || baseType.contains('weapon')) {
+      return _buildWeaponModel(baseType, size, primaryColor, false, false);
+    }
+    
+    // Create a more realistic generic model with textures
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Main body
+        // Main body with gradient texture
         Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
             ..scale(scale),
           child: Container(
-            width: 60,
-            height: 60,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
-              color: primaryColor,
-              borderRadius: BorderRadius.circular(30),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  primaryColor,
+                  primaryColor.withOpacity(0.8),
+                  primaryColor.withOpacity(0.6),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.3),
-                  blurRadius: 10,
+                  color: primaryColor.withOpacity(0.4),
+                  blurRadius: 20,
                   spreadRadius: 2,
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
                 ),
               ],
             ),
           ),
         ),
-        // Secondary details
+        // Add texture details
         Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()

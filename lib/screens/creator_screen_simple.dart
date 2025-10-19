@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 import '../services/ai_service.dart';
 import '../services/enhanced_ai_service.dart';
-import '../services/speech_service.dart';
-import '../services/tts_service.dart';
+import '../services/enhanced_speech_service.dart';
+import '../services/enhanced_tts_service.dart';
+import '../services/conversation_context_service.dart';
 import '../services/app_localizations.dart';
 import '../services/achievement_service.dart';
+import '../services/enhanced_item_creation_service.dart';
 import '../models/conversation.dart';
 import '../models/enhanced_creature_attributes.dart';
+import '../models/item_type.dart';
 import '../theme/minecraft_theme.dart';
+import '../widgets/voice_feedback_widget.dart';
 import 'advanced_customization_screen.dart';
 
 /// Minecraft-inspired Creator Screen - Looks like a crafting table!
+/// Now supports creating all item types: creatures, weapons, armor, furniture, tools, decorations, vehicles
 class CreatorScreenSimple extends StatefulWidget {
-  const CreatorScreenSimple({super.key});
+  final ItemType? itemType;
+  final MaterialType? material;
+
+  const CreatorScreenSimple({
+    super.key,
+    this.itemType,
+    this.material,
+  });
 
   @override
   State<CreatorScreenSimple> createState() => _CreatorScreenSimpleState();
@@ -20,15 +32,20 @@ class CreatorScreenSimple extends StatefulWidget {
 
 class _CreatorScreenSimpleState extends State<CreatorScreenSimple> with TickerProviderStateMixin {
   final AIService _aiService = AIService();
-  final SpeechService _speechService = SpeechService();
-  final TTSService _ttsService = TTSService();
+  final EnhancedSpeechService _speechService = EnhancedSpeechService();
+  final EnhancedTTSService _ttsService = EnhancedTTSService();
+  final ConversationContextService _contextService = ConversationContextService();
   final TextEditingController _textController = TextEditingController();
 
   String _recognizedText = '';
+  String _partialText = '';
+  double _soundLevel = 0.0;
   bool _isListening = false;
   bool _isProcessing = false;
   Conversation _conversation = Conversation(messages: []);
   EnhancedCreatureAttributes? _currentCreature;
+  Map<String, dynamic>? _currentItem; // For non-creature items
+  late ItemType _selectedItemType; // Current item type being created
 
   // Animations
   late AnimationController _sendButtonController;
@@ -39,6 +56,7 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> with TickerPr
   @override
   void initState() {
     super.initState();
+    _selectedItemType = widget.itemType ?? ItemType.creature; // Default to creature for backward compatibility
     _initializeServices();
     _initializeAnimations();
   }
@@ -65,41 +83,67 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> with TickerPr
   Future<void> _initializeServices() async {
     await _speechService.initialize();
     await _ttsService.initialize();
+    await _contextService.initialize();
 
+    // Set up real-time callbacks
+    _speechService.onSoundLevelChange = (level) {
+      if (mounted) {
+        setState(() => _soundLevel = level);
+      }
+    };
+
+    _speechService.onPartialResult = (partial) {
+      if (mounted) {
+        setState(() => _partialText = partial);
+      }
+    };
+
+    _speechService.onListeningStateChange = (listening) {
+      if (mounted && _isListening != listening) {
+        setState(() => _isListening = listening);
+        if (listening) {
+          _pulseController.repeat(reverse: true);
+        } else {
+          _pulseController.stop();
+          _pulseController.reset();
+        }
+      }
+    };
+
+    // Play warm welcome after a brief delay
     Future.delayed(const Duration(seconds: 1), () {
-      _ttsService.playWarmWelcome();
+      if (mounted) {
+        _ttsService.playEncouragement();
+      }
     });
   }
 
   Future<void> _startListening() async {
     if (_isListening) return;
 
-    setState(() => _isListening = true);
-    _pulseController.repeat(reverse: true);
+    setState(() {
+      _isListening = true;
+      _partialText = '';
+      _soundLevel = 0.0;
+    });
 
-    await _speechService.startListening(
-      onResult: (text) {
-        setState(() => _recognizedText = text);
-      },
-      onError: (error) {
-        print('Speech error: $error');
-        setState(() => _isListening = false);
-        _pulseController.stop();
-      },
-    );
+    final result = await _speechService.listen();
+
+    setState(() {
+      _isListening = false;
+      _partialText = '';
+    });
+
+    if (result != null && result.isNotEmpty) {
+      setState(() => _recognizedText = result);
+      await _processTextInput(result);
+    }
   }
 
   Future<void> _stopListening() async {
     if (!_isListening) return;
 
     await _speechService.stopListening();
-    setState(() => _isListening = false);
-    _pulseController.stop();
-    _pulseController.reset();
-
-    if (_recognizedText.isNotEmpty) {
-      await _processTextInput(_recognizedText);
-    }
   }
 
   Future<void> _processTextInput(String text) async {
@@ -113,49 +157,16 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> with TickerPr
     });
 
     try {
+      // Add to conversation context
+      await _contextService.addUserMessage(text);
       _conversation = _conversation.addMessage(text, true);
 
-      final enhancedAttributes = await EnhancedAIService.parseEnhancedCreatureRequest(text);
-
-      setState(() {
-        _currentCreature = enhancedAttributes;
-        _conversation = _conversation.addMessage(
-          'I created ${enhancedAttributes.customName}! ${enhancedAttributes.fullDescription}',
-          false
-        );
-      });
-
-      // Track achievement progress
-      await AchievementService.updateProgress(RequirementType.creaturesCreated, 1);
-      
-      // Track specific creature types
-      if (enhancedAttributes.baseType.toLowerCase().contains('dragon')) {
-        await AchievementService.updateProgress(RequirementType.dragonsCreated, 1);
+      // Handle different item types
+      if (_selectedItemType == ItemType.creature) {
+        await _processCreatureCreation(text);
+      } else {
+        await _processItemCreation(text);
       }
-      
-      // Track colors used
-      final colorsUsed = _extractColorsFromAttributes(enhancedAttributes);
-      for (final color in colorsUsed) {
-        await AchievementService.updateStats('color_$color', 1);
-      }
-
-      await _ttsService.speak('I created ${enhancedAttributes.customName}! ${enhancedAttributes.fullDescription}');
-      await Future.delayed(const Duration(milliseconds: 500));
-      await _ttsService.playEncouragement();
-
-      // Navigate to 3D viewer to show exactly how it will look in Minecraft
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
-          Navigator.pushNamed(
-            context,
-            '/minecraft-3d-viewer',
-            arguments: {
-              'creatureAttributes': enhancedAttributes.toMap(),
-              'creatureName': enhancedAttributes.customName,
-            },
-          );
-        }
-      });
 
       setState(() {
         _isProcessing = false;
@@ -165,7 +176,115 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> with TickerPr
     } catch (e) {
       print('Error processing text: $e');
       setState(() => _isProcessing = false);
+      await _ttsService.speak('Oops! Let\'s try that again!');
     }
+  }
+
+  /// Process creature creation (original logic)
+  Future<void> _processCreatureCreation(String text) async {
+    final enhancedAttributes = await EnhancedAIService.parseEnhancedCreatureRequest(text);
+
+    // Update context with current creature
+    await _contextService.setCurrentCreature(enhancedAttributes.customName);
+
+    final responseText = 'I created ${enhancedAttributes.customName}! ${enhancedAttributes.fullDescription}';
+
+    setState(() {
+      _currentCreature = enhancedAttributes;
+      _conversation = _conversation.addMessage(responseText, false);
+    });
+
+    // Add Crafta's response to context
+    await _contextService.addCraftaResponse(
+      responseText,
+      metadata: {'creatureCreated': true},
+    );
+
+    // Track achievement progress
+    await AchievementService.updateProgress(RequirementType.creaturesCreated, 1);
+
+    // Track specific creature types
+    if (enhancedAttributes.baseType.toLowerCase().contains('dragon')) {
+      await AchievementService.updateProgress(RequirementType.dragonsCreated, 1);
+    }
+
+    // Track colors used
+    final colorsUsed = _extractColorsFromAttributes(enhancedAttributes);
+    for (final color in colorsUsed) {
+      await AchievementService.updateStats('color_$color', 1);
+    }
+
+    await _ttsService.speak(responseText);
+    await Future.delayed(const Duration(milliseconds: 500));
+    await _ttsService.playEncouragement();
+
+    // Navigate to 3D viewer to show exactly how it will look in Minecraft
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        Navigator.pushNamed(
+          context,
+          '/minecraft-3d-viewer',
+          arguments: {
+            'creatureAttributes': enhancedAttributes.toMap(),
+            'creatureName': enhancedAttributes.customName,
+          },
+        );
+      }
+    });
+  }
+
+  /// Process item creation (weapons, armor, furniture, tools, etc.)
+  Future<void> _processItemCreation(String text) async {
+    // Use AI to generate item from user's description
+    final prompt = EnhancedItemCreationService.generatePromptForItemType(
+      itemType: _selectedItemType,
+      userInput: text,
+      material: widget.material,
+    );
+
+    // Get AI response using the specialized prompt
+    // We send the full prompt directly to get structured JSON responses
+    final aiResponse = await _aiService.processPrompt(prompt);
+
+    // Parse response into item attributes
+    final itemAttributes = EnhancedItemCreationService.parseItemResponse(
+      aiResponse,
+      _selectedItemType,
+    );
+
+    final itemName = itemAttributes['customName'] ?? 'My ${_selectedItemType.displayName}';
+    final description = itemAttributes['description'] ?? 'A cool ${_selectedItemType.displayName}!';
+
+    final responseText = 'I created $itemName! $description';
+
+    setState(() {
+      _currentItem = itemAttributes;
+      _conversation = _conversation.addMessage(responseText, false);
+    });
+
+    // Add Crafta's response to context
+    await _contextService.addCraftaResponse(
+      responseText,
+      metadata: {'itemCreated': true, 'itemType': _selectedItemType.toString()},
+    );
+
+    await _ttsService.speak(responseText);
+    await Future.delayed(const Duration(milliseconds: 500));
+    await _ttsService.playEncouragement();
+
+    // Navigate to 3D viewer to show item
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        Navigator.pushNamed(
+          context,
+          '/minecraft-3d-viewer',
+          arguments: {
+            'creatureAttributes': itemAttributes,
+            'creatureName': itemName,
+          },
+        );
+      }
+    });
   }
 
   Future<void> _openAdvancedCustomization() async {
@@ -281,19 +400,43 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> with TickerPr
                 MinecraftPanel(
                   backgroundColor: MinecraftTheme.slotBackground.withOpacity(0.95),
                   padding: const EdgeInsets.all(16),
-                  child: MinecraftText(
-                    _recognizedText.isEmpty
-                      ? l10n.craftaGreeting
-                      : _recognizedText,
-                    fontSize: 14,
-                    color: _recognizedText.isEmpty
-                      ? MinecraftTheme.textLight
-                      : MinecraftTheme.goldOre,
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    children: [
+                      MinecraftText(
+                        _recognizedText.isEmpty
+                          ? _getGreetingForItemType()
+                          : _recognizedText,
+                        fontSize: 14,
+                        color: _recognizedText.isEmpty
+                          ? MinecraftTheme.textLight
+                          : MinecraftTheme.goldOre,
+                        textAlign: TextAlign.center,
+                      ),
+                      // Show partial results during listening
+                      if (_partialText.isNotEmpty && _isListening) ...[
+                        const SizedBox(height: 8),
+                        MinecraftText(
+                          'Listening: $_partialText...',
+                          fontSize: 12,
+                          color: MinecraftTheme.diamond.withOpacity(0.7),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ],
                   ),
                 ),
 
                 const SizedBox(height: 24),
+
+                // Voice Feedback Widget
+                if (_isListening)
+                  VoiceFeedbackWidget(
+                    isListening: _isListening,
+                    soundLevel: _soundLevel,
+                    style: VoiceFeedbackStyle.pulse,
+                  ),
+
+                if (_isListening) const SizedBox(height: 24),
 
                 // Microphone Button (like a crafting button with redstone glow)
                 GestureDetector(
@@ -521,5 +664,27 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> with TickerPr
     if (color == Colors.black) return 'black';
     if (color == Colors.white) return 'white';
     return 'custom';
+  }
+
+  /// Get greeting text based on selected item type
+  String _getGreetingForItemType() {
+    final l10n = AppLocalizations.of(context);
+
+    switch (_selectedItemType) {
+      case ItemType.creature:
+        return l10n.craftaGreeting;
+      case ItemType.weapon:
+        return 'Hi! Tell me about the ${widget.material?.displayName ?? ''} weapon you want to create! Like "a flaming sword" or "a powerful bow"!';
+      case ItemType.armor:
+        return 'Hi! Tell me about the ${widget.material?.displayName ?? ''} armor you want to create! Like "a shiny helmet" or "a dragon chestplate"!';
+      case ItemType.furniture:
+        return 'Hi! Tell me about the ${widget.material?.displayName ?? ''} furniture you want to create! Like "a cozy chair" or "a royal throne"!';
+      case ItemType.tool:
+        return 'Hi! Tell me about the ${widget.material?.displayName ?? ''} tool you want to create! Like "a super pickaxe" or "a fast shovel"!';
+      case ItemType.decoration:
+        return 'Hi! Tell me about the decoration you want to create! Like "a flower pot" or "a cool statue"!';
+      case ItemType.vehicle:
+        return 'Hi! Tell me about the vehicle you want to create! Like "a race car" or "a flying spaceship"!';
+    }
   }
 }

@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/startup_service.dart';
 import '../services/app_localizations.dart';
 import '../services/tutorial_service.dart';
+import '../services/enhanced_speech_service.dart';
+import '../models/item_type.dart';
 import '../theme/minecraft_theme.dart';
 import 'tutorial_screen.dart';
 
@@ -63,6 +65,61 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Future<void> _initializeStartup() async {
     if (mounted) {
       await StartupService.initialize(context);
+
+      // Check if voice calibration is needed
+      await _checkVoiceCalibration();
+    }
+  }
+
+  Future<void> _checkVoiceCalibration() async {
+    try {
+      final speechService = EnhancedSpeechService();
+      await speechService.initialize();
+
+      if (speechService.needsCalibration()) {
+        // Wait a bit before showing calibration prompt
+        await Future.delayed(const Duration(seconds: 2));
+
+        if (!mounted) return;
+
+        // Show calibration prompt
+        final shouldCalibrate = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.mic, color: Colors.blue),
+                SizedBox(width: 12),
+                Text('Voice Setup'),
+              ],
+            ),
+            content: const Text(
+              'Let\'s set up your voice so Crafta can hear you perfectly! '
+              'This only takes a minute.',
+              style: TextStyle(fontSize: 16),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Skip for Now'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                ),
+                child: const Text('Set Up Voice'),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldCalibrate == true && mounted) {
+          await Navigator.pushNamed(context, '/voice-calibration');
+        }
+      }
+    } catch (e) {
+      print('Voice calibration check error: $e');
     }
   }
 
@@ -298,13 +355,47 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   // Bottom section: Buttons
                   Column(
                     children: [
-                      // Main start button
+                      // Main start button - Choose what to create
                       MinecraftButton(
-                        text: l10n.getStarted.toUpperCase(),
-                        onPressed: _startCreating,
+                        text: 'CHOOSE WHAT TO CREATE',
+                        onPressed: () async {
+                          // Show item type selection first
+                          final itemType = await Navigator.pushNamed(context, '/item-type-selection');
+                          if (itemType != null && mounted) {
+                            // If material required, show material selection
+                            MaterialType? material;
+                            if (itemType is ItemType && itemType != ItemType.creature && itemType != ItemType.decoration && itemType != ItemType.vehicle) {
+                              material = await Navigator.pushNamed(context, '/material-selection', arguments: itemType) as MaterialType?;
+                              if (material == null) return; // User cancelled material selection
+                            }
+
+                            // Then go to creator with selected type and material
+                            if (mounted) {
+                              Navigator.pushNamed(
+                                context,
+                                '/creator',
+                                arguments: {
+                                  'itemType': itemType,
+                                  'material': material,
+                                },
+                              );
+                            }
+                          }
+                        },
                         color: MinecraftTheme.emerald,
-                        icon: Icons.play_arrow,
+                        icon: Icons.auto_awesome,
                         height: 64,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Quick start - Create creature (classic mode)
+                      MinecraftButton(
+                        text: 'QUICK START: CREATURE',
+                        onPressed: _startCreating,
+                        color: MinecraftTheme.grassGreen,
+                        icon: Icons.pets,
+                        height: 56,
                       ),
 
                       const SizedBox(height: 16),
@@ -341,6 +432,31 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         },
                         color: MinecraftTheme.emerald,
                         icon: Icons.people,
+                        height: 56,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Enhanced Creator button
+                      MinecraftButton(
+                        text: '🤖 ENHANCED CREATOR',
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/enhanced-creator');
+                        },
+                        color: Colors.cyan,
+                        icon: Icons.auto_awesome,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Kid-Friendly button
+                      MinecraftButton(
+                        text: '🎮 KID MODE',
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/kid-friendly');
+                        },
+                        color: Colors.purple,
+                        icon: Icons.child_care,
                         height: 56,
                       ),
 

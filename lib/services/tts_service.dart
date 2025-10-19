@@ -486,7 +486,7 @@ class TTSService {
     try {
       final currentLocale = await LanguageService.getCurrentLanguage();
       final languageCode = currentLocale.languageCode;
-      
+
       final surpriseMessages = languageCode == 'sv' ? [
         '😲 Oj! Det där var oväntat! Så coolt! 😲',
         '🤯 Wow! Det här blir verkligen fantastiskt! 🤯',
@@ -500,11 +500,53 @@ class TTSService {
         '🎊 Fantastic! This is really magical! 🎊',
         '🌟 Omg! This is so cool! I\'m impressed! 🌟'
       ];
-      
+
       final randomMessage = surpriseMessages[DateTime.now().millisecond % surpriseMessages.length];
       await _flutterTts!.speak(randomMessage);
     } catch (e) {
       print('Funny surprise error: $e');
+    }
+  }
+
+  /// Set speech rate (0.5 to 2.0, default 1.0)
+  Future<void> setSpeechRate(double rate) async {
+    if (!_isInitialized || _flutterTts == null) return;
+
+    try {
+      // Clamp rate between 0.5 and 2.0
+      final clampedRate = rate.clamp(0.5, 2.0);
+      await _flutterTts!.setSpeechRate(clampedRate);
+      print('✓ Speech rate set to $clampedRate');
+    } catch (e) {
+      print('Error setting speech rate: $e');
+    }
+  }
+
+  /// Set pitch (0.5 to 2.0, default 1.0)
+  Future<void> setPitch(double pitch) async {
+    if (!_isInitialized || _flutterTts == null) return;
+
+    try {
+      // Clamp pitch between 0.5 and 2.0
+      final clampedPitch = pitch.clamp(0.5, 2.0);
+      await _flutterTts!.setPitch(clampedPitch);
+      print('✓ Pitch set to $clampedPitch');
+    } catch (e) {
+      print('Error setting pitch: $e');
+    }
+  }
+
+  /// Set volume (0.0 to 1.0, default 1.0)
+  Future<void> setVolume(double volume) async {
+    if (!_isInitialized || _flutterTts == null) return;
+
+    try {
+      // Clamp volume between 0.0 and 1.0
+      final clampedVolume = volume.clamp(0.0, 1.0);
+      await _flutterTts!.setVolume(clampedVolume);
+      print('✓ Volume set to $clampedVolume');
+    } catch (e) {
+      print('Error setting volume: $e');
     }
   }
 }

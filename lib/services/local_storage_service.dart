@@ -321,4 +321,16 @@ class LocalStorageService {
       return false;
     }
   }
+
+  /// Get data from storage (alias for loadData)
+  /// Used by voice personality service
+  Future<dynamic> getData(String key) async {
+    return await loadData(key);
+  }
+
+  /// Remove data from storage (alias for deleteData)
+  /// Used by voice personality service
+  Future<void> removeData(String key) async {
+    await deleteData(key);
+  }
 }

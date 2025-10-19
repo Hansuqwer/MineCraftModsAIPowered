@@ -695,6 +695,37 @@ Keep responses short and engaging (2-3 sentences max).''';
     return responses[DateTime.now().millisecondsSinceEpoch % responses.length];
   }
   
+  /// Generate response with optional system prompt and conversation history
+  /// Used by voice services for personality-aware responses
+  Future<String> generateResponse(
+    String userInput, {
+    String? systemPrompt,
+    List<String>? conversationHistory,
+  }) async {
+    await initialize();
+
+    // Build context message with system prompt if provided
+    String contextMessage = userInput;
+    if (systemPrompt != null) {
+      contextMessage = '$systemPrompt\n\nUser: $userInput';
+    }
+
+    // Add conversation history if provided
+    if (conversationHistory != null && conversationHistory.isNotEmpty) {
+      final historyText = conversationHistory.join('\n');
+      contextMessage = '$historyText\n\nUser: $userInput';
+    }
+
+    try {
+      // Use existing getCraftaResponse with context
+      final response = await getCraftaResponse(contextMessage);
+      return response;
+    } catch (e) {
+      print('Error generating response: $e');
+      rethrow;
+    }
+  }
+
   /// Get current provider status
   static Map<String, dynamic> getProviderStatus() {
     return {

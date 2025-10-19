@@ -29,7 +29,7 @@ import 'screens/material_selection_screen.dart';
 import 'models/enhanced_creature_attributes.dart';
 import 'models/item_type.dart';
 import 'services/google_cloud_service.dart';
-// import 'services/enhanced_voice_ai_service.dart';
+import 'services/enhanced_voice_ai_service.dart';
 import 'services/community_service.dart';
 
 /// Main entry point for Crafta app
@@ -54,8 +54,8 @@ Future<void> main() async {
     await GoogleCloudService.initialize();
     print('✅ Google Cloud service initialized');
     
-    // Initialize Enhanced Voice AI service (commented out due to missing method)
-    // await EnhancedVoiceAIService.getCurrentPersonality();
+    // Initialize Enhanced Voice AI service
+    await EnhancedVoiceAIService().initialize();
     print('✅ Enhanced Voice AI service initialized');
   } catch (e) {
     print('⚠️ Warning: Could not load .env file. Make sure to create one from .env.example');

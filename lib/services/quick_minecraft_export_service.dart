@@ -35,9 +35,16 @@ class QuickMinecraftExportService {
     try {
       print('📦 [QUICK EXPORT] Using MinecraftExportService to generate addon...');
 
-      // Create metadata
-      final color = creatureAttributes['color'] as String? ?? 'green';
-      final creatureType = creatureAttributes['creatureType'] as String? ?? 'creature';
+      // Normalize creature attributes to ensure all required fields are present
+      final normalizedAttrs = _normalizeAttributes(creatureAttributes);
+
+      // Extract color info for description
+      final color = normalizedAttrs['color'] as String? ?? 'creature';
+      final creatureType = normalizedAttrs['creatureType'] as String? ?? 'creature';
+
+      print('✅ [QUICK EXPORT] Normalized attributes:');
+      print('   - Color: $color');
+      print('   - CreatureType: $creatureType');
 
       final metadata = AddonMetadata(
         name: creatureName,
@@ -47,7 +54,7 @@ class QuickMinecraftExportService {
 
       // Use existing export service
       final addon = await MinecraftExportService.exportCreature(
-        creatureAttributes: creatureAttributes,
+        creatureAttributes: normalizedAttrs,
         metadata: metadata,
       );
 
@@ -61,6 +68,37 @@ class QuickMinecraftExportService {
       print('❌ [QUICK EXPORT] Error generating addon: $e');
       rethrow;
     }
+  }
+
+  /// Normalize creature attributes to ensure all fields are present
+  static Map<String, dynamic> _normalizeAttributes(Map<String, dynamic> attrs) {
+    final normalized = Map<String, dynamic>.from(attrs);
+
+    // Ensure 'color' field exists as a string
+    if (normalized['color'] == null) {
+      // Try to extract from primaryColor
+      final primaryColor = normalized['primaryColor'];
+      if (primaryColor is String) {
+        normalized['color'] = primaryColor;
+        print('✅ [QUICK EXPORT] Set color from primaryColor string: ${normalized['color']}');
+      } else if (primaryColor != null) {
+        // If it's a Flutter Color or something else, convert to string
+        normalized['color'] = 'green'; // Default
+        print('⚠️ [QUICK EXPORT] primaryColor is not string, defaulting to green');
+      } else {
+        normalized['color'] = 'green';
+        print('⚠️ [QUICK EXPORT] No color found, defaulting to green');
+      }
+    }
+
+    // Ensure required fields have defaults
+    normalized['creatureType'] ??= 'creature';
+    normalized['size'] ??= 'normal';
+    normalized['effects'] ??= [];
+
+    print('📋 [QUICK EXPORT] Final normalized attributes keys: ${normalized.keys.toList()}');
+
+    return normalized;
   }
 
   /// Check if .mcpack file exists and is valid

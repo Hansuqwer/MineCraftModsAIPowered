@@ -14,7 +14,12 @@ class TextureGenerator {
     required AddonMetadata metadata,
   }) async {
     final creatureType = (creatureAttributes['creatureType'] ?? 'creature').toString().toLowerCase();
-    final colorName = (creatureAttributes['color'] ?? 'normal').toString().toLowerCase();
+
+    // Extract color - handle both string names and actual Flutter Color objects
+    final colorInput = creatureAttributes['color'] ?? creatureAttributes['primaryColor'] ?? 'normal';
+    final Color extractedColor = _extractColorFromInput(colorInput);
+    final colorName = _getColorName(extractedColor);
+
     final sizeAttr = (creatureAttributes['size'] ?? 'normal').toString().toLowerCase();
 
     // Generate identifier
@@ -37,13 +42,48 @@ class TextureGenerator {
       return AddonFile.png('textures/entity/$identifier.png', textureData);
     } catch (e) {
       // Fallback to simple texture if renderer fails
-      print('Warning: Procedural renderer failed, using simple texture: $e');
+      print('⚠️ [TEXTURE] Procedural renderer failed, using solid color texture: $e');
       final textureData = await _generateSimpleTexture(
-        color: _getColorFromName(colorName),
+        color: extractedColor,
         size: 64,
       );
       return AddonFile.png('textures/entity/$identifier.png', textureData);
     }
+  }
+
+  /// Extract Color from various input formats
+  static Color _extractColorFromInput(dynamic input) {
+    if (input is Color) {
+      print('✅ [TEXTURE] Using Flutter Color directly: $input');
+      return input;
+    }
+
+    if (input is String) {
+      final color = _getColorFromName(input.toLowerCase());
+      print('✅ [TEXTURE] Extracted color from string "$input": $color');
+      return color;
+    }
+
+    print('⚠️ [TEXTURE] Unknown color input type: ${input.runtimeType}, defaulting to blue');
+    return Colors.blue;
+  }
+
+  /// Get color name from Flutter Color for identifier
+  static String _getColorName(Color color) {
+    if (color == Colors.red) return 'red';
+    if (color == Colors.blue) return 'blue';
+    if (color == Colors.green) return 'green';
+    if (color == Colors.yellow) return 'yellow';
+    if (color == Colors.purple) return 'purple';
+    if (color == Colors.pink) return 'pink';
+    if (color == Colors.orange) return 'orange';
+    if (color == Colors.brown) return 'brown';
+    if (color == Colors.black87 || color == Colors.black) return 'black';
+    if (color == Colors.white) return 'white';
+    if (color == Colors.grey) return 'grey';
+    if (color == Colors.amber.shade600) return 'gold';
+    if (color == Colors.grey.shade400) return 'silver';
+    return 'normal';
   }
 
   /// Generate a simple solid color texture (MVP version)
@@ -51,38 +91,58 @@ class TextureGenerator {
     required Color color,
     required int size,
   }) async {
-    // Create an image using the image package
-    final image = img.Image(width: size, height: size);
+    try {
+      print('🎨 [TEXTURE] Generating simple texture (${size}x$size) with color: $color');
 
-    // Fill with color
-    final imgColor = img.ColorRgba8(
-      color.red,
-      color.green,
-      color.blue,
-      color.alpha,
-    );
+      // Create an image using the image package
+      final image = img.Image(width: size, height: size, numChannels: 4);
 
-    for (int y = 0; y < size; y++) {
-      for (int x = 0; x < size; x++) {
-        image.setPixel(x, y, imgColor);
+      // Extract RGB components properly from Flutter Color
+      final r = color.red;    // 0-255
+      final g = color.green;  // 0-255
+      final b = color.blue;   // 0-255
+      final a = color.alpha;  // 0-255
+
+      print('   RGB components: R=$r, G=$g, B=$b, A=$a');
+
+      // Fill with color
+      for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+          image.setPixelRgba(x, y, r, g, b, a);
+        }
       }
-    }
 
-    // Add some simple shading (darker bottom half)
-    for (int y = size ~/ 2; y < size; y++) {
-      for (int x = 0; x < size; x++) {
-        final darkerColor = img.ColorRgba8(
-          (color.red * 0.7).round(),
-          (color.green * 0.7).round(),
-          (color.blue * 0.7).round(),
-          color.alpha,
-        );
-        image.setPixel(x, y, darkerColor);
+      // Add some simple shading (darker bottom half) for depth
+      for (int y = size ~/ 2; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+          final darkerR = (r * 0.7).round();
+          final darkerG = (g * 0.7).round();
+          final darkerB = (b * 0.7).round();
+          image.setPixelRgba(x, y, darkerR, darkerG, darkerB, a);
+        }
       }
-    }
 
-    // Encode as PNG
-    return Uint8List.fromList(img.encodePng(image));
+      // Add top-half highlight for dimension
+      for (int y = 0; y < size ~/ 4; y++) {
+        for (int x = 0; x < size; x++) {
+          final lighterR = ((r + 255) ~/ 2).clamp(0, 255);
+          final lighterG = ((g + 255) ~/ 2).clamp(0, 255);
+          final lighterB = ((b + 255) ~/ 2).clamp(0, 255);
+          image.setPixelRgba(x, y, lighterR, lighterG, lighterB, a);
+        }
+      }
+
+      // Encode as PNG
+      final encoded = img.encodePng(image);
+      print('✅ [TEXTURE] Generated PNG texture: ${encoded.length} bytes');
+      return Uint8List.fromList(encoded);
+    } catch (e) {
+      print('❌ [TEXTURE] Error generating simple texture: $e');
+      // Return a fallback 1x1 red pixel if everything fails
+      final image = img.Image(width: 1, height: 1, numChannels: 4);
+      image.setPixelRgba(0, 0, 255, 0, 0, 255);
+      return Uint8List.fromList(img.encodePng(image));
+    }
   }
 
   /// Export texture from ProceduralCreatureRenderer (Advanced version)

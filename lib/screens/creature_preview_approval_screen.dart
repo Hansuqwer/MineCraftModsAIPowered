@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../widgets/creature_preview.dart';
-import '../widgets/creature_3d_preview.dart';
 import '../services/tts_service.dart';
 import '../services/enhanced_ai_service.dart';
 import '../services/quick_minecraft_export_service.dart';
@@ -31,7 +30,6 @@ class _CreaturePreviewApprovalScreenState
 
   final TTSService _ttsService = TTSService();
   bool _isLoading = false;
-  bool _is3DView = false;
   int _generationAttempt = 1;
 
   @override
@@ -144,41 +142,6 @@ class _CreaturePreviewApprovalScreenState
                   ),
                 ),
 
-                // View Toggle (2D/3D)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'View: ',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF333333),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      ToggleButtons(
-                        isSelected: [!_is3DView, _is3DView],
-                        onPressed: (index) {
-                          setState(() {
-                            _is3DView = index == 1;
-                          });
-                        },
-                        children: const [
-                          Text('2D'),
-                          Text('3D'),
-                        ],
-                        selectedColor: Colors.white,
-                        fillColor: const Color(0xFFFF6B9D),
-                        color: const Color(0xFF666666),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ],
-                  ),
-                ),
 
                 // Creature Preview
                 Container(
@@ -220,22 +183,12 @@ class _CreaturePreviewApprovalScreenState
                             builder: (context, child) {
                               return Transform.scale(
                                 scale: 1.0 + (_sparkleAnimation.value * 0.05),
-                                child: _is3DView
-                                    ? Creature3DPreview(
-                                        creatureAttributes:
-                                            widget.creatureAttributes,
-                                        size: 280,
-                                        isAnimated: true,
-                                        enableRotation: true,
-                                        enableFloating: true,
-                                        enableInteraction: true,
-                                      )
-                                    : CreaturePreview(
-                                        creatureAttributes:
-                                            widget.creatureAttributes,
-                                        size: 280,
-                                        isAnimated: true,
-                                      ),
+                                child: CreaturePreview(
+                                  creatureAttributes:
+                                      widget.creatureAttributes,
+                                  size: 280,
+                                  isAnimated: true,
+                                ),
                               );
                             },
                           ),

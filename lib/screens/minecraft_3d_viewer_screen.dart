@@ -4,6 +4,7 @@ import '../services/ai_suggestion_service.dart';
 import '../services/speech_service.dart';
 import '../services/tts_service.dart';
 import '../services/language_service.dart';
+import '../services/ai_minecraft_export_service.dart';
 import '../models/enhanced_creature_attributes.dart';
 import '../widgets/minecraft_3d_preview.dart';
 import '../widgets/simple_3d_preview.dart';

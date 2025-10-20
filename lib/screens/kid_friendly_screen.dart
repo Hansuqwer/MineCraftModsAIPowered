@@ -102,14 +102,16 @@ class _KidFriendlyScreenState extends State<KidFriendlyScreen>
       baseType: attributes['baseType'] ?? 'creature',
       primaryColor: attributes['primaryColor'] ?? Colors.blue,
       secondaryColor: Colors.white,
+      accentColor: Colors.yellow,
       size: _getSizeFromString(attributes['size'] ?? 'medium'),
       personality: _getPersonalityFromString(attributes['personality'] ?? 'friendly'),
       abilities: _getAbilitiesFromEffects(attributes['effects'] ?? []),
       accessories: [],
-      patterns: [],
-      texture: 'smooth',
-      glowEffect: false,
+      patterns: [Pattern.none],
+      texture: TextureType.smooth,
+      glowEffect: GlowEffect.none,
       animationStyle: CreatureAnimationStyle.natural,
+      customName: 'Voice Creation',
       description: 'Created with voice!',
     );
     
@@ -184,13 +186,13 @@ class _KidFriendlyScreenState extends State<KidFriendlyScreen>
           break;
         case 'glowing':
         case 'sparkly':
-          abilities.add(SpecialAbility.glowing);
+          abilities.add(SpecialAbility.magic);
           break;
         case 'fire':
-          abilities.add(SpecialAbility.fireBreathing);
+          abilities.add(SpecialAbility.fireBreath);
           break;
         case 'ice':
-          abilities.add(SpecialAbility.iceBreathing);
+          abilities.add(SpecialAbility.iceBreath);
           break;
         case 'super':
         case 'mega':
@@ -589,8 +591,8 @@ class _KidFriendlyScreenState extends State<KidFriendlyScreen>
                                   borderRadius: BorderRadius.circular(KidFriendlyTheme.mediumRadius),
                                 ),
                                 child: Simple3DPreview(
-                                  attributes: _currentAttributes!,
-                                  name: _currentItemName,
+                                  creatureAttributes: _currentAttributes!,
+                                  creatureName: _currentItemName,
                                 ),
                               ),
                             ),
@@ -681,15 +683,19 @@ class _KidFriendlyScreenState extends State<KidFriendlyScreen>
       _currentItemName = itemName;
       _currentAttributes = EnhancedCreatureAttributes(
         baseType: itemName,
-        color: attributes['color']?.toString() ?? 'blue',
-        size: attributes['size']?.toString() ?? 'medium',
-        personality: attributes['personality']?.toString() ?? 'friendly',
-        abilities: (attributes['abilities'] as List?)?.cast<String>() ?? [],
-        home: attributes['home']?.toString() ?? 'forest',
-        pattern: 'solid',
-        animationStyle: CreatureAnimationStyle.natural,
+        primaryColor: (attributes['color'] as Color?) ?? Colors.blue,
+        secondaryColor: Colors.white,
+        accentColor: Colors.yellow,
+        size: _getSizeFromString(attributes['size']?.toString() ?? 'medium'),
+        personality: _getPersonalityFromString(attributes['personality']?.toString() ?? 'friendly'),
+        abilities: _getAbilitiesFromEffects((attributes['abilities'] as List?)?.cast<String>() ?? []),
         accessories: [],
-        specialEffects: [],
+        patterns: [Pattern.none],
+        texture: TextureType.smooth,
+        glowEffect: GlowEffect.none,
+        animationStyle: CreatureAnimationStyle.natural,
+        customName: itemName,
+        description: 'AI Generated Item',
       );
     });
   }

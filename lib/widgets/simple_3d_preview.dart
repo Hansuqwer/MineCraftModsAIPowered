@@ -734,6 +734,44 @@ class _Simple3DPreviewState extends State<Simple3DPreview>
     return _buildGenericModel(baseType, size, primaryColor, secondaryColor);
   }
 
+  Widget _buildGenericModel(String baseType, CreatureSize size, Color primaryColor, Color secondaryColor) {
+    final scale = _getSizeScale(size);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Main body
+        Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()..scale(scale),
+          child: Container(
+            width: 80,
+            height: 100,
+            decoration: BoxDecoration(
+              color: primaryColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
+        // Head
+        Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..translate(0, -scale * 60)
+            ..scale(scale),
+          child: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: secondaryColor,
+              borderRadius: BorderRadius.circular(25),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildArmorModel(String baseType, CreatureSize size, Color primaryColor, bool hasGlow) {
     final scale = _getSizeScale(size);
     

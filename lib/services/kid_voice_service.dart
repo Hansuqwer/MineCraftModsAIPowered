@@ -139,10 +139,10 @@ class KidVoiceService {
         }
         
         _isListening = false;
-        
-        if (result != null && result.isNotEmpty) {
+
+        if ((result ?? '').isNotEmpty) {
           print('✅ Kid voice recognized: "$result"');
-          return result;
+          return result ?? '';
         } else {
           print('❌ No words recognized in attempt $_attemptCount');
           

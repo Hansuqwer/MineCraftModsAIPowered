@@ -326,10 +326,11 @@ class _EnhancedMinecraft3DPreviewState extends State<EnhancedMinecraft3DPreview>
                         [0.4, 0, -0.6]
                     ];
 
-                    legPositions.forEach((pos, i) => {
-                        const leg = BABYLON.MeshBuilder.CreateCylinder(`leg${i}`, {
-                            diameter: 0.3 * scale,
-                            height: 0.8 * scale
+                    for (int i = 0; i < legPositions.length; i++) {
+                        final pos = legPositions[i];
+                        final leg = BABYLON.MeshBuilder.CreateCylinder('leg\$i', {
+                            'diameter': 0.3 * scale,
+                            'height': 0.8 * scale
                         }, scene);
                         leg.position = new BABYLON.Vector3(
                             pos[0] * scale,
@@ -339,10 +340,10 @@ class _EnhancedMinecraft3DPreviewState extends State<EnhancedMinecraft3DPreview>
                         leg.parent = parent;
 
                         // Foot
-                        const foot = BABYLON.MeshBuilder.CreateBox(`foot${i}`, {
-                            width: 0.4 * scale,
-                            height: 0.1 * scale,
-                            depth: 0.5 * scale
+                        final foot = BABYLON.MeshBuilder.CreateBox('foot\$i', {
+                            'width': 0.4 * scale,
+                            'height': 0.1 * scale,
+                            'depth': 0.5 * scale
                         }, scene);
                         foot.position = new BABYLON.Vector3(
                             pos[0] * scale,
@@ -350,20 +351,21 @@ class _EnhancedMinecraft3DPreviewState extends State<EnhancedMinecraft3DPreview>
                             pos[1] * scale
                         );
                         foot.parent = parent;
-                    });
+                    }
 
                     // Wings
                     if (hasWings) {
-                        [-1, 1].forEach((side) => {
-                            const wing = BABYLON.MeshBuilder.CreateBox(`wing${side}`, {
-                                width: 0.1 * scale,
-                                height: 1.2 * scale,
-                                depth: 1.5 * scale
+                        for (int sideIdx = 0; sideIdx < 2; sideIdx++) {
+                            final side = sideIdx == 0 ? -1 : 1;
+                            final wing = BABYLON.MeshBuilder.CreateBox('wing\$side', {
+                                'width': 0.1 * scale,
+                                'height': 1.2 * scale,
+                                'depth': 1.5 * scale
                             }, scene);
                             wing.position = new BABYLON.Vector3(side * 0.6 * scale, 1 * scale, 0);
                             wing.rotation.z = side * 0.3;
                             wing.parent = parent;
-                        });
+                        }
                     }
 
                     // Parent all meshes

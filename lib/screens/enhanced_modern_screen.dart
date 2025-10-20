@@ -121,12 +121,7 @@ class _EnhancedModernScreenState extends State<EnhancedModernScreen>
     });
 
     // Generate AI response
-    final aiResponse = await EnhancedVoiceAIService.generateVoiceResponse(
-      userMessage: result,
-      context: 'creation',
-      currentCreature: null,
-      language: _currentLanguage,
-    );
+    final aiResponse = await EnhancedVoiceAIService.generateVoiceResponse(result);
 
     // Speak the response
     await _ttsService.speak(aiResponse);
@@ -696,13 +691,7 @@ class _EnhancedModernScreenState extends State<EnhancedModernScreen>
               onTap: () async {
                 await EnhancedVoiceAIService.setPersonality('friendly_teacher');
                 setState(() {
-                  _currentPersonality = const VoicePersonality(
-                    name: 'Friendly Teacher',
-                    description: 'Warm, encouraging, and educational',
-                    traits: ['encouraging', 'patient', 'educational'],
-                    responseStyle: 'warm and supportive',
-                    emoji: '👩‍🏫',
-                  );
+                  _currentPersonality = VoicePersonality.friendlyTeacher;
                 });
                 Navigator.pop(context);
               },
@@ -714,13 +703,7 @@ class _EnhancedModernScreenState extends State<EnhancedModernScreen>
               onTap: () async {
                 await EnhancedVoiceAIService.setPersonality('playful_friend');
                 setState(() {
-                  _currentPersonality = const VoicePersonality(
-                    name: 'Playful Friend',
-                    description: 'Fun, energetic, and creative',
-                    traits: ['energetic', 'creative', 'humorous'],
-                    responseStyle: 'fun and exciting',
-                    emoji: '🎉',
-                  );
+                  _currentPersonality = VoicePersonality.playfulFriend;
                 });
                 Navigator.pop(context);
               },
@@ -732,31 +715,31 @@ class _EnhancedModernScreenState extends State<EnhancedModernScreen>
               onTap: () async {
                 await EnhancedVoiceAIService.setPersonality('wise_mentor');
                 setState(() {
-                  _currentPersonality = const VoicePersonality(
-                    name: 'Wise Mentor',
-                    description: 'Thoughtful, knowledgeable, and guiding',
-                    traits: ['thoughtful', 'knowledgeable', 'guiding'],
-                    responseStyle: 'wise and thoughtful',
-                    emoji: '🧙‍♂️',
-                  );
+                  _currentPersonality = VoicePersonality.wiseMentor;
                 });
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: const Text('🏔️', style: TextStyle(fontSize: 24)),
-              title: const Text('Adventurous Guide'),
-              subtitle: const Text('Bold, exciting, and inspiring'),
+              leading: const Text('🎨', style: TextStyle(fontSize: 24)),
+              title: const Text('Creative Artist'),
+              subtitle: const Text('Imaginative, expressive, and artistic'),
               onTap: () async {
-                await EnhancedVoiceAIService.setPersonality('adventurous_guide');
+                await EnhancedVoiceAIService.setPersonality('creative_artist');
                 setState(() {
-                  _currentPersonality = const VoicePersonality(
-                    name: 'Adventurous Guide',
-                    description: 'Bold, exciting, and inspiring',
-                    traits: ['bold', 'exciting', 'inspiring'],
-                    responseStyle: 'bold and adventurous',
-                    emoji: '🏔️',
-                  );
+                  _currentPersonality = VoicePersonality.creativeArtist;
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Text('💪', style: TextStyle(fontSize: 24)),
+              title: const Text('Encouraging Coach'),
+              subtitle: const Text('Motivational, supportive, and positive'),
+              onTap: () async {
+                await EnhancedVoiceAIService.setPersonality('encouraging_coach');
+                setState(() {
+                  _currentPersonality = VoicePersonality.encouragingCoach;
                 });
                 Navigator.pop(context);
               },

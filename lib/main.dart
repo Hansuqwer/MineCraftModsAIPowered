@@ -17,18 +17,15 @@ import 'screens/legal_settings_screen.dart';
 import 'screens/creature_sharing_screen.dart';
 import 'screens/dragon_couch_preview.dart';
 import 'screens/ai_setup_screen.dart';
-// import 'screens/minecraft_3d_viewer_screen.dart';
-// import 'screens/enhanced_modern_screen.dart';
+import 'screens/minecraft_3d_viewer_screen.dart';
+import 'screens/enhanced_modern_screen.dart';
 import 'screens/community_gallery_screen.dart';
-// import 'screens/kid_friendly_screen.dart';
+import 'screens/kid_friendly_screen.dart';
 import 'screens/voice_calibration_screen.dart';
 import 'screens/voice_settings_screen.dart';
 import 'screens/item_type_selection_screen.dart';
 import 'screens/material_selection_screen.dart';
 import 'screens/enhanced_creator_basic.dart';
-// import 'screens/enhanced_modern_screen.dart';
-// import 'screens/minecraft_3d_viewer_screen.dart';
-// import 'screens/kid_friendly_screen.dart';
 import 'models/enhanced_creature_attributes.dart';
 import 'models/item_type.dart';
 import 'services/google_cloud_service.dart';
@@ -128,16 +125,16 @@ class CraftaApp extends StatelessWidget {
         },
         '/dragon-couch-preview': (context) => const DragonCouchPreviewScreen(),
         '/ai-setup': (context) => const AISetupScreen(),
-        // '/minecraft-3d-viewer': (context) {
-        //   final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-        //   return Minecraft3DViewerScreen(
-        //     creatureAttributes: EnhancedCreatureAttributes.fromMap(args['creatureAttributes']),
-        //     creatureName: args['creatureName'],
-        //   );
-        // },
-        // '/enhanced-modern': (context) => const EnhancedModernScreen(),
+        '/minecraft-3d-viewer': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return Minecraft3DViewerScreen(
+            creatureAttributes: args['creatureAttributes'] as EnhancedCreatureAttributes,
+            creatureName: args['creatureName'] as String,
+          );
+        },
+        '/enhanced-modern': (context) => const EnhancedModernScreen(),
         '/community-gallery': (context) => const CommunityGalleryScreen(),
-        // '/kid-friendly': (context) => const KidFriendlyScreen(),
+        '/kid-friendly': (context) => const KidFriendlyScreen(),
         '/voice-calibration': (context) => const VoiceCalibrationScreen(),
         '/voice-settings': (context) => const VoiceSettingsScreen(),
         '/item-type-selection': (context) => const ItemTypeSelectionScreen(),

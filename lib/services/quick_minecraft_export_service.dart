@@ -101,6 +101,89 @@ class QuickMinecraftExportService {
     return normalized;
   }
 
+  /// PHASE 0.2: Determine if attributes represent an item or creature
+  static String detectType(Map<String, dynamic> attributes) {
+    final baseType = (attributes['baseType'] ?? 'creature').toString().toLowerCase();
+    final category = (attributes['category'] ?? 'creature').toString().toLowerCase();
+
+    // List of known items (non-creatures)
+    const itemTypes = [
+      'sword',
+      'shield',
+      'bow',
+      'arrow',
+      'wand',
+      'staff',
+      'hammer',
+      'axe',
+      'car',
+      'truck',
+      'boat',
+      'plane',
+      'rocket',
+      'spaceship',
+      'train',
+      'bike',
+      'house',
+      'castle',
+      'tower',
+      'bridge',
+      'tunnel',
+      'cave',
+      'tent',
+      'fort',
+      'crown',
+      'ring',
+      'gem',
+      'crystal',
+      'key',
+      'treasure',
+      'coin',
+      'star',
+    ];
+
+    final isItem =
+        itemTypes.contains(baseType) || category == 'weapon' || category == 'item' || category == 'vehicle' || category == 'furniture';
+
+    final type = isItem ? 'item' : 'creature';
+    print('🔍 [EXPORT] Type detection: "$baseType" → $type');
+
+    return type;
+  }
+
+  /// PHASE 0.2: Route to appropriate export service based on type
+  static Future<String> quickExportCreatureWithRouting({
+    required Map<String, dynamic> creatureAttributes,
+    required String creatureName,
+    required String worldType,
+  }) async {
+    try {
+      final type = detectType(creatureAttributes);
+      print('🚀 [EXPORT] Routing: type=$type, creature=$creatureName');
+
+      if (type == 'item') {
+        print('📦 [EXPORT] Detected as ITEM - routing to item export (PHASE B)');
+        // TODO: Route to ItemExportService when Phase B is implemented
+        // For now, continue with creature export
+        return await quickExportCreature(
+          creatureAttributes: creatureAttributes,
+          creatureName: creatureName,
+          worldType: worldType,
+        );
+      } else {
+        print('🐉 [EXPORT] Detected as CREATURE - using entity export');
+        return await quickExportCreature(
+          creatureAttributes: creatureAttributes,
+          creatureName: creatureName,
+          worldType: worldType,
+        );
+      }
+    } catch (e) {
+      print('❌ [EXPORT] Error in routing: $e');
+      rethrow;
+    }
+  }
+
   /// Check if .mcpack file exists and is valid
   static Future<bool> validateMcpackFile(String mcpackPath) async {
     try {

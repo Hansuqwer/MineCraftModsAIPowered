@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'dart:async';
 import 'dart:math';
+import 'enhanced_ai_service.dart';
 
 /// Kid-Friendly Voice Service
 /// Optimized for children ages 4-10
@@ -188,16 +189,38 @@ class KidVoiceService {
   }
 
   /// Parse kid voice input into item attributes with enhanced intelligence
-  Map<String, dynamic> parseKidVoice(String voiceInput) {
+  /// Parse kid voice with AI first, fallback to keyword matching
+  Future<Map<String, dynamic>> parseKidVoiceWithAI(String voiceInput) async {
+    print('🔍 Parsing kid voice: "$voiceInput"');
+
+    try {
+      // Try AI parsing first (PHASE 0.1 improvement)
+      print('🤖 Attempting AI parsing...');
+      final aiAttributes = await EnhancedAIService
+          .parseEnhancedCreatureRequest('Create minecraft item: $voiceInput');
+
+      // Convert to map format
+      final attributes = _convertAIAttributesToMap(aiAttributes);
+      print('✅ AI parsing successful: $attributes');
+      return attributes;
+    } catch (e) {
+      print('⚠️ AI parsing failed, falling back to keyword matching: $e');
+      // Fall back to local keyword matching
+      return parseKidVoiceLocal(voiceInput);
+    }
+  }
+
+  /// Local keyword matching (fallback if AI fails)
+  Map<String, dynamic> parseKidVoiceLocal(String voiceInput) {
     final lowerInput = voiceInput.toLowerCase();
     final attributes = <String, dynamic>{};
-    
-    print('🔍 Parsing kid voice: "$voiceInput"');
-    
+
+    print('🔍 Using local keyword matching for: "$voiceInput"');
+
     // Enhanced item detection with fuzzy matching
     String? detectedItem;
     int bestMatch = 0;
-    
+
     for (final item in _kidCommands['items']!) {
       // Exact match gets highest priority
       if (lowerInput.contains(item)) {
@@ -208,13 +231,13 @@ class KidVoiceService {
         }
       }
     }
-    
+
     if (detectedItem != null) {
       attributes['baseType'] = detectedItem;
       attributes['category'] = _getItemCategory(detectedItem);
       print('✅ Detected item: $detectedItem');
     }
-    
+
     // Enhanced color detection
     Color? detectedColor;
     for (final color in _kidCommands['colors']!) {
@@ -223,12 +246,12 @@ class KidVoiceService {
         break;
       }
     }
-    
+
     if (detectedColor != null) {
       attributes['primaryColor'] = detectedColor;
       print('✅ Detected color: ${detectedColor.toString()}');
     }
-    
+
     // Enhanced effects detection
     final effects = <String>[];
     for (final effect in _kidCommands['effects']!) {
@@ -236,12 +259,12 @@ class KidVoiceService {
         effects.add(effect);
       }
     }
-    
+
     if (effects.isNotEmpty) {
       attributes['effects'] = effects;
       print('✅ Detected effects: $effects');
     }
-    
+
     // Smart defaults based on context
     if (attributes['baseType'] == null) {
       // Try to guess from context
@@ -259,14 +282,64 @@ class KidVoiceService {
         attributes['category'] = 'creature';
       }
     }
-    
+
     // Set smart defaults
     attributes['primaryColor'] ??= Colors.blue;
     attributes['size'] ??= 'medium';
     attributes['personality'] ??= 'friendly';
-    
+
     print('✅ Final parsed attributes: $attributes');
     return attributes;
+  }
+
+  /// Convert EnhancedCreatureAttributes to the map format
+  Map<String, dynamic> _convertAIAttributesToMap(
+    dynamic attributes,
+  ) {
+    try {
+      // Handle both EnhancedCreatureAttributes object and Map
+      final Map<String, dynamic> result = {};
+
+      if (attributes is Map) {
+        // Already a map
+        result['baseType'] = attributes['baseType'] ?? 'creature';
+        result['primaryColor'] = attributes['primaryColor'] ?? Colors.blue;
+        result['category'] = _getItemCategory(attributes['baseType'] ?? 'creature');
+      } else {
+        // It's an EnhancedCreatureAttributes object
+        // Access properties via reflection or toString
+        result['baseType'] = attributes.baseType ?? 'creature';
+        result['primaryColor'] = attributes.primaryColor ?? Colors.blue;
+        result['category'] = _getItemCategory(attributes.baseType ?? 'creature');
+        result['size'] = attributes.size?.toString().split('.').last ?? 'medium';
+        result['personality'] = attributes.personality?.toString().split('.').last ?? 'friendly';
+      }
+
+      // Ensure required fields
+      result['primaryColor'] ??= Colors.blue;
+      result['size'] ??= 'medium';
+      result['personality'] ??= 'friendly';
+      result['effects'] ??= [];
+
+      return result;
+    } catch (e) {
+      print('⚠️ Error converting AI attributes: $e');
+      // Return safe defaults
+      return {
+        'baseType': 'creature',
+        'primaryColor': Colors.blue,
+        'category': 'creature',
+        'size': 'medium',
+        'personality': 'friendly',
+        'effects': [],
+      };
+    }
+  }
+
+  /// Legacy method - kept for backward compatibility
+  Map<String, dynamic> parseKidVoice(String voiceInput) {
+    // Just call the local version for sync calls
+    return parseKidVoiceLocal(voiceInput);
   }
 
   /// Get item category from item name

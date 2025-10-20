@@ -470,9 +470,9 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
     );
 
     try {
-      // Step 1: Export to .mcpack file
-      print('📦 Starting quick export...');
-      final mcpackPath = await QuickMinecraftExportService.quickExportCreature(
+      // Step 1: Export to .mcpack file (with PHASE 0.2 routing)
+      print('📦 Starting quick export with type detection...');
+      final mcpackPath = await QuickMinecraftExportService.quickExportCreatureWithRouting(
         creatureAttributes: widget.creatureAttributes,
         creatureName: widget.creatureName,
         worldType: worldType,

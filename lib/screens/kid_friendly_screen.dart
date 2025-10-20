@@ -94,8 +94,9 @@ class _KidFriendlyScreenState extends State<KidFriendlyScreen>
       _isListening = false;
     });
 
-    // Parse the voice input
-    final attributes = _kidVoiceService.parseKidVoice(result);
+    // Parse the voice input with AI (PHASE 0.1 improvement)
+    try {
+      final attributes = await _kidVoiceService.parseKidVoiceWithAI(result);
     
     // Create item attributes
     _currentAttributes = EnhancedCreatureAttributes(
@@ -133,6 +134,10 @@ class _KidFriendlyScreenState extends State<KidFriendlyScreen>
         });
       }
     });
+    } catch (e) {
+      print('❌ Error parsing voice: $e');
+      _handleEncouragement('Oops! Let me try again.');
+    }
   }
 
   void _handleEncouragement(String message) {

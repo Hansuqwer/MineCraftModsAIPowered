@@ -88,6 +88,7 @@ class _VoiceTestScreenState extends State<VoiceTestScreen> {
     }
 
     _addLog('🎤 Starting speech recognition...');
+    _addLog('⏳ Give it 2-3 seconds after AI finishes speaking, then speak clearly');
     setState(() {
       _isListening = true;
       _recognizedText = '';
@@ -96,6 +97,12 @@ class _VoiceTestScreenState extends State<VoiceTestScreen> {
     try {
       await _speechService.startListening(
         onResult: (result) {
+          // ECHO CANCELLATION: Ignore if result contains common AI greeting phrases
+          if (_isLikelyEcho(result)) {
+            _addLog('⚠️ Echo detected - ignoring AI voice: $result');
+            return;
+          }
+
           _addLog('✅ Speech recognized: $result');
           setState(() {
             _recognizedText = result;
@@ -128,6 +135,28 @@ class _VoiceTestScreenState extends State<VoiceTestScreen> {
     }
   }
 
+  // ECHO CANCELLATION: Detect if the recognized text is likely the AI speaking, not user
+  bool _isLikelyEcho(String recognized) {
+    final lowerRecognized = recognized.toLowerCase();
+
+    // Common phrases the AI says - if we recognize these, it's probably echo
+    final aiPhrases = [
+      'hello i am crafta',
+      'please say something',
+      'you said',
+      'great job you are amazing',
+      'test spoken successfully',
+    ];
+
+    for (final phrase in aiPhrases) {
+      if (lowerRecognized.contains(phrase)) {
+        return true; // Likely echo from AI speaking
+      }
+    }
+
+    return false; // Likely user speaking
+  }
+
   Future<void> _testTextOutput(String text) async {
     if (!_ttsInitialized) {
       _addLog('❌ TTS service not initialized');
@@ -148,7 +177,11 @@ class _VoiceTestScreenState extends State<VoiceTestScreen> {
     _addLog('Step 1: Speaking test message');
 
     await _testTextOutput('Hello! I am Crafta. Please say something!');
-    await Future.delayed(const Duration(seconds: 2));
+
+    // CRITICAL FIX: Wait longer for TTS to finish before listening
+    // This prevents microphone from picking up the AI's own voice
+    _addLog('⏳ Waiting for TTS to finish (5 seconds)...');
+    await Future.delayed(const Duration(seconds: 5));
 
     _addLog('Step 2: Listening for your response');
     await _testSpeechInput();

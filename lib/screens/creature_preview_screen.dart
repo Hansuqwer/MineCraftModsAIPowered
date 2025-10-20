@@ -3,6 +3,8 @@ import '../widgets/creature_preview.dart';
 import '../widgets/creature_3d_preview.dart';
 import '../widgets/enhanced_creature_preview.dart';
 import '../services/tts_service.dart';
+import '../services/quick_minecraft_export_service.dart';
+import '../services/minecraft_launcher_service.dart';
 
 class CreaturePreviewScreen extends StatefulWidget {
   final Map<String, dynamic> creatureAttributes;
@@ -468,31 +470,77 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
     );
 
     try {
-      // TODO: Call QuickMinecraftExportService when created
-      // final mcpackPath = await QuickMinecraftExportService.quickExportCreature(
-      //   creatureAttributes: widget.creatureAttributes,
-      //   creatureName: widget.creatureName,
-      //   worldType: worldType,
-      // );
-
-      // TODO: Launch Minecraft
-      // await MinecraftLauncherService.launchMinecraftWithAddon(
-      //   mcpackPath,
-      //   worldType,
-      // );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ Launching Minecraft...'),
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.green,
-        ),
+      // Step 1: Export to .mcpack file
+      print('📦 Starting quick export...');
+      final mcpackPath = await QuickMinecraftExportService.quickExportCreature(
+        creatureAttributes: widget.creatureAttributes,
+        creatureName: widget.creatureName,
+        worldType: worldType,
       );
+
+      print('✅ Export complete: $mcpackPath');
+
+      // Step 2: Validate .mcpack file
+      final isValid = await QuickMinecraftExportService.validateMcpackFile(mcpackPath);
+      if (!isValid) {
+        throw Exception('.mcpack file validation failed');
+      }
+
+      // Step 3: Check if Minecraft installed
+      final isMinecraftInstalled = await MinecraftLauncherService.isMinecraftInstalled();
+
+      if (isMinecraftInstalled) {
+        // Step 4: Launch Minecraft
+        print('🚀 Launching Minecraft...');
+        await MinecraftLauncherService.launchMinecraftWithAddon(
+          mcpackPath,
+          worldType,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Launching Minecraft...'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        // Minecraft not installed - show instructions
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('⚠️ Minecraft not detected. File saved to Downloads.'),
+            duration: const Duration(seconds: 5),
+            backgroundColor: Colors.orange,
+            action: SnackBarAction(
+              label: 'More Info',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Import Addon to Minecraft'),
+                    content: Text(
+                      MinecraftLauncherService.getMissingMinecraftInstructions(),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      }
     } catch (e) {
+      print('❌ Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('❌ Error: $e'),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
         ),
       );
     }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/enhanced_voice_ai_service.dart';
 import '../services/voice_personality_service.dart';
 import '../services/educational_voice_service.dart';
-import '../widgets/conversational_voice_widget.dart';
+// import '../widgets/conversational_voice_widget.dart'; // DISABLED: broken widget
 import '../theme/kid_friendly_theme.dart';
 import '../models/conversation.dart';
 
@@ -196,15 +196,15 @@ class _EnhancedCreatorScreenSimpleState extends State<EnhancedCreatorScreenSimpl
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
-                            // Voice interaction widget
-                            ConversationalVoiceWidget(
-                              onResponse: _onVoiceResponse,
-                              onError: _onVoiceError,
-                              isEnabled: true,
-                            ),
-                            
+                            // Voice interaction widget - DISABLED: widget broken
+                            // ConversationalVoiceWidget(
+                            //   onResponse: _onVoiceResponse,
+                            //   onError: _onVoiceError,
+                            //   isEnabled: true,
+                            // ),
+
                             const SizedBox(height: 32),
-                            
+
                             // Response display
                             _buildResponseArea(),
                             

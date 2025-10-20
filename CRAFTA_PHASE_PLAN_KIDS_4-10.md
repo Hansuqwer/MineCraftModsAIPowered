@@ -295,3 +295,4 @@ class KidAIPersonality {
 **Phase 1 begins now!** Let's make Crafta the best voice-powered creation app for kids 4-10! 🎮✨
 
 
+

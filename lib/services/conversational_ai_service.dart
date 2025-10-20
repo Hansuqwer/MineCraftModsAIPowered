@@ -327,7 +327,7 @@ class ConversationalAIService {
     // Analyze user input for specific details
     final details = _extractDetailsFromInput(userInput);
     if (details.isNotEmpty) {
-      final detail = details.first;
+      final detail = details.keys.first; // Fixed: get first key from map
       final value = details[detail];
       return '${personality.responses[Random().nextInt(personality.responses.length)]} I\'ll make it $value! What else should we add?';
     }

@@ -51,7 +51,8 @@ class EnhancedExportService {
   /// Get all exports
   static Future<List<ExportRecord>> getAllExports() async {
     try {
-      final exports = await LocalStorageService.loadData(_exportsKey);
+      final storage = LocalStorageService();
+      final exports = await storage.loadData(_exportsKey);
       if (exports == null) return [];
 
       final List<dynamic> exportList = exports['exports'] ?? [];
@@ -136,7 +137,8 @@ class EnhancedExportService {
 
   /// Clean up old exports
   static Future<void> _cleanupOldExports() async {
-    final maxExports = await LocalStorageService.loadData(_maxExports);
+    final storage = LocalStorageService();
+    final maxExports = await storage.loadData(_maxExports);
     final maxCount = maxExports?['value'] ?? _defaultMaxExports;
 
     final exports = await getAllExports();
@@ -146,7 +148,7 @@ class EnhancedExportService {
     exports.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
     // Delete oldest exports
-    final toDelete = exports.take(exports.length - maxCount).toList();
+    final toDelete = exports.take((exports.length - maxCount) as int).toList();
     for (final export in toDelete) {
       await deleteExport(export.id);
     }
@@ -161,25 +163,28 @@ class EnhancedExportService {
 
   /// Save export records
   static Future<void> _saveExportRecords(List<ExportRecord> exports) async {
+    final storage = LocalStorageService();
     final data = {
       'exports': exports.map((e) => e.toMap()).toList(),
       'lastUpdated': DateTime.now().millisecondsSinceEpoch,
     };
-    await LocalStorageService.saveData(_exportsKey, data);
+    await storage.saveData(_exportsKey, data);
   }
 
   /// Set maximum number of exports
   static Future<void> setMaxExports(int maxExports) async {
+    final storage = LocalStorageService();
     final data = {
       'value': maxExports,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
     };
-    await LocalStorageService.saveData(_maxExports, data);
+    await storage.saveData(_maxExports, data);
   }
 
   /// Get maximum number of exports
   static Future<int> getMaxExports() async {
-    final data = await LocalStorageService.loadData(_maxExports);
+    final storage = LocalStorageService();
+    final data = await storage.loadData(_maxExports);
     return data?['value'] ?? _defaultMaxExports;
   }
 

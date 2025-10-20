@@ -97,43 +97,29 @@ class _KidFriendlyScreenState extends State<KidFriendlyScreen>
     // Parse the voice input with AI (PHASE 0.1 improvement)
     try {
       final attributes = await _kidVoiceService.parseKidVoiceWithAI(result);
-    
-    // Create item attributes
-    _currentAttributes = EnhancedCreatureAttributes(
-      baseType: attributes['baseType'] ?? 'creature',
-      primaryColor: attributes['primaryColor'] ?? Colors.blue,
-      secondaryColor: Colors.white,
-      accentColor: Colors.yellow,
-      size: _getSizeFromString(attributes['size'] ?? 'medium'),
-      personality: _getPersonalityFromString(attributes['personality'] ?? 'friendly'),
-      abilities: _getAbilitiesFromEffects(attributes['effects'] ?? []),
-      accessories: [],
-      patterns: [Pattern.none],
-      texture: TextureType.smooth,
-      glowEffect: GlowEffect.none,
-      animationStyle: CreatureAnimationStyle.natural,
-      customName: 'Voice Creation',
-      description: 'Created with voice!',
-    );
-    
+
     _currentItemName = _generateItemName(attributes);
-    
+
     // Show encouragement
     setState(() {
-      _encouragementMessage = _kidVoiceService.getRandomEncouragement();
+      _encouragementMessage = 'Great! Let me show you what I created!';
     });
-    
-    // Start sparkle animation
-    _sparkleController.forward();
-    
-    // Clear encouragement after 3 seconds
-    Future.delayed(Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _encouragementMessage = '';
-        });
-      }
-    });
+
+    // Wait for encouragement to be spoken
+    await Future.delayed(Duration(seconds: 2));
+
+    if (!mounted) return;
+
+    // PHASE E: Navigate to preview approval screen instead of showing inline
+    Navigator.pushNamed(
+      context,
+      '/creature-preview-approval',
+      arguments: {
+        'creatureAttributes': attributes,
+        'creatureName': _currentItemName,
+      },
+    );
+
     } catch (e) {
       print('❌ Error parsing voice: $e');
       _handleEncouragement('Oops! Let me try again.');
@@ -563,75 +549,6 @@ class _KidFriendlyScreenState extends State<KidFriendlyScreen>
                     ),
                   
                   SizedBox(height: KidFriendlyTheme.hugeSpacing),
-                  
-                  // 3D Preview
-                  if (_currentAttributes != null)
-                    KidFriendlyCard(
-                      color: KidFriendlyTheme.backgroundLight,
-                      padding: EdgeInsets.zero,
-                      child: Container(
-                        height: 350,
-                        decoration: BoxDecoration(
-                          gradient: KidFriendlyTheme.getSunsetGradient(),
-                          borderRadius: BorderRadius.circular(KidFriendlyTheme.largeRadius),
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(KidFriendlyTheme.largeSpacing),
-                              child: Text(
-                                'Your $_currentItemName',
-                                style: TextStyle(
-                                  fontSize: KidFriendlyTheme.headingFontSize,
-                                  fontWeight: FontWeight.bold,
-                                  color: KidFriendlyTheme.textWhite,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                margin: EdgeInsets.all(KidFriendlyTheme.mediumSpacing),
-                                decoration: BoxDecoration(
-                                  color: KidFriendlyTheme.backgroundLight,
-                                  borderRadius: BorderRadius.circular(KidFriendlyTheme.mediumRadius),
-                                ),
-                                child: Simple3DPreview(
-                                  creatureAttributes: _currentAttributes!,
-                                  creatureName: _currentItemName,
-                                ),
-                              ),
-                            ),
-                            // Action buttons
-                            Padding(
-                              padding: EdgeInsets.all(KidFriendlyTheme.mediumSpacing),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  KidFriendlyButton(
-                                    text: '🎮 Put in Game',
-                                    onPressed: () => _exportToMinecraft(),
-                                    color: KidFriendlyTheme.primaryGreen,
-                                    width: 140,
-                                    height: 50,
-                                    icon: Icons.videogame_asset,
-                                  ),
-                                  KidFriendlyButton(
-                                    text: '🔄 Create Another',
-                                    onPressed: () => _createAnother(),
-                                    color: KidFriendlyTheme.primaryPurple,
-                                    width: 140,
-                                    height: 50,
-                                    icon: Icons.refresh,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  
-                  SizedBox(height: KidFriendlyTheme.largeSpacing),
                   
                   // Last voice result
                   if (_lastVoiceResult.isNotEmpty)

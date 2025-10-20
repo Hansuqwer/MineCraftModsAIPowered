@@ -28,6 +28,7 @@ import 'screens/material_selection_screen.dart';
 import 'screens/enhanced_creator_basic.dart';
 import 'screens/voice_test_screen.dart';
 import 'screens/voice_first_creator.dart';
+import 'screens/creature_preview_approval_screen.dart';
 import 'models/enhanced_creature_attributes.dart';
 import 'models/item_type.dart';
 import 'services/google_cloud_service.dart';
@@ -147,6 +148,13 @@ class CraftaApp extends StatelessWidget {
         '/enhanced-creator': (context) => const EnhancedCreatorBasic(),
         '/voice-test': (context) => const VoiceTestScreen(),
         '/voice-first': (context) => const VoiceFirstCreator(),
+        '/creature-preview-approval': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return CreaturePreviewApprovalScreen(
+            creatureAttributes: args['creatureAttributes'],
+            creatureName: args['creatureName'],
+          );
+        },
             },
     );
   }

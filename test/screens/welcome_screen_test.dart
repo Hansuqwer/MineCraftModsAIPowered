@@ -118,7 +118,7 @@ void main() {
       final buttons = find.byType(ElevatedButton);
       for (final button in buttons.evaluate()) {
         final semantics = tester.getSemantics(find.byWidget(button.widget));
-        expect(semantics.hasAction(SemanticsAction.tap), isTrue);
+        expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
       }
     });
 

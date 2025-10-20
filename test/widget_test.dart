@@ -19,6 +19,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Check for welcome text or Crafta branding
-    expect(find.textContaining('Crafta', findRichText: true), findsAtLeastOneWidget);
+    expect(find.textContaining('Crafta', findRichText: true), findsWidgets);
   });
 }

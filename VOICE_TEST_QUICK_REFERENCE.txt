@@ -1,0 +1,93 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    VOICE TEST - QUICK REFERENCE CARD
+═══════════════════════════════════════════════════════════════════════════════
+
+🎯 OBJECTIVE: Test Speech-to-Text and Text-to-Speech functionality
+
+📱 ACCESS:
+  1. Deploy APK to Android device: adb install build/app/outputs/flutter-apk/app-release.apk
+  2. Open app
+  3. Navigate to: /voice-test screen
+  4. See two status cards at top (should both show ✅)
+
+───────────────────────────────────────────────────────────────────────────────
+
+🧪 TEST 1: Speech-to-Text (T1.1)
+  Button: "Test Speech Input"
+  Action: Click → Listen → Speak clearly when it says "Listening..."
+  Example: "I want a red dragon"
+  Success: See text appear in "Recognized Text" box
+  Expect: 🎤 VOICE TEST: ✅ Speech recognized: [your words]
+
+🔊 TEST 2: Text-to-Speech Hello (T1.2)
+  Button: "Test TTS: Hello"
+  Action: Click → Listen for audio
+  Expected: Hear "Hello! This is Crafta speaking!"
+  Success: Clear voice output, no errors
+
+🎉 TEST 3: Text-to-Speech Celebration (T1.3)
+  Button: "Test TTS: Celebration"
+  Action: Click → Listen for audio
+  Expected: Hear "Great job! You are amazing!"
+  Success: Different tone from Test 2
+
+🔄 TEST 4: Complete Voice Loop (T1.4) ⭐ MOST IMPORTANT
+  Button: "Test Complete Voice Loop"
+  Action: Click → Listen for greeting → Speak when prompted → Hear echo
+  Steps:
+    1. Hear: "Hello! I am Crafta. Please say something!"
+    2. Say: "I want a blue sword" or "Make me a flying horse"
+    3. Wait (15 seconds listening)
+    4. Hear: "You said: [your words]"
+  Success: Full conversation works end-to-end
+
+───────────────────────────────────────────────────────────────────────────────
+
+⚠️  IMPORTANT:
+  • Use REAL Android device (not emulator - no audio support)
+  • Grant microphone permission when asked
+  • Test in QUIET environment
+  • Speak CLEARLY and SLOWLY
+  • Keep app open (don't minimize)
+  • Check device is NOT MUTED
+  • Expect 15-20 second delays (normal)
+
+───────────────────────────────────────────────────────────────────────────────
+
+✅ SUCCESS CHECKLIST:
+  [ ] Test 1: Speech recognized (text appeared)
+  [ ] Test 2: Heard "Hello" message
+  [ ] Test 3: Heard celebration message
+  [ ] Test 4: Complete loop worked (speak → listen → echo)
+  [ ] No blocking errors in test log
+  [ ] Ready for STEP 2: 3D Rendering
+
+❌ IF TESTS FAIL:
+  • Microphone not working → Check Settings → Apps → Crafta → Permissions
+  • No audio output → Check device volume (not muted) → Check speaker
+  • No speech recognized → Speak louder, slower, clearer → Try again
+  • Services not initialized → Restart app → Check permissions
+  • See error in log → Note error text for debugging
+
+───────────────────────────────────────────────────────────────────────────────
+
+📊 REPORT RESULTS:
+  When done, note:
+  ✅ Which tests passed
+  ❌ Which tests failed (if any)
+  📝 Any error messages from test log
+  📱 Device info: [Model, Android version]
+  💡 Any other observations
+
+───────────────────────────────────────────────────────────────────────────────
+
+🚀 READY TO TEST?
+  1. Connect Android device
+  2. Run: flutter build apk --release
+  3. Run: adb install build/app/outputs/flutter-apk/app-release.apk
+  4. Open app
+  5. Navigate to /voice-test
+  6. Run tests in order: T1.1 → T1.2 → T1.3 → T1.4
+  7. Report results
+
+═══════════════════════════════════════════════════════════════════════════════

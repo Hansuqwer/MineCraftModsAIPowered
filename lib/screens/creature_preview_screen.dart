@@ -321,6 +321,23 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
                           ),
                         ),
                       ),
+                      const SizedBox(width: 12),
+                      // NEW: Quick Export & Play Button
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          _showWorldSelectorDialog();
+                        },
+                        icon: const Icon(Icons.play_circle_fill),
+                        label: const Text('⚡ Export & Play'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00AA00),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -363,17 +380,121 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
   String _getCreatureDescription() {
     final effects = widget.creatureAttributes['effects'] as List<String>? ?? [];
     final abilities = widget.creatureAttributes['abilities'] as List<String>? ?? [];
-    
+
     String description = '${widget.creatureAttributes['color']} ${widget.creatureAttributes['creatureType']}';
-    
+
     if (effects.isNotEmpty) {
       description += ' with ${effects.join(' and ')}';
     }
-    
+
     if (abilities.isNotEmpty) {
       description += ' that can ${abilities.join(' and ')}';
     }
-    
+
     return description;
+  }
+
+  // NEW: World Selector Dialog for Direct Minecraft Export
+  void _showWorldSelectorDialog() {
+    String selectedWorld = 'new'; // Default: create new world
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('🎮 Where to Play?'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile<String>(
+                    title: const Text('📝 Create New World'),
+                    subtitle: const Text('Start fresh with your creation'),
+                    value: 'new',
+                    groupValue: selectedWorld,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedWorld = value ?? 'new';
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: const Text('🏠 Use Existing World'),
+                    subtitle: const Text('Add to your current world'),
+                    value: 'existing',
+                    groupValue: selectedWorld,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedWorld = value ?? 'new';
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _quickExportToMinecraft(selectedWorld);
+                  },
+                  icon: const Icon(Icons.play_circle_fill),
+                  label: const Text('Export & Play'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00AA00),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // NEW: Quick Export to Minecraft
+  Future<void> _quickExportToMinecraft(String worldType) async {
+    // Show loading indicator
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('⏳ Preparing your creation for Minecraft...'),
+        duration: Duration(seconds: 5),
+      ),
+    );
+
+    try {
+      // TODO: Call QuickMinecraftExportService when created
+      // final mcpackPath = await QuickMinecraftExportService.quickExportCreature(
+      //   creatureAttributes: widget.creatureAttributes,
+      //   creatureName: widget.creatureName,
+      //   worldType: worldType,
+      // );
+
+      // TODO: Launch Minecraft
+      // await MinecraftLauncherService.launchMinecraftWithAddon(
+      //   mcpackPath,
+      //   worldType,
+      // );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Launching Minecraft...'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

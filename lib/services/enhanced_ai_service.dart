@@ -41,17 +41,30 @@ class EnhancedAIService {
   static Future<EnhancedCreatureAttributes> parseEnhancedCreatureRequest(
     String userMessage,
   ) async {
+    print('🔍 [ENHANCED_AI] === API CALL START ===');
+    print('🔍 [ENHANCED_AI] User request: $userMessage');
+
     try {
-      // Get API key
+      // Step 1: Get API key
+      print('🔍 [ENHANCED_AI] Step 1: Loading API key...');
       final apiKey = await _getApiKey();
 
       // If no API key, use offline mode
       if (apiKey == null) {
-        print('⚠️ [ENHANCED_AI] No API key available, using fallback');
+        print('❌ [ENHANCED_AI] FAILED: No API key found in storage or .env');
+        print('💡 [ENHANCED_AI] User needs to configure API key in settings');
+        print('⚠️ [ENHANCED_AI] Falling back to offline mode (default creature)');
         return _getDefaultAttributes(userMessage);
       }
 
-      print('🚀 [ENHANCED_AI] Making API call with key: ${apiKey.substring(0, 7)}...');
+      print('✅ [ENHANCED_AI] Step 1: API key loaded: ${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}');
+      print('🔍 [ENHANCED_AI] Key length: ${apiKey.length} characters');
+
+      // Step 2: Make API call with timeout
+      print('🔍 [ENHANCED_AI] Step 2: Making API call to OpenAI...');
+      print('🔍 [ENHANCED_AI] Endpoint: $_baseUrl');
+      print('🔍 [ENHANCED_AI] Model: gpt-4o-mini');
+      print('🔍 [ENHANCED_AI] Message length: ${userMessage.length} chars');
 
       final response = await http.post(
         Uri.parse(_baseUrl),
@@ -74,20 +87,63 @@ class EnhancedAIService {
           'temperature': 0.7,
           'max_tokens': 1000,
         }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          print('❌ [ENHANCED_AI] FAILED: API request timed out after 30 seconds');
+          print('💡 [ENHANCED_AI] This usually means slow internet connection');
+          throw Exception('OpenAI API timeout - Check your internet connection');
+        },
       );
 
+      print('🔍 [ENHANCED_AI] Step 2: Response received');
+      print('🔍 [ENHANCED_AI] Status code: ${response.statusCode}');
+
+      // Step 3: Parse response
       if (response.statusCode == 200) {
+        print('✅ [ENHANCED_AI] Step 3: Parsing successful response...');
         final data = jsonDecode(response.body);
         final content = data['choices'][0]['message']['content'];
-        print('✅ [ENHANCED_AI] API call successful, parsing response');
-        print('🤖 [ENHANCED_AI] AI Response: $content');
+        print('✅ [ENHANCED_AI] === API CALL SUCCESS ===');
+        print('🤖 [ENHANCED_AI] Response preview: ${content.substring(0, content.length > 100 ? 100 : content.length)}...');
         return _parseAIResponse(content);
       } else {
-        print('❌ [ENHANCED_AI] API error: ${response.statusCode} - ${response.body}');
+        print('❌ [ENHANCED_AI] FAILED: OpenAI API returned error status');
+        print('❌ [ENHANCED_AI] Status: ${response.statusCode}');
+        print('❌ [ENHANCED_AI] Body: ${response.body}');
+
+        // Parse error message if available
+        String errorMessage = 'API error ${response.statusCode}';
+        try {
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['error']?['message'] ?? errorMessage;
+          print('❌ [ENHANCED_AI] Error message: $errorMessage');
+        } catch (e) {
+          // Couldn't parse error body
+        }
+
+        print('⚠️ [ENHANCED_AI] Falling back to offline mode');
         return _getDefaultAttributes(userMessage);
       }
+    } on Exception catch (e) {
+      print('❌ [ENHANCED_AI] === API CALL FAILED ===');
+      print('❌ [ENHANCED_AI] Error type: ${e.runtimeType}');
+      print('❌ [ENHANCED_AI] Error: $e');
+
+      if (e.toString().contains('SocketException')) {
+        print('💡 [ENHANCED_AI] Network error - No internet connection or can\'t reach OpenAI servers');
+      } else if (e.toString().contains('timeout')) {
+        print('💡 [ENHANCED_AI] Timeout error - Request took too long (>30 seconds)');
+      } else {
+        print('💡 [ENHANCED_AI] Unexpected error - See details above');
+      }
+
+      print('⚠️ [ENHANCED_AI] Falling back to offline mode');
+      return _getDefaultAttributes(userMessage);
     } catch (e) {
-      print('Enhanced AI parsing error: $e');
+      print('❌ [ENHANCED_AI] === UNEXPECTED ERROR ===');
+      print('❌ [ENHANCED_AI] Error: $e');
+      print('⚠️ [ENHANCED_AI] Falling back to offline mode');
       return _getDefaultAttributes(userMessage);
     }
   }

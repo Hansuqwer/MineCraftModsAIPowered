@@ -228,13 +228,35 @@ class AIService {
 
   /// OpenAI response with enhanced parsing
   Future<String> _getOpenAIResponse(String userMessage, int age) async {
+    print('🔍 [DEBUG] === OPENAI API CALL START ===');
     try {
+      // Step 1: Load API key
+      print('🔍 [DEBUG] Step 1: Loading API key from secure storage...');
       final apiKey = await _apiKeyService.getApiKey();
+
       if (apiKey == null) {
-        throw AIServiceException('OpenAI API key not found', 'OpenAI');
+        print('❌ [DEBUG] FAILED: No API key found in storage');
+        print('💡 [DEBUG] User needs to configure API key in settings');
+        throw AIServiceException('OpenAI API key not found - Please configure in settings', 'OpenAI');
       }
 
-      print('🚀 [AI_SERVICE] Using OpenAI API with key: ${apiKey.substring(0, 7)}...');
+      print('✅ [DEBUG] Step 1: API key loaded: ${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}');
+      print('🔍 [DEBUG] Key length: ${apiKey.length} characters');
+
+      // Step 2: Check connectivity
+      print('🔍 [DEBUG] Step 2: Checking internet connectivity...');
+      final isConnected = await _connectivityService.checkConnectivity();
+      if (!isConnected) {
+        print('❌ [DEBUG] FAILED: No internet connection');
+        throw AIServiceException('No internet connection - Using offline mode', 'OpenAI');
+      }
+      print('✅ [DEBUG] Step 2: Internet connected');
+
+      // Step 3: Make API call
+      print('🔍 [DEBUG] Step 3: Making API call to OpenAI...');
+      print('🔍 [DEBUG] Endpoint: https://api.openai.com/v1/chat/completions');
+      print('🔍 [DEBUG] Model: gpt-4o-mini');
+      print('🔍 [DEBUG] Message length: ${userMessage.length} chars');
 
       final response = await http.post(
         Uri.parse('https://api.openai.com/v1/chat/completions'),
@@ -257,18 +279,50 @@ class AIService {
           'max_tokens': 1000,
           'temperature': 0.7,
         }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          print('❌ [DEBUG] FAILED: API request timed out after 30 seconds');
+          throw TimeoutException('OpenAI API request timed out');
+        },
       );
-      
+
+      print('🔍 [DEBUG] Step 3: Response received');
+      print('🔍 [DEBUG] Status code: ${response.statusCode}');
+
       if (response.statusCode == 200) {
+        print('✅ [DEBUG] Step 4: Parsing successful response...');
         final data = jsonDecode(response.body);
         final content = data['choices'][0]['message']['content'];
-        print('✅ [AI_SERVICE] OpenAI response received');
-        print('🤖 [AI_SERVICE] Response: $content');
+        print('✅ [DEBUG] === OPENAI API CALL SUCCESS ===');
+        print('🤖 [DEBUG] Response preview: ${content.substring(0, content.length > 100 ? 100 : content.length)}...');
         return content;
       } else {
-        throw AIServiceException('OpenAI API error: ${response.statusCode}', 'OpenAI');
+        print('❌ [DEBUG] FAILED: OpenAI API returned error status');
+        print('❌ [DEBUG] Status: ${response.statusCode}');
+        print('❌ [DEBUG] Body: ${response.body}');
+
+        // Parse error message if available
+        try {
+          final errorData = jsonDecode(response.body);
+          final errorMessage = errorData['error']?['message'] ?? 'Unknown error';
+          print('❌ [DEBUG] Error message: $errorMessage');
+          throw AIServiceException('OpenAI API error (${response.statusCode}): $errorMessage', 'OpenAI');
+        } catch (e) {
+          throw AIServiceException('OpenAI API error: ${response.statusCode}', 'OpenAI');
+        }
       }
+    } on TimeoutException catch (e) {
+      print('❌ [DEBUG] === OPENAI API CALL FAILED: TIMEOUT ===');
+      throw AIServiceException('OpenAI API timeout: $e', 'OpenAI');
+    } on SocketException catch (e) {
+      print('❌ [DEBUG] === OPENAI API CALL FAILED: NETWORK ===');
+      print('❌ [DEBUG] Network error: $e');
+      throw AIServiceException('Network error: Unable to reach OpenAI servers', 'OpenAI');
     } catch (e) {
+      print('❌ [DEBUG] === OPENAI API CALL FAILED: UNEXPECTED ===');
+      print('❌ [DEBUG] Error type: ${e.runtimeType}');
+      print('❌ [DEBUG] Error: $e');
       throw AIServiceException('OpenAI error: $e', 'OpenAI');
     }
   }

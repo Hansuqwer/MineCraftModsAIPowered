@@ -1,369 +1,316 @@
-# Crafta - AI-Powered Minecraft Mod Creator
+# 🌈 Crafta - AI-Powered Minecraft Mod Creator for Kids
 
-<div align="center">
+**Voice-first iOS app that turns children's imagination into real Minecraft Bedrock mods**
 
-**A magical voice-powered app for kids ages 4-10 to create custom Minecraft creatures**
-
-*Following Crafta Constitution: Safe, Kind, Imaginative*
-
-[![Flutter](https://img.shields.io/badge/Flutter-3.5.4-02569B?logo=flutter)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.5.4-0175C2?logo=dart)](https://dart.dev)
-[![License](https://img.shields.io/badge/License-Private-red)](LICENSE)
-
-</div>
-
-## Overview
-
-**Crafta** is a mobile application that empowers children to become game creators through voice interaction with an AI companion. Kids can design custom Minecraft items including **weapons**, **armor**, **furniture**, **vehicles**, and **creatures** by simply describing what they want to create - no typing, no complex interfaces, just pure imagination brought to life.
-
-### What Kids Can Create
-
-- **⚔️ Realistic Weapons**: Swords with custom materials, bows with special colors
-- **🛡️ Custom Armor**: Helmets, chestplates, boots with different materials and colors
-- **🪑 Practical Furniture**: Chairs, tables, couches, beds with custom designs
-- **🚗 Real Vehicles**: Cars, boats, planes with custom colors and materials
-- **🐉 Friendly Creatures**: Cows, pigs, horses, cats, dogs with custom colors
-- **⛏️ Custom Tools**: Pickaxes, axes, shovels with special materials like diamond handles
-
-*All items are realistic and functional - a mining pick looks like a mining pick, just with custom materials and colors!*
-
-### Key Features
-
-- **Voice-First Design**: Kids talk to Crafta, Crafta responds with warm, funny voice
-- **AI-Powered Creativity**: Multiple AI providers (OpenAI, Groq, Hugging Face, Ollama) with intelligent fallbacks
-- **Advanced Item Customization**: Colors, size, personality, abilities, accessories with 5-tab interface
-- **3D Item Preview**: See your creation come to life in real-time with Babylon.js WebView - exactly as it will look in Minecraft
-- **Enhanced AI Suggestions**: Contextual and age-appropriate suggestions for continued creativity
-- **Multi-Language Support**: Complete English and Swedish translation with voice support
-- **Child Safety**: Built-in content filtering and parental controls
-- **Privacy-First**: COPPA/GDPR compliant, no personal data collection
-- **Export to Minecraft**: Download ready-to-use Minecraft mod files (.mcpack format) for weapons, armor, furniture, vehicles, and creatures
-- **Offline Mode**: 60+ cached item responses, works without internet
-- **Item Sharing**: Cloud sharing with 8-character share codes for your creations
-- **Performance Optimized**: LRU caching, LOD rendering, particle pooling
-- **Mobile-First**: Touch-friendly interface optimized for iOS/Android
-- **Responsive Design**: Optimized for phones, tablets, and foldable devices
-- **Warm TTS Personality**: Encouraging, funny, child-friendly voice responses
-
-## Architecture
-
-### Tech Stack
-
-- **Framework**: Flutter 3.5.4
-- **Language**: Dart 3.5.4
-- **AI Backend**: OpenAI GPT-4o-mini, Groq, Hugging Face, Ollama (with fallbacks)
-- **Voice**: speech_to_text, flutter_tts (multi-language support)
-- **3D Rendering**: Babylon.js via WebView, vector_math
-- **State Management**: Provider pattern
-- **Localization**: flutter_localizations, intl
-- **WebView**: webview_flutter for 3D previews
-
-### Project Structure
-
-```
-crafta/
-├── lib/
-│   ├── main.dart                    # App entry point & routing
-│   ├── screens/                     # UI screens (7 screens)
-│   │   ├── welcome_screen.dart      # Animated welcome
-│   │   ├── creator_screen.dart      # Voice interaction hub
-│   │   ├── complete_screen.dart     # Success celebration
-│   │   ├── creature_preview_screen.dart # 3D visualization
-│   │   ├── parent_settings_screen.dart  # Safety controls
-│   │   ├── creation_history_screen.dart # History tracking
-│   │   ├── export_management_screen.dart # Mod downloads
-│   │   ├── export_minecraft_screen.dart # Minecraft export UI
-│   │   └── minecraft_settings_screen.dart # Minecraft settings
-│   ├── services/                    # Business logic (20+ services)
-│   │   ├── ai_service.dart          # OpenAI integration
-│   │   ├── enhanced_ai_service.dart # Enhanced AI suggestions
-│   │   ├── groq_ai_service.dart     # Groq AI integration
-│   │   ├── huggingface_ai_service.dart # Hugging Face integration
-│   │   ├── ollama_ai_service.dart   # Ollama integration
-│   │   ├── offline_ai_service.dart # Offline AI cache (60+ creatures)
-│   │   ├── speech_service.dart      # Speech-to-Text
-│   │   ├── tts_service.dart         # Text-to-Speech
-│   │   ├── language_service.dart    # Multi-language support
-│   │   ├── swedish_ai_service.dart  # Swedish AI responses
-│   │   ├── responsive_service.dart  # Responsive design
-│   │   ├── startup_service.dart     # App initialization
-│   │   ├── updater_service.dart    # App updates
-│   │   ├── debug_service.dart       # Remote debugging
-│   │   ├── connectivity_service.dart # Network monitoring
-│   │   ├── local_storage_service.dart # Data persistence
-│   │   ├── performance_monitor.dart # Performance tracking
-│   │   ├── minecraft/               # Minecraft export services
-│   │   │   ├── minecraft_export_service.dart
-│   │   │   ├── entity_behavior_generator.dart
-│   │   │   ├── entity_client_generator.dart
-│   │   │   ├── texture_generator.dart
-│   │   │   ├── geometry_generator.dart
-│   │   │   └── manifest_generator.dart
-│   │   └── utils/                   # Utility services
-│   │       ├── memory_optimizer.dart # LRU cache, memory management
-│   │       └── rendering_optimizer.dart # LOD, particle pooling
-│   ├── widgets/                     # Reusable UI components
-│   │   ├── minecraft_3d_preview.dart # 3D WebView preview
-│   │   ├── language_selector.dart   # Language switching
-│   │   ├── update_dialog.dart       # App update dialog
-│   │   ├── furniture_renderer.dart   # Furniture visualization
-│   │   └── offline_indicator.dart   # Connectivity status
-│   ├── models/                      # Data models
-│   │   ├── conversation.dart        # Chat history model
-│   │   └── minecraft/               # Minecraft data models
-│   │       ├── addon_package.dart
-│   │       ├── addon_metadata.dart
-│   │       ├── behavior_pack.dart
-│   │       ├── resource_pack.dart
-│   │       └── addon_file.dart
-│   └── core/                        # Core utilities
-│       └── result.dart              # Result pattern for error handling
-├── test/                            # Unit & widget tests (57+ tests)
-│   ├── services/                    # Service tests
-│   ├── screens/                     # Widget tests
-│   └── helpers/                     # Test utilities
-├── docs/                            # Documentation
-│   ├── PRODUCTION_DEPLOYMENT.md     # Deployment guide
-│   ├── SPEECH_TESTING_ALTERNATIVES.md # Testing strategies
-│   ├── ARCHITECTURE.md              # System architecture
-│   ├── API_REFERENCE.md             # API documentation
-│   ├── DEVELOPMENT_GUIDE.md         # Development workflow
-│   ├── SECURITY_AND_IMPROVEMENTS.md # Security & roadmap
-│   └── INDEX.md                     # Documentation index
-├── android/                         # Android-specific config
-├── ios/                             # iOS-specific config
-└── pubspec.yaml                     # Dependencies
-
-~10,200 lines of Dart code
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Flutter SDK 3.5.4 or higher
-- Dart SDK 3.5.4 or higher
-- Android Studio / Xcode (for mobile development)
-- OpenAI API key (for AI features)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd crafta
-   ```
-
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Configure API Key**
-
-   Edit `lib/services/ai_service.dart` and add your OpenAI API key:
-   ```dart
-   static const String _apiKey = 'your-api-key-here';
-   ```
-
-   > ⚠️ **Security Note**: For production, use environment variables or secure storage
-
-4. **Run the app**
-   ```bash
-   # On Android emulator/device
-   flutter run -d android
-
-   # On iOS simulator/device
-   flutter run -d ios
-   ```
-
-### Platform-Specific Setup
-
-#### Android
-Add microphone permissions to `android/app/src/main/AndroidManifest.xml`:
-```xml
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-<uses-permission android:name="android.permission.INTERNET" />
-```
-
-#### iOS
-Add microphone permissions to `ios/Runner/Info.plist`:
-```xml
-<key>NSMicrophoneUsageDescription</key>
-<string>Crafta needs microphone access for voice interaction</string>
-<key>NSSpeechRecognitionUsageDescription</key>
-<string>Crafta uses speech recognition to understand your voice</string>
-```
-
-## Development
-
-### Testing
-
-```bash
-# Run all tests
-flutter test
-
-# Run specific test
-flutter test test/speech_service_test.dart
-
-# Run with coverage
-flutter test --coverage
-```
-
-### Building
-
-```bash
-# Debug build
-flutter build apk --debug
-
-# Release build for Android
-flutter build appbundle --release
-
-# Release build for iOS
-flutter build ios --release
-```
-
-### Code Quality
-
-```bash
-# Analyze code
-flutter analyze
-
-# Format code
-dart format lib/
-
-# Check for outdated dependencies
-flutter pub outdated
-```
-
-## Key Dependencies
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| flutter | sdk | Framework |
-| http | ^1.5.0 | API requests |
-| speech_to_text | ^6.6.0 | Voice input |
-| flutter_tts | ^4.2.3 | Voice output |
-| provider | ^6.1.5+1 | State management |
-| vector_math | ^2.1.4 | 3D calculations |
-| rive | ^0.12.4 | Animations |
-| archive | ^4.0.7 | File compression |
-| path_provider | ^2.1.5 | File storage |
-
-## Crafta Constitution
-
-All features and interactions follow these core principles:
-
-### 1. Safe
-- Child-safe AI responses with content filtering
-- No violence, fear, negativity, or adult themes
-- COPPA/GDPR compliant privacy protection
-- Parental controls and monitoring
-
-### 2. Kind
-- Encouraging and positive interactions
-- Every idea is celebrated, never criticized
-- Supportive learning experience
-- Gentle error handling ("Let's try again!" vs "Error")
-
-### 3. Imaginative
-- Creative creature generation
-- Inspiring AI personality
-- Colorful, engaging visual design
-- Fun and playful interactions
-
-## Crafta AI Personality
-
-Crafta is designed with a specific personality:
-
-- **Voice**: Warm, curious, kind, gentle humor
-- **Vocabulary**: Simple, short sentences (age 4-10 appropriate)
-- **Emotion Range**: Happy → Curious → Calm → Excited (never angry/sad)
-- **Behavior**: Always asks questions, never issues commands
-- **Fallback**: If unsure, asks kindly for clarification
-
-## Features in Detail
-
-### Voice Interaction
-- Hands-free operation for young children
-- Natural language understanding
-- Real-time speech-to-text processing
-- Child-friendly TTS responses
-
-### AI Integration
-- GPT-4o-mini for intelligent conversations
-- Custom system prompt for child safety
-- Context-aware responses
-- Creative creature attribute parsing
-
-### 3D Visualization
-- Real-time creature preview
-- Interactive rotation and zoom
-- Visual effects (sparkles, glows)
-- Smooth animations
-
-### Parental Controls
-- Safety settings dashboard
-- Creation history monitoring
-- Export management
-- Age-appropriate content filters
-
-## Roadmap
-
-### Current Status: Production-Ready ✅
-
-### ✅ Completed Features
-- **Offline Mode**: 60+ cached creature responses, works without internet
-- **Performance Optimization**: LRU caching, LOD rendering, particle pooling
-- **Minecraft Export**: Complete .mcpack file generation
-- **Creature Sharing**: Cloud sharing with share codes
-- **Behavior Mapping**: Complete Minecraft components integration
-- **Mobile Optimization**: Touch-friendly interface for iOS/Android
-- **Comprehensive Testing**: 57+ test cases with 100% offline service coverage
-- **Build System**: ✅ APK builds successfully - `build/app/outputs/flutter-apk/app-debug.apk`
-- **Production Code**: ✅ 0 errors, all core functionality working
-- **Creator Screen**: ✅ Working with simplified, clean implementation
-
-### Future Enhancements
-- [ ] Add more creature types (currently: 60+ offline creatures)
-- [ ] Multiplayer creature sharing
-- [ ] Tutorial/onboarding flow
-- [ ] More customization options
-- [ ] Achievement system
-- [ ] Advanced 3D rendering features
-
-## Documentation
-
-- [Production Deployment Guide](docs/PRODUCTION_DEPLOYMENT.md)
-- [Speech Testing Alternatives](docs/SPEECH_TESTING_ALTERNATIVES.md)
-
-## Contributing
-
-This is a private project. For contributions, please contact the maintainers.
-
-## License
-
-Private and proprietary. All rights reserved.
-
-## Support
-
-For issues or questions:
-- Create an issue in the repository
-- Contact: [Your contact information]
-
-## Acknowledgments
-
-- Built with Flutter & Dart
-- Powered by OpenAI GPT-4o-mini
-- Designed for children ages 4-10
-- Inspired by the joy of creative play
+> "If you can say it, you can make it."
 
 ---
 
-<div align="center">
+## 🎯 What is Crafta?
 
-**Made with ❤️ for young creators**
+Crafta is an iOS application designed for children ages 4-10 that allows them to create Minecraft Bedrock Edition mods using only their voice. Kids speak naturally about what they want to create, and Crafta's friendly AI helps bring their ideas to life—no coding required.
 
-*Safe • Kind • Imaginative*
+**Example:**
+- Child: "I want a rainbow cow that sparkles!"
+- Crafta: "Cool! Should it be tiny or huge?"
+- Child: "Tiny!"
+- *30 seconds later, the mod is ready to import into Minecraft*
 
-</div>
+---
+
+## 📚 Project Documentation
+
+This repository contains comprehensive planning documents for the Crafta project. No code has been written yet—we're in the planning phase.
+
+### 🗂️ Documentation Overview
+
+| Document | Purpose | Read This If... |
+|----------|---------|-----------------|
+| **[CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md)** | Complete project vision and features | You want to understand the full vision |
+| **[MVP_SCOPE.md](docs/MVP_SCOPE.md)** | What to build first (simplified scope) | You want to know what to build for v1.0 |
+| **[TECH_STACK.md](docs/TECH_STACK.md)** | Technical architecture and decisions | You want to know HOW to build it |
+| **[CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md)** | Core principles and values | You need ethical/safety guidelines |
+| **[Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md)** | AI behavior and safety rules | You're configuring AI interactions |
+| **[Crafta_Prompt_Library.md](docs/Crafta_Prompt_Library.md)** | Ready-to-use AI prompts | You need prompts for content generation |
+
+---
+
+## 🚀 Quick Start Guide
+
+### For Understanding the Project
+1. Read [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) - Get the full vision
+2. Read [MVP_SCOPE.md](docs/MVP_SCOPE.md) - Understand what's being built first
+3. Read [CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md) - Learn the guiding principles
+
+### For Developers
+1. Read [MVP_SCOPE.md](docs/MVP_SCOPE.md) - Know the scope
+2. Read [TECH_STACK.md](docs/TECH_STACK.md) - Understand the architecture
+3. Read [Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md) - Follow AI guidelines
+
+### For Designers
+1. Read [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) - Understand user experience
+2. Read [CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md) - Know the values
+3. Check UI/UX sections in CONCEPT_DOCUMENT.md
+
+### For Using AI Tools
+1. Read [Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md) - Understand guidelines
+2. Use [Crafta_Prompt_Library.md](docs/Crafta_Prompt_Library.md) - Copy-paste ready prompts
+3. Reference [CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md) - Stay aligned with values
+
+---
+
+## 🎨 Key Features (Planned)
+
+### MVP (Version 1.0)
+- ✅ Voice-powered creature creation
+- ✅ 3 creature types (cow, pig, chicken)
+- ✅ 5 customizable attributes (color, effect, size, behavior, sound)
+- ✅ Simple visual preview
+- ✅ Direct export to Minecraft Bedrock (.mcaddon files)
+- ✅ Parent safety controls
+- ✅ Offline-first operation
+
+### Future Versions
+- Custom items (wands, tools, decorations)
+- Block creation
+- Biome designer
+- Story adventure generator
+- Collaboration features
+- AR preview mode
+- Multi-language support
+
+See [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) for complete feature roadmap.
+
+---
+
+## 🛠️ Technology Stack
+
+**Platform:** iOS 16+ (iPhone, iPad compatible)
+**Language:** Swift + SwiftUI
+**AI:** OpenAI GPT-4o-mini
+**Voice:** Apple Speech Framework (offline)
+**Voice Output:** OpenAI TTS or Apple AVSpeechSynthesizer
+**Minecraft:** Bedrock Edition 1.20+ format
+
+See [TECH_STACK.md](docs/TECH_STACK.md) for detailed architecture.
+
+---
+
+## 🎯 Target Audience
+
+### Primary Users
+**Children (Ages 4-10)**
+- Early to emerging readers
+- Minecraft Bedrock players on iOS
+- High imagination, need quick results
+- Comfortable with voice interaction
+
+### Secondary Users
+**Parents**
+- Want safe, educational screen time
+- Need content visibility and controls
+- Value creativity over passive consumption
+
+See [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) for detailed user personas.
+
+---
+
+## 🌟 Core Values (The Crafta Constitution)
+
+1. Safe, kind, and imaginative—always
+2. Every idea is valid and welcomed
+3. Privacy first—no data collection without consent
+4. Voice over text for accessibility
+5. Play is the path to learning
+
+Read the full [CRAFTA_CONSTITUTION.md](docs/CRAFTA_CONSTITUTION.md) for all 10 principles.
+
+---
+
+## 📖 Development Roadmap
+
+### Current Phase: **Planning Complete** ✅
+All planning documents created and reviewed.
+
+### Next Phase: **Foundation** (Weeks 1-2)
+- [ ] Set up Xcode project
+- [ ] Implement Apple Speech API
+- [ ] Create basic UI skeleton
+- [ ] Connect to OpenAI API
+- [ ] Test basic voice loop
+
+### Future Phases
+- Visual Polish (Weeks 5-6)
+- Content Expansion (Weeks 7-8)
+- Parent Features (Week 9)
+- Testing (Week 10)
+- Launch Prep (Weeks 11-12)
+
+See [MVP_SCOPE.md](docs/MVP_SCOPE.md) for detailed timeline.
+
+---
+
+## 🧠 AI Integration
+
+Crafta uses AI in three ways:
+
+1. **Conversation** - GPT-4o-mini interprets kids' requests
+2. **Voice Output** - TTS reads responses warmly
+3. **Content Generation** - Structured prompts generate mod JSON
+
+### AI Safety Features
+- Child-safe language filtering
+- Positive reinforcement only
+- No violent or scary content
+- Parent-approved responses
+
+See [Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md) for complete AI guidelines.
+
+---
+
+## 💡 Example Use Cases
+
+### Creative Play
+"I want a dragon that's pink and loves cookies!"
+→ Crafta creates a friendly pink dragon entity
+
+### Educational
+"Can you make a cow that glows in the dark?"
+→ Teaches cause and effect, attributes
+
+### Storytelling
+"I need a tiny pig with wings for my adventure"
+→ Encourages narrative thinking
+
+See [CONCEPT_DOCUMENT.md](docs/CONCEPT_DOCUMENT.md) for more examples.
+
+---
+
+## 🛡️ Safety & Privacy
+
+### Data Privacy
+- **Offline-first** - Core features work without internet
+- **No tracking** - No analytics in MVP
+- **Local processing** - Voice stays on device
+- **Parent controls** - All sharing requires approval
+
+### Content Safety
+- AI filtered for age-appropriateness
+- No violence, fear, or negative themes
+- Pre-moderated attribute options
+- Parent review of all creations
+
+See [Crafta_AI_Rules.md](docs/Crafta_AI_Rules.md) for safety protocols.
+
+---
+
+## 📦 Project Status
+
+**Current Status:** Planning Phase Complete
+
+| Component | Status |
+|-----------|--------|
+| Concept & Vision | ✅ Complete |
+| MVP Scope | ✅ Complete |
+| Technical Architecture | ✅ Complete |
+| AI Guidelines | ✅ Complete |
+| Development | ⏳ Not Started |
+| Testing | ⏳ Not Started |
+| Launch | ⏳ Not Started |
+
+---
+
+## 🤝 Contributing
+
+This is currently a solo development project in the planning phase. Once development begins, contribution guidelines will be added.
+
+---
+
+## 📝 Documentation Standards
+
+All planning documents follow these principles:
+- **Clear** - Written for both technical and non-technical readers
+- **Actionable** - Includes specific next steps
+- **Safe** - Always considers child safety first
+- **Realistic** - Scoped for solo developer
+- **Inspiring** - Maintains the vision of magic and creativity
+
+---
+
+## 🎓 Learning Resources
+
+### For Understanding Minecraft Modding
+- [Bedrock Wiki](https://wiki.bedrock.dev)
+- Minecraft Creator Portal
+- Community Discord servers
+
+### For iOS Development
+- Apple's SwiftUI Tutorials
+- Hacking with Swift
+- WWDC Sessions on Speech
+
+### For AI Integration
+- OpenAI API Documentation
+- GPT Best Practices Guide
+- Child-Safe AI Design Resources
+
+---
+
+## 📞 Contact & Support
+
+**Project Creator:** Rickard
+**Repository:** [MineCraftModsAIPowered](https://github.com/Hansuqwer/MineCraftModsAIPowered)
+
+---
+
+## 📄 License
+
+TBD - Will be determined before code development begins.
+
+---
+
+## 🌟 Project Philosophy
+
+**"If it's not safe, kind, and imaginative — it's not Crafta."**
+
+Every decision, from technical architecture to UI design, must pass this test. We're building something magical for kids, and that requires us to be thoughtful, responsible, and creative at every step.
+
+---
+
+## 🗺️ Document Navigation Map
+
+```
+Start Here: README.md (you are here)
+    │
+    ├─→ Want the full vision?
+    │   └─→ docs/CONCEPT_DOCUMENT.md
+    │
+    ├─→ Want to know what to build first?
+    │   └─→ docs/MVP_SCOPE.md
+    │
+    ├─→ Want to know HOW to build it?
+    │   └─→ docs/TECH_STACK.md
+    │
+    ├─→ Need AI guidelines?
+    │   ├─→ docs/CRAFTA_CONSTITUTION.md (values)
+    │   ├─→ docs/Crafta_AI_Rules.md (rules)
+    │   └─→ docs/Crafta_Prompt_Library.md (prompts)
+    │
+    └─→ Ready to code?
+        └─→ Check docs/MVP_SCOPE.md for Phase 1 tasks
+```
+
+---
+
+## ✨ Next Steps
+
+1. ✅ Review all planning documents
+2. ⏳ Set up development environment
+3. ⏳ Create Xcode project
+4. ⏳ Implement Phase 1 foundation
+5. ⏳ Begin MVP development
+
+---
+
+*Last Updated: October 15, 2025*
+*Status: Planning Complete, Ready for Development*

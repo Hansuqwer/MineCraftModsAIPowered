@@ -5,6 +5,8 @@ import 'services/language_service.dart';
 import 'services/debug_service.dart';
 import 'services/secure_api_key_manager.dart';
 import 'services/error_handling_service.dart';
+import 'screens/splash_screen.dart';
+import 'screens/first_run_setup_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/creator_screen_simple.dart';
 import 'screens/complete_screen.dart';
@@ -80,6 +82,7 @@ class CraftaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Crafta - AI-Powered Minecraft Mod Creator',
       theme: ThemeData(
         primarySwatch: Colors.pink,
@@ -88,8 +91,11 @@ class CraftaApp extends StatelessWidget {
       ),
       localizationsDelegates: LanguageService.getLocalizationDelegates(),
       supportedLocales: LanguageService.getSupportedLocales(),
-      initialRoute: '/',
+      initialRoute: '/splash',
             routes: {
+              '/splash': (context) => const SplashScreen(),
+              '/first-run-setup': (context) => const FirstRunSetupScreen(),
+              '/welcome': (context) => const WelcomeScreen(),
               '/': (context) => const WelcomeScreen(),
               '/creator': (context) {
                 final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;

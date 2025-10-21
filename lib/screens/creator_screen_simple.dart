@@ -98,34 +98,96 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
       // Close loading dialog
       if (mounted) Navigator.pop(context);
 
-      // Show error dialog to user
+      // Show kid-friendly error dialog
       if (mounted) {
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('⚠️ Creation Error'),
-            content: Text(
-              'Could not create your ${_selectedItemType.displayName}:\n\n$e\n\n'
-              'Possible reasons:\n'
-              '• No API key configured\n'
-              '• No internet connection\n'
-              '• Invalid API key\n'
-              '• OpenAI rate limit\n\n'
-              'Check Settings → API Configuration',
+          builder: (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Icon
+                  Icon(
+                    Icons.help_outline,
+                    size: 64,
+                    color: Colors.orange,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Kid-friendly message
+                  Text(
+                    'Oops! I need help!',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+
+                  Text(
+                    'Please ask a parent or grown-up to help set up the AI.',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black54,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+
+                  Text(
+                    '(They need to add an API key in Settings)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                            padding: const EdgeInsets.all(16),
+                          ),
+                          child: const Text('OK', style: TextStyle(fontSize: 18)),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/parent-settings');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.all(16),
+                          ),
+                          child: const Text(
+                            'Get Parent',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/parent-settings');
-                },
-                child: const Text('Go to Settings'),
-              ),
-            ],
+            ),
           ),
         );
       }

@@ -168,6 +168,63 @@ class AppLocalizations {
   String get tip2 => _translate('Describe colors, size, and abilities', 'Beskriv färger, storlek och förmågor');
   String get tip3 => _translate('Try "dragon with fire" or "rainbow unicorn"', 'Prova "drake med eld" eller "regnbågs enhörning"');
 
+  // First-run setup screen
+  String get setupWelcome => _translate('Welcome to Crafta!', 'Välkommen till Crafta!');
+  String get setupSubtitle => _translate(
+    'Let\'s get you set up to create amazing creatures and items for Minecraft!',
+    'Låt oss sätta upp allt så du kan skapa fantastiska varelser och föremål till Minecraft!'
+  );
+  String get startCreating => _translate('Start Creating', 'Börja Skapa');
+  String get letsGo => _translate('Let\'s Go!', 'Vi Kör!');
+
+  // API setup
+  String get apiKeyTitle => _translate('OpenAI API Key', 'OpenAI API-nyckel');
+  String get apiKeyDescription => _translate(
+    'For the best AI quality, add your OpenAI API key.\n\nYou can skip this and use limited offline mode.',
+    'För bästa AI-kvalitet, lägg till din OpenAI API-nyckel.\n\nDu kan hoppa över detta och använda begränsat offline-läge.'
+  );
+  String get testAndSaveKey => _translate('Test & Save Key', 'Testa & Spara Nyckel');
+  String get validating => _translate('Validating...', 'Validerar...');
+  String get skipForNow => _translate('Skip for now (use offline mode)', 'Hoppa över nu (använd offline-läge)');
+  String get howToGetApiKey => _translate('How to get an API key:', 'Hur man får en API-nyckel:');
+  String get apiKeyInstructions => _translate(
+    '1. Visit platform.openai.com\n2. Sign up or log in\n3. Go to API Keys section\n4. Create new secret key\n5. Copy and paste it here',
+    '1. Besök platform.openai.com\n2. Registrera dig eller logga in\n3. Gå till API Keys-sektionen\n4. Skapa ny hemlig nyckel\n5. Kopiera och klistra in den här'
+  );
+  String get apiKeySaved => _translate('API key saved successfully!', 'API-nyckel sparad!');
+  String get invalidApiKey => _translate('Invalid API key. Please check and try again.', 'Ogiltig API-nyckel. Kontrollera och försök igen.');
+
+  // Language selection
+  String get chooseLanguage => _translate('Choose Your Language', 'Välj Ditt Språk');
+
+  // Tutorial/completion
+  String get allSet => _translate('All Set!', 'Allt Klart!');
+  String get readyToCreate => _translate('You\'re ready to start creating!', 'Du är redo att börja skapa!');
+  String get quickTipsTitle => _translate('Quick Tips:', 'Snabbtips:');
+  String get tutorialTip1 => _translate('Tap the microphone button to speak', 'Tryck på mikrofonknappen för att prata');
+  String get tutorialTip2 => _translate('Describe what you want to create', 'Beskriv vad du vill skapa');
+  String get tutorialTip3 => _translate('Preview and modify your creation', 'Förhandsgranska och ändra din skapelse');
+  String get tutorialTip4 => _translate('Export to Minecraft and have fun!', 'Exportera till Minecraft och ha kul!');
+
+  // API status
+  String get aiOnline => _translate('AI Online', 'AI Online');
+  String get limitedMode => _translate('Limited Mode', 'Begränsat Läge');
+  String get online => _translate('Online', 'Online');
+  String get offline => _translate('Offline', 'Offline');
+  String get onlineDescription => _translate(
+    'Your app is connected to OpenAI for the best AI quality.',
+    'Din app är ansluten till OpenAI för bästa AI-kvalitet.'
+  );
+  String get offlineDescription => _translate(
+    'You\'re using offline mode with limited creature variety.',
+    'Du använder offline-läge med begränsad varelsevariation.'
+  );
+  String get addApiKeyPrompt => _translate(
+    'To enable full AI features, add your OpenAI API key in Settings.',
+    'För att aktivera alla AI-funktioner, lägg till din OpenAI API-nyckel i Inställningar.'
+  );
+  String get addApiKey => _translate('Add API Key', 'Lägg till API-nyckel');
+
   // Helper method for translation
   String _translate(String en, String sv) {
     return locale.languageCode == 'sv' ? sv : en;

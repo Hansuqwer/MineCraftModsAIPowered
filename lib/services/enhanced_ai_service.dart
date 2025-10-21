@@ -1,23 +1,55 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/enhanced_creature_attributes.dart';
+import './api_key_service.dart';
 
 /// Enhanced AI service for advanced creature customization
 class EnhancedAIService {
   static const String _baseUrl = 'https://api.openai.com/v1/chat/completions';
-  static const String _apiKey = 'YOUR_OPENAI_API_KEY'; // TODO: Move to secure storage
+
+  /// Get API key from secure storage or .env file
+  static Future<String?> _getApiKey() async {
+    // Try to get from ApiKeyService first
+    final apiKeyService = ApiKeyService();
+    final storedKey = await apiKeyService.getApiKey();
+
+    if (storedKey != null && storedKey.isNotEmpty) {
+      print('✅ [ENHANCED_AI] Using API key from secure storage');
+      return storedKey;
+    }
+
+    // Fall back to .env file
+    final envKey = dotenv.env['OPENAI_API_KEY'];
+    if (envKey != null && envKey.isNotEmpty) {
+      print('⚠️ [ENHANCED_AI] Using API key from .env file');
+      return envKey;
+    }
+
+    print('❌ [ENHANCED_AI] No API key found - will use offline mode');
+    return null;
+  }
 
   /// Parse enhanced creature request with advanced attributes
   static Future<EnhancedCreatureAttributes> parseEnhancedCreatureRequest(
     String userMessage,
   ) async {
     try {
+      // Get API key
+      final apiKey = await _getApiKey();
+
+      // If no API key, use offline mode
+      if (apiKey == null) {
+        print('⚠️ [ENHANCED_AI] No API key available, using fallback');
+        return _getDefaultAttributes(userMessage);
+      }
+
       final response = await http.post(
         Uri.parse(_baseUrl),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_apiKey',
+          'Authorization': 'Bearer $apiKey',
         },
         body: jsonEncode({
           'model': 'gpt-4o-mini',

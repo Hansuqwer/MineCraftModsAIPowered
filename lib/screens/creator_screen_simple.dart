@@ -67,18 +67,16 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
       final aiResponse = await EnhancedAIService.parseEnhancedCreatureRequest(prompt);
 
       print('✅ [CREATOR] AI returned response');
+      print('🔍 [CREATOR] Base type: ${aiResponse.baseType}');
+      print('🔍 [CREATOR] Custom name: ${aiResponse.customName}');
+      print('🔍 [CREATOR] Primary color: ${aiResponse.primaryColor}');
+      print('🔍 [CREATOR] Size: ${aiResponse.size}');
 
-      // Convert EnhancedCreatureAttributes to Map for compatibility
-      _currentItem = {
-        'baseType': aiResponse.baseType?.toString() ?? _selectedItemType.displayName,
-        'customName': aiResponse.customName ?? text,
-        'itemType': _selectedItemType.toString().split('.').last,
-        'description': aiResponse.description ?? 'A ${_selectedItemType.displayName}',
-        'primaryColor': aiResponse.primaryColor?.toString() ?? 'Colors.blue',
-        'secondaryColor': aiResponse.secondaryColor?.toString(),
-        'size': aiResponse.size?.toString() ?? 'medium',
-        'abilities': aiResponse.abilities?.map((a) => a.toString()).toList() ?? [],
-      };
+      // Use toMap() method for proper conversion
+      _currentItem = aiResponse.toMap();
+
+      // Add item type for routing
+      _currentItem!['itemType'] = _selectedItemType.toString().split('.').last;
 
       // Close loading dialog
       if (mounted) Navigator.pop(context);

@@ -153,30 +153,138 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Future<void> _checkTutorialStatus() async {
     final shouldShowTutorial = await TutorialService.shouldShowTutorial();
     if (shouldShowTutorial && mounted) {
-      // Show a dialog asking if they want to start the tutorial
+      // Wait a moment for welcome screen to appear
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (!mounted) return;
+
+      // Show a simple kid-friendly dialog with voice guidance
       await showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Welcome to Crafta!'),
-          content: const Text(
-            'Would you like to take a quick tutorial to learn how to use Crafta? It only takes a few minutes!',
+        barrierDismissible: false,
+        builder: (context) => WillPopScope(
+          onWillPop: () async => false,
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(
+                color: MinecraftTheme.goldOre,
+                width: 4,
+              ),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: MinecraftTheme.textLight,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Title
+                  Text(
+                    '✨ Welcome to Crafta! ✨',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: MinecraftTheme.goldOre,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Message
+                  Text(
+                    'Do you want me to show you how to create amazing things?',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: MinecraftTheme.coalBlack,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
+
+                  // GREEN button - Start tutorial
+                  SizedBox(
+                    width: double.infinity,
+                    height: 70,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _startTutorial();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: BorderSide(
+                            color: Colors.green.shade900,
+                            width: 4,
+                          ),
+                        ),
+                        elevation: 8,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.play_arrow, size: 40, color: Colors.white),
+                          const SizedBox(width: 12),
+                          Text(
+                            'YES! Show me!',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // RED button - Skip
+                  SizedBox(
+                    width: double.infinity,
+                    height: 70,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        TutorialService.markTutorialSkipped();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: BorderSide(
+                            color: Colors.red.shade900,
+                            width: 4,
+                          ),
+                        ),
+                        elevation: 8,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.close, size: 40, color: Colors.white),
+                          const SizedBox(width: 12),
+                          Text(
+                            'No, Skip Tutorial',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                TutorialService.markTutorialSkipped();
-              },
-              child: const Text('Skip'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _startTutorial();
-              },
-              child: const Text('Start Tutorial'),
-            ),
-          ],
         ),
       );
     }
@@ -352,125 +460,44 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     ),
                   ),
 
-                  // Bottom section: Buttons
+                  // Bottom section: Simple single button for kids
                   Column(
                     children: [
-                      // Main start button - Choose what to create
+                      // ONE BIG BUTTON - Simple for kids
                       MinecraftButton(
-                        text: 'CHOOSE WHAT TO CREATE',
-                        onPressed: () async {
-                          // Show item type selection first
-                          final itemType = await Navigator.pushNamed(context, '/item-type-selection');
-                          if (itemType != null && mounted) {
-                            // If material required, show material selection
-                            ItemMaterialType? material;
-                            if (itemType is ItemType && itemType != ItemType.creature && itemType != ItemType.decoration && itemType != ItemType.vehicle) {
-                              material = await Navigator.pushNamed(context, '/material-selection', arguments: itemType) as ItemMaterialType?;
-                              if (material == null) return; // User cancelled material selection
-                            }
-
-                            // Then go to creator with selected type and material
-                            if (mounted) {
-                              Navigator.pushNamed(
-                                context,
-                                '/creator',
-                                arguments: {
-                                  'itemType': itemType,
-                                  'material': material,
-                                },
-                              );
-                            }
-                          }
-                        },
-                        color: MinecraftTheme.emerald,
-                        icon: Icons.auto_awesome,
-                        height: 64,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Quick start - Create creature (classic mode)
-                      MinecraftButton(
-                        text: 'QUICK START: CREATURE',
+                        text: 'START CREATING!',
                         onPressed: _startCreating,
-                        color: MinecraftTheme.grassGreen,
-                        icon: Icons.pets,
-                        height: 56,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Tutorial button
-                      MinecraftButton(
-                        text: 'TUTORIAL',
-                        onPressed: _startTutorial,
-                        color: MinecraftTheme.diamond,
-                        icon: Icons.school,
-                        height: 56,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Enhanced Modern Features button
-                      MinecraftButton(
-                        text: 'ENHANCED FEATURES',
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/enhanced-modern');
-                        },
-                        color: MinecraftTheme.goldOre,
-                        icon: Icons.auto_awesome,
-                        height: 56,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Community Gallery button
-                      MinecraftButton(
-                        text: 'COMMUNITY GALLERY',
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/community-gallery');
-                        },
                         color: MinecraftTheme.emerald,
-                        icon: Icons.people,
-                        height: 56,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Enhanced Creator button
-                      MinecraftButton(
-                        text: '🤖 ENHANCED CREATOR',
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/enhanced-creator');
-                        },
-                        color: Colors.cyan,
                         icon: Icons.auto_awesome,
+                        height: 80,
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
-                      // Kid-Friendly button
-                      MinecraftButton(
-                        text: '🎮 KID MODE',
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/kid-friendly');
-                        },
-                        color: Colors.purple,
-                        icon: Icons.child_care,
-                        height: 56,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Parent settings button
-                      MinecraftButton(
-                        text: l10n.parentSettings.toUpperCase(),
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/parent-settings');
-                        },
-                        color: MinecraftTheme.buttonBackground,
-                        icon: Icons.settings,
-                        height: 56,
+                      // Small settings button for parents (subtle)
+                      Container(
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: MinecraftTheme.stoneGray.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: TextButton.icon(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/parent-settings');
+                          },
+                          icon: Icon(
+                            Icons.settings,
+                            color: MinecraftTheme.stoneGray,
+                            size: 20,
+                          ),
+                          label: Text(
+                            'Parent Settings',
+                            style: TextStyle(
+                              color: MinecraftTheme.stoneGray,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
                       ),
 
                       const SizedBox(height: 24),

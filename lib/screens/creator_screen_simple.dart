@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/enhanced_item_creation_service.dart';
+import '../services/enhanced_ai_service.dart';
 import '../models/enhanced_creature_attributes.dart';
 import '../models/item_type.dart';
 import '../theme/minecraft_theme.dart';
@@ -40,26 +41,96 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
     final text = _textController.text;
     if (text.isEmpty) return;
 
-    // Parse the response into item attributes
-    _currentItem = EnhancedItemCreationService.parseItemResponse(
-      '{}',
-      _selectedItemType,
+    print('🎨 [CREATOR] User requested: "$text"');
+    print('🎨 [CREATOR] Item type: $_selectedItemType');
+
+    // Show loading indicator
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
     );
 
-    // Add default name and description
-    _currentItem!['customName'] = text.isNotEmpty ? text : 'My ${_selectedItemType.displayName}';
-    _currentItem!['itemType'] = _selectedItemType.toString().split('.').last;
-
-    // Navigate to preview screen
-    if (mounted) {
-      Navigator.pushNamed(
-        context,
-        '/creature-preview',
-        arguments: {
-          'creatureAttributes': _currentItem,
-          'creatureName': _currentItem!['customName'],
-        },
+    try {
+      // Generate prompt for the AI based on item type and user input
+      final prompt = EnhancedItemCreationService.generatePromptForItemType(
+        itemType: _selectedItemType,
+        userInput: text,
       );
+
+      print('🤖 [CREATOR] Calling AI with prompt...');
+
+      // Call AI service to parse the request
+      final aiResponse = await EnhancedAIService.parseEnhancedCreatureRequest(prompt);
+
+      print('✅ [CREATOR] AI returned response');
+
+      // Convert EnhancedCreatureAttributes to Map for compatibility
+      _currentItem = {
+        'baseType': aiResponse.baseType?.toString() ?? _selectedItemType.displayName,
+        'customName': aiResponse.customName ?? text,
+        'itemType': _selectedItemType.toString().split('.').last,
+        'description': aiResponse.description ?? 'A ${_selectedItemType.displayName}',
+        'primaryColor': aiResponse.primaryColor?.toString() ?? 'Colors.blue',
+        'secondaryColor': aiResponse.secondaryColor?.toString(),
+        'size': aiResponse.size?.toString() ?? 'medium',
+        'abilities': aiResponse.abilities?.map((a) => a.toString()).toList() ?? [],
+      };
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+
+      // Navigate to preview screen
+      if (mounted) {
+        Navigator.pushNamed(
+          context,
+          '/creature-preview',
+          arguments: {
+            'creatureAttributes': _currentItem,
+            'creatureName': _currentItem!['customName'],
+          },
+        );
+      }
+    } catch (e) {
+      print('❌ [CREATOR] Error creating item: $e');
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+
+      // Show error dialog to user
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('⚠️ Creation Error'),
+            content: Text(
+              'Could not create your ${_selectedItemType.displayName}:\n\n$e\n\n'
+              'Possible reasons:\n'
+              '• No API key configured\n'
+              '• No internet connection\n'
+              '• Invalid API key\n'
+              '• OpenAI rate limit\n\n'
+              'Check Settings → API Configuration',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/parent-settings');
+                },
+                child: const Text('Go to Settings'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 

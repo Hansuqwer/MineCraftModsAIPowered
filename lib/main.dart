@@ -76,8 +76,35 @@ Future<void> main() async {
   runApp(const CraftaApp());
 }
 
-class CraftaApp extends StatelessWidget {
+class CraftaApp extends StatefulWidget {
   const CraftaApp({super.key});
+
+  @override
+  State<CraftaApp> createState() => _CraftaAppState();
+}
+
+class _CraftaAppState extends State<CraftaApp> {
+  Locale _currentLocale = const Locale('en', '');
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    try {
+      final locale = await LanguageService.getCurrentLanguage();
+      if (mounted) {
+        setState(() {
+          _currentLocale = locale;
+        });
+      }
+    } catch (e) {
+      print('❌ Error loading language: $e');
+      // Keep default English locale
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +116,7 @@ class CraftaApp extends StatelessWidget {
         fontFamily: 'Roboto',
         useMaterial3: true,
       ),
+      locale: _currentLocale,
       localizationsDelegates: LanguageService.getLocalizationDelegates(),
       supportedLocales: LanguageService.getSupportedLocales(),
       initialRoute: '/splash',

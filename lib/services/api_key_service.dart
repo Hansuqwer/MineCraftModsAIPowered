@@ -45,22 +45,17 @@ class ApiKeyService {
   ///
   /// Returns null if no key is stored
   Future<String?> getApiKey() async {
-    // Return cached value if available
-    if (_cachedApiKey != null) {
-      return _cachedApiKey;
-    }
-
     try {
       final key = await _storage.read(key: _apiKeyStorageKey);
       _cachedApiKey = key;
 
-      if (key != null) {
-        print('✅ [API_KEY_SERVICE] API key loaded from storage');
+      if (key != null && key.isNotEmpty) {
+        print('✅ [API_KEY_SERVICE] API key loaded from storage: ${key.substring(0, 7)}...');
+        return key;
       } else {
         print('⚠️ [API_KEY_SERVICE] No API key found in storage');
+        return null;
       }
-
-      return key;
     } catch (e) {
       print('❌ [API_KEY_SERVICE] Error loading API key: $e');
       return null;

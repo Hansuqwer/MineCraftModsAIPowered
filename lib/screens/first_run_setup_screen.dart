@@ -472,7 +472,8 @@ class _FirstRunSetupScreenState extends State<FirstRunSetupScreen> {
 
         // Save language preference
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('language_code', code);
+        await prefs.setString('selected_language', code);
+        print('💬 Language saved: $code');
       },
       child: Container(
         padding: const EdgeInsets.all(20),

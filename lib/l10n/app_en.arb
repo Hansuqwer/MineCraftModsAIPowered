@@ -103,5 +103,189 @@
   "swedish": "Svenska",
   "@swedish": {
     "description": "Swedish language option"
+  },
+  "parentSettings": "Parent Settings",
+  "@parentSettings": {
+    "description": "Title for parent settings screen"
+  },
+  "ageGroup": "Age Group",
+  "@ageGroup": {
+    "description": "Age group setting label"
+  },
+  "safetyLevel": "Safety Level",
+  "@safetyLevel": {
+    "description": "Safety level setting label"
+  },
+  "functionalitySwitches": "Functionality Switches",
+  "@functionalitySwitches": {
+    "description": "Functionality switches section title"
+  },
+  "voiceSettings": "Voice Settings",
+  "@voiceSettings": {
+    "description": "Voice settings section title"
+  },
+  "creationHistory": "Creation History",
+  "@creationHistory": {
+    "description": "Creation history section title"
+  },
+  "exportManagement": "Export Management",
+  "@exportManagement": {
+    "description": "Export management section title"
+  },
+  "legalPrivacySettings": "Legal & Privacy Settings",
+  "@legalPrivacySettings": {
+    "description": "Legal and privacy settings section title"
+  },
+  "saveSettings": "Save Settings",
+  "@saveSettings": {
+    "description": "Save settings button text"
+  },
+  "speechEnabled": "Speech Recognition",
+  "@speechEnabled": {
+    "description": "Speech recognition toggle label"
+  },
+  "ttsEnabled": "Text-to-Speech",
+  "@ttsEnabled": {
+    "description": "Text-to-speech toggle label"
+  },
+  "aiEnabled": "AI Features",
+  "@aiEnabled": {
+    "description": "AI features toggle label"
+  },
+  "exportEnabled": "Export Features",
+  "@exportEnabled": {
+    "description": "Export features toggle label"
+  },
+  "historyEnabled": "Creation History",
+  "@historyEnabled": {
+    "description": "Creation history toggle label"
+  },
+  "ageGroup46": "4-6 years",
+  "@ageGroup46": {
+    "description": "Age group 4-6 years option"
+  },
+  "ageGroup78": "7-8 years",
+  "@ageGroup78": {
+    "description": "Age group 7-8 years option"
+  },
+  "ageGroup910": "9-10 years",
+  "@ageGroup910": {
+    "description": "Age group 9-10 years option"
+  },
+  "safetyLevelHigh": "High",
+  "@safetyLevelHigh": {
+    "description": "High safety level option"
+  },
+  "safetyLevelMedium": "Medium",
+  "@safetyLevelMedium": {
+    "description": "Medium safety level option"
+  },
+  "safetyLevelLow": "Low",
+  "@safetyLevelLow": {
+    "description": "Low safety level option"
+  },
+  "tutorialWelcome": "Welcome to Crafta!",
+  "@tutorialWelcome": {
+    "description": "Tutorial welcome title"
+  },
+  "tutorialWelcomeDesc": "I'm your AI friend who helps you create amazing Minecraft creatures!",
+  "@tutorialWelcomeDesc": {
+    "description": "Tutorial welcome description"
+  },
+  "tutorialWelcomeAction": "Tap the microphone and say \"Hello Crafta!\"",
+  "@tutorialWelcomeAction": {
+    "description": "Tutorial welcome action"
+  },
+  "tutorialVoiceTraining": "Voice Training",
+  "@tutorialVoiceTraining": {
+    "description": "Tutorial voice training title"
+  },
+  "tutorialVoiceTrainingDesc": "Speak clearly so I can understand you better. Try saying your name!",
+  "@tutorialVoiceTrainingDesc": {
+    "description": "Tutorial voice training description"
+  },
+  "tutorialVoiceTrainingAction": "Say \"My name is [your name]\"",
+  "@tutorialVoiceTrainingAction": {
+    "description": "Tutorial voice training action"
+  },
+  "tutorialFirstCreature": "Create Your First Creature",
+  "@tutorialFirstCreature": {
+    "description": "Tutorial first creature title"
+  },
+  "tutorialFirstCreatureDesc": "Let's create something amazing together! Try asking for a friendly dragon.",
+  "@tutorialFirstCreatureDesc": {
+    "description": "Tutorial first creature description"
+  },
+  "tutorialFirstCreatureAction": "Say \"Create a friendly dragon\"",
+  "@tutorialFirstCreatureAction": {
+    "description": "Tutorial first creature action"
+  },
+  "tutorialCustomize": "Customize Your Creature",
+  "@tutorialCustomize": {
+    "description": "Tutorial customize title"
+  },
+  "tutorialCustomizeDesc": "Make it special! Try asking for different colors or effects.",
+  "@tutorialCustomizeDesc": {
+    "description": "Tutorial customize description"
+  },
+  "tutorialCustomizeAction": "Say \"Make it blue with sparkles\"",
+  "@tutorialCustomizeAction": {
+    "description": "Tutorial customize action"
+  },
+  "tutorialView3D": "View in 3D",
+  "@tutorialView3D": {
+    "description": "Tutorial view 3D title"
+  },
+  "tutorialView3DDesc": "See how your creature looks in Minecraft! Tap the 3D button.",
+  "@tutorialView3DDesc": {
+    "description": "Tutorial view 3D description"
+  },
+  "tutorialView3DAction": "Tap the \"VIEW IN 3D\" button",
+  "@tutorialView3DAction": {
+    "description": "Tutorial view 3D action"
+  },
+  "tutorialExport": "Export to Minecraft",
+  "@tutorialExport": {
+    "description": "Tutorial export title"
+  },
+  "tutorialExportDesc": "Ready to use your creature in Minecraft? Let's export it!",
+  "@tutorialExportDesc": {
+    "description": "Tutorial export description"
+  },
+  "tutorialExportAction": "Tap \"Export to Minecraft\"",
+  "@tutorialExportAction": {
+    "description": "Tutorial export action"
+  },
+  "tutorialComplete": "You're All Set!",
+  "@tutorialComplete": {
+    "description": "Tutorial complete title"
+  },
+  "tutorialCompleteDesc": "Amazing! You've learned how to use Crafta. Now create anything you can imagine!",
+  "@tutorialCompleteDesc": {
+    "description": "Tutorial complete description"
+  },
+  "tutorialCompleteAction": "Start creating!",
+  "@tutorialCompleteAction": {
+    "description": "Tutorial complete action"
+  },
+  "tutorialPrevious": "Previous",
+  "@tutorialPrevious": {
+    "description": "Tutorial previous button"
+  },
+  "tutorialSkip": "Skip",
+  "@tutorialSkip": {
+    "description": "Tutorial skip button"
+  },
+  "tutorialTryIt": "Try It!",
+  "@tutorialTryIt": {
+    "description": "Tutorial try it button"
+  },
+  "tutorialNext": "Next",
+  "@tutorialNext": {
+    "description": "Tutorial next button"
+  },
+  "tutorialCompleteButton": "Complete",
+  "@tutorialCompleteButton": {
+    "description": "Tutorial complete button"
   }
 }

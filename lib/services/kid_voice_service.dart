@@ -191,20 +191,20 @@ class KidVoiceService {
   /// Parse kid voice input into item attributes with enhanced intelligence
   /// Parse kid voice with AI first, fallback to keyword matching
   Future<Map<String, dynamic>> parseKidVoiceWithAI(String voiceInput) async {
-    print('🔍 Parsing kid voice: "$voiceInput"');
+    print('🔍 [KID_VOICE] Parsing kid voice: "$voiceInput"');
 
     try {
       // Try AI parsing first (PHASE 0.1 improvement)
-      print('🤖 Attempting AI parsing...');
+      print('🤖 [KID_VOICE] Attempting AI parsing...');
       final aiAttributes = await EnhancedAIService
           .parseEnhancedCreatureRequest('Create minecraft item: $voiceInput');
 
       // Convert to map format
       final attributes = _convertAIAttributesToMap(aiAttributes);
-      print('✅ AI parsing successful: $attributes');
+      print('✅ [KID_VOICE] AI parsing successful: $attributes');
       return attributes;
     } catch (e) {
-      print('⚠️ AI parsing failed, falling back to keyword matching: $e');
+      print('⚠️ [KID_VOICE] AI parsing failed, falling back to keyword matching: $e');
       // Fall back to local keyword matching
       return parseKidVoiceLocal(voiceInput);
     }

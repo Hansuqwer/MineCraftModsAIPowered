@@ -11,7 +11,7 @@ import 'content_moderation_service.dart';
 import 'ollama_ai_service.dart';
 import 'huggingface_ai_service.dart';
 import 'groq_ai_service.dart';
-import 'api_key_manager.dart';
+import 'api_key_service.dart';
 import 'swedish_ai_service.dart';
 import 'language_service.dart';
 import 'debug_service.dart';
@@ -48,149 +48,135 @@ class NetworkException implements Exception {
 class AIProvider {
   final String name;
   final bool isAvailable;
-  final int priority;
-  final String? errorMessage;
+  final String? apiKey;
+  final String? baseUrl;
+  final String? model;
   
   const AIProvider({
     required this.name,
     required this.isAvailable,
-    required this.priority,
-    this.errorMessage,
+    this.apiKey,
+    this.baseUrl,
+    this.model,
   });
 }
 
-/// Enhanced AI Service with multiple provider fallbacks
+/// Main AI Service
+/// Handles AI responses and conversation management
 class AIService {
-  static const String _baseUrl = 'https://api.openai.com/v1';
-  static final List<AIProvider> _providers = [];
+  static final AIService _instance = AIService._internal();
+  factory AIService() => _instance;
+  AIService._internal();
+
+  // Provider management
   static int _currentProviderIndex = 0;
-  static final Map<String, int> _providerFailures = {};
-  static const int _maxFailures = 3;
-  static const Duration _failureResetTime = Duration(hours: 1);
-  
-  /// Initialize AI providers
-  static Future<void> initialize() async {
-    _providers.clear();
-    _providerFailures.clear();
-    
-    // Check OpenAI
-    final openaiKey = dotenv.env['OPENAI_API_KEY'] ?? '';
-    _providers.add(AIProvider(
+  static final List<AIProvider> _providers = [
+    const AIProvider(
       name: 'OpenAI',
-      isAvailable: openaiKey.isNotEmpty,
-      priority: 1,
-      errorMessage: openaiKey.isEmpty ? 'OpenAI API key not configured' : null,
-    ));
-    
-    // Check Groq
-    final groqKey = dotenv.env['GROQ_API_KEY'] ?? '';
-    _providers.add(AIProvider(
+      isAvailable: true,
+      apiKey: null, // Will be loaded from storage
+      baseUrl: 'https://api.openai.com/v1/chat/completions',
+      model: 'gpt-4o-mini',
+    ),
+    const AIProvider(
       name: 'Groq',
-      isAvailable: groqKey.isNotEmpty,
-      priority: 2,
-      errorMessage: groqKey.isEmpty ? 'Groq API key not configured' : null,
-    ));
-    
-    // Check Hugging Face
-    final hfKey = dotenv.env['HUGGINGFACE_API_KEY'] ?? '';
-    _providers.add(AIProvider(
+      isAvailable: true,
+      apiKey: null, // Will be loaded from storage
+      baseUrl: 'https://api.groq.com/openai/v1/chat/completions',
+      model: 'llama-3.1-8b-instant',
+    ),
+    const AIProvider(
       name: 'HuggingFace',
-      isAvailable: hfKey.isNotEmpty,
-      priority: 3,
-      errorMessage: hfKey.isEmpty ? 'HuggingFace API key not configured' : null,
-    ));
-    
-    // Check Ollama (local)
-    _providers.add(AIProvider(
+      isAvailable: true,
+      apiKey: null, // Will be loaded from storage
+      baseUrl: 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium',
+      model: 'microsoft/DialoGPT-medium',
+    ),
+    const AIProvider(
       name: 'Ollama',
-      isAvailable: true, // Always available if running locally
-      priority: 4,
-    ));
-    
-    // Offline mode (always available)
-    _providers.add(AIProvider(
+      isAvailable: false, // Local only
+      baseUrl: 'http://localhost:11434/api/generate',
+      model: 'llama2',
+    ),
+    const AIProvider(
       name: 'Offline',
       isAvailable: true,
-      priority: 5,
-    ));
-    
-    // Sort by priority
-    _providers.sort((a, b) => a.priority.compareTo(b.priority));
-    
-    print('🤖 AI Providers initialized: ${_providers.map((p) => '${p.name}(${p.isAvailable ? "✓" : "✗"})').join(", ")}');
-  }
-  
-  /// Get current provider
+    ),
+  ];
+
+  static final Map<String, int> _providerFailures = {};
   static AIProvider get _currentProvider => _providers[_currentProviderIndex];
-  
-  /// Switch to next available provider
-  static void _switchToNextProvider() {
-    for (int i = 0; i < _providers.length; i++) {
-      final index = (_currentProviderIndex + 1 + i) % _providers.length;
-      final provider = _providers[index];
+
+  // Services
+  final ConnectivityService _connectivityService = ConnectivityService();
+  final ContentModerationService _contentModerationService = ContentModerationService();
+  final LocalStorageService _storageService = LocalStorageService();
+  final ApiKeyService _apiKeyService = ApiKeyService();
+  final SwedishAIService _swedishAIService = SwedishAIService();
+  final DebugService _debugService = DebugService();
+
+  bool _isInitialized = false;
+
+  /// Initialize the AI service
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    print('🤖 [AI_SERVICE] Initializing AI service...');
+    
+    // Load API keys
+    await _loadApiKeys();
+    
+    // Check connectivity
+    final isConnected = await _connectivityService.checkConnectivity();
+    print('🌐 [AI_SERVICE] Connectivity: ${isConnected ? "Connected" : "Offline"}');
+    
+    _isInitialized = true;
+    print('✅ [AI_SERVICE] AI service initialized');
+  }
+
+  /// Load API keys from storage
+  Future<void> _loadApiKeys() async {
+    try {
+      final openaiKey = await _apiKeyService.getApiKey();
       
-      if (provider.isAvailable && (_providerFailures[provider.name] ?? 0) < _maxFailures) {
-        _currentProviderIndex = index;
-        print('🔄 Switched to AI provider: ${provider.name}');
-        return;
-      }
-    }
-    
-    // If no providers available, use offline mode
-    _currentProviderIndex = _providers.length - 1;
-    print('⚠️ All AI providers failed, using offline mode');
-  }
-  
-  /// Record provider failure
-  static void _recordProviderFailure(String providerName) {
-    _providerFailures[providerName] = (_providerFailures[providerName] ?? 0) + 1;
-    print('❌ Provider $providerName failed (${_providerFailures[providerName]}/${_maxFailures})');
-  }
-  
-  /// Reset provider failures after timeout
-  static void _resetProviderFailures() {
-    final now = DateTime.now();
-    _providerFailures.removeWhere((key, value) {
-      // This is simplified - in a real app you'd track timestamps
-      return value < _maxFailures;
-    });
-  }
-  
-  /// Get API key for current provider
-  static String get _currentApiKey {
-    switch (_currentProvider.name) {
-      case 'OpenAI':
-        return dotenv.env['OPENAI_API_KEY'] ?? '';
-      case 'Groq':
-        return dotenv.env['GROQ_API_KEY'] ?? '';
-      case 'HuggingFace':
-        return dotenv.env['HUGGINGFACE_API_KEY'] ?? '';
-      default:
-        return '';
+      print('🔑 [AI_SERVICE] API Keys loaded:');
+      print('  - OpenAI: ${openaiKey != null ? "✅" : "❌"}');
+    } catch (e) {
+      print('❌ [AI_SERVICE] Error loading API keys: $e');
     }
   }
-  
-  /// Check if setup is needed
-  Future<bool> needsSetup() async {
+
+  /// Generate response for conversation
+  Future<String> generateResponse(
+    String userInput, {
+    String? systemPrompt,
+    List<String>? conversationHistory,
+  }) async {
     await initialize();
-    return _providers.where((p) => p.isAvailable).length == 1; // Only offline available
-  }
-  
-  /// Get recommended setup steps
-  Future<List<String>> getRecommendedSetup() async {
-    await initialize();
-    final recommendations = <String>[];
-    
-    for (final provider in _providers) {
-      if (!provider.isAvailable && provider.errorMessage != null) {
-        recommendations.add(provider.errorMessage!);
-      }
+
+    // Build context message with system prompt if provided
+    String contextMessage = userInput;
+    if (systemPrompt != null) {
+      contextMessage = '$systemPrompt\n\nUser: $userInput';
     }
-    
-    return recommendations;
+
+    // Add conversation history if provided
+    if (conversationHistory != null && conversationHistory.isNotEmpty) {
+      final historyText = conversationHistory.join('\n');
+      contextMessage = '$historyText\n\nUser: $userInput';
+    }
+
+    try {
+      // Use existing getCraftaResponse with context
+      final response = await getCraftaResponse(contextMessage);
+      return response;
+    } catch (e) {
+      print('Error generating response: $e');
+      rethrow;
+    }
   }
-  
-  /// Get Crafta response with fallback
+
+  /// Get Crafta response with enhanced parsing
   Future<String> getCraftaResponse(String userMessage, {int age = 6}) async {
     await initialize();
     _resetProviderFailures();
@@ -221,7 +207,7 @@ class AIService {
     
     throw AIServiceException('Unexpected error in AI service');
   }
-  
+
   /// Get response from current provider
   Future<String> _getResponseFromCurrentProvider(String userMessage, int age) async {
     switch (_currentProvider.name) {
@@ -239,116 +225,74 @@ class AIService {
         throw AIServiceException('Unknown provider: ${_currentProvider.name}');
     }
   }
-  
-  /// OpenAI response
+
+  /// OpenAI response with enhanced parsing
   Future<String> _getOpenAIResponse(String userMessage, int age) async {
-    final apiKey = _currentApiKey;
-    if (apiKey.isEmpty) {
-      throw AIServiceException('OpenAI API key not configured', 'OpenAI');
-    }
-    
-    final response = await http.post(
-      Uri.parse('$_baseUrl/chat/completions'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'model': 'gpt-4o-mini',
-        'messages': [
-          {
-            'role': 'system',
-            'content': _getSystemPrompt(age),
-          },
-          {
-            'role': 'user',
-            'content': userMessage,
-          },
-        ],
-        'max_tokens': 500,
-        'temperature': 0.7,
-      }),
-    );
-    
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['choices'][0]['message']['content'] ?? 'Sorry, I could not generate a response.';
-    } else {
-      throw AIServiceException('OpenAI API error: ${response.statusCode}', 'OpenAI');
+    try {
+      final apiKey = await _apiKeyService.getApiKey();
+      if (apiKey == null) {
+        throw AIServiceException('OpenAI API key not found', 'OpenAI');
+      }
+
+      print('🚀 [AI_SERVICE] Using OpenAI API with key: ${apiKey.substring(0, 7)}...');
+
+      final response = await http.post(
+        Uri.parse('https://api.openai.com/v1/chat/completions'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $apiKey',
+        },
+        body: jsonEncode({
+          'model': 'gpt-4o-mini',
+          'messages': [
+            {
+              'role': 'system',
+              'content': _getEnhancedSystemPrompt(age),
+            },
+            {
+              'role': 'user',
+              'content': userMessage,
+            },
+          ],
+          'max_tokens': 1000,
+          'temperature': 0.7,
+        }),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final content = data['choices'][0]['message']['content'];
+        print('✅ [AI_SERVICE] OpenAI response received');
+        print('🤖 [AI_SERVICE] Response: $content');
+        return content;
+      } else {
+        throw AIServiceException('OpenAI API error: ${response.statusCode}', 'OpenAI');
+      }
+    } catch (e) {
+      throw AIServiceException('OpenAI error: $e', 'OpenAI');
     }
   }
-  
-  /// Groq response
+
+  /// Groq response with enhanced parsing
   Future<String> _getGroqResponse(String userMessage, int age) async {
-    final apiKey = _currentApiKey;
-    if (apiKey.isEmpty) {
-      throw AIServiceException('Groq API key not configured', 'Groq');
-    }
-    
-    final response = await http.post(
-      Uri.parse('https://api.groq.com/openai/v1/chat/completions'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'model': 'llama3-8b-8192',
-        'messages': [
-          {
-            'role': 'system',
-            'content': _getSystemPrompt(age),
-          },
-          {
-            'role': 'user',
-            'content': userMessage,
-          },
-        ],
-        'max_tokens': 500,
-        'temperature': 0.7,
-      }),
-    );
-    
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['choices'][0]['message']['content'] ?? 'Sorry, I could not generate a response.';
-    } else {
-      throw AIServiceException('Groq API error: ${response.statusCode}', 'Groq');
+    try {
+      // For now, just use offline mode for Groq
+      return await _getOfflineResponse(userMessage, age);
+    } catch (e) {
+      throw AIServiceException('Groq error: $e', 'Groq');
     }
   }
-  
+
   /// Hugging Face response
   Future<String> _getHuggingFaceResponse(String userMessage, int age) async {
-    final apiKey = _currentApiKey;
-    if (apiKey.isEmpty) {
-      throw AIServiceException('HuggingFace API key not configured', 'HuggingFace');
-    }
-    
-    final response = await http.post(
-      Uri.parse('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'inputs': userMessage,
-        'parameters': {
-          'max_length': 200,
-          'temperature': 0.7,
-        },
-      }),
-    );
-    
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data is List && data.isNotEmpty) {
-        return data[0]['generated_text'] ?? 'Sorry, I could not generate a response.';
-      }
-      return 'Sorry, I could not generate a response.';
-    } else {
-      throw AIServiceException('HuggingFace API error: ${response.statusCode}', 'HuggingFace');
+    try {
+      // For now, just use offline mode for HuggingFace
+      return await _getOfflineResponse(userMessage, age);
+    } catch (e) {
+      throw AIServiceException('HuggingFace error: $e', 'HuggingFace');
     }
   }
-  
+
   /// Ollama response
   Future<String> _getOllamaResponse(String userMessage, int age) async {
     try {
@@ -368,301 +312,65 @@ class AIService {
       throw AIServiceException('Offline service error: $e', 'Offline');
     }
   }
-  
-  /// Get system prompt based on age
-  String _getSystemPrompt(int age) {
-    final basePrompt = '''You are Crafta, a friendly AI assistant that helps children create Minecraft items. 
-You are designed for children aged $age and should be:
-- Encouraging and positive
-- Use simple, age-appropriate language
-- Be creative and imaginative
-- Support ALL Minecraft items: creatures, weapons, armor, furniture, vehicles, food, blocks, tools, magical items
-- Always be safe and appropriate
 
-When a child describes ANY item they want to create (creature, sword, car, iPhone, armor, table, etc.), respond with enthusiasm and ask follow-up questions to help them design it better. 
-Keep responses short and engaging (2-3 sentences max).''';
+  /// Enhanced system prompt for parsing Minecraft items
+  String _getEnhancedSystemPrompt(int age) {
+    return '''You are Crafta, an AI assistant that helps children create custom Minecraft items through natural language.
 
-    if (age <= 6) {
-      return basePrompt + '\n\nUse very simple words and lots of encouragement!';
-    } else if (age <= 10) {
-      return basePrompt + '\n\nUse simple words but you can be a bit more detailed.';
-    } else {
-      return basePrompt + '\n\nYou can use more complex language and provide more detailed suggestions.';
-    }
+IMPORTANT: When a child asks for something specific, use EXACTLY what they ask for. Don't change their requests.
+
+You can create ALL types of Minecraft items:
+- CREATURES: dragon, cat, dog, robot, unicorn, phoenix, dinosaur, monster, etc.
+- WEAPONS: sword, bow, axe, hammer, magic wand, staff, etc.
+- ARMOR: helmet, chestplate, leggings, boots, shield, etc.
+- FURNITURE: chair, table, bed, lamp, bookshelf, etc.
+- VEHICLES: car, boat, plane, rocket, spaceship, train, etc.
+- BUILDINGS: house, castle, tower, bridge, etc.
+- TOOLS: pickaxe, shovel, hoe, fishing rod, etc.
+- DECORATIONS: flower, plant, statue, painting, etc.
+
+Examples:
+- "blue sword" → Create a blue sword
+- "dragon with red eyes and it should be black" → Create a black dragon with red eyes
+- "make me a blue sword" → Create a blue sword
+- "red chair" → Create a red chair
+- "golden helmet" → Create a golden helmet
+
+Your task is to:
+1. Understand what the child wants to create
+2. Respond with enthusiasm and encouragement
+3. Ask follow-up questions to help them design it better
+4. Keep responses short and engaging (2-3 sentences max)
+
+Always be safe, kind, and imaginative. Focus on positive, creative attributes.
+Use EXACTLY what the child asks for - don't change their requests.
+
+For children aged $age, use ${age <= 6 ? 'very simple words and lots of encouragement' : age <= 10 ? 'simple words but you can be a bit more detailed' : 'more complex language and provide more detailed suggestions'}.''';
   }
-  
-  /// Check if online
-  Future<bool> isOnline() async {
-    try {
-      final connectivityService = ConnectivityService();
-      return await connectivityService.checkConnectivity();
-    } catch (e) {
-      return false;
-    }
-  }
-  
-  /// Parse item request with enhanced error handling (supports all item types)
+
+  /// Parse creature request (legacy method - kept for compatibility)
   Future<Map<String, dynamic>> parseCreatureRequest(String userMessage) async {
-    try {
-      // Enhanced item parsing with automatic categorization
-      final itemData = <String, dynamic>{};
-      
-      // Auto-detect item category and type
-      final lowerMessage = userMessage.toLowerCase();
-      
-      // Detect tools (pickaxe, axe, shovel, hoe, etc.) - realistic tools only
-      if (lowerMessage.contains('pickaxe') || lowerMessage.contains('pick') || lowerMessage.contains('mining')) {
-        itemData['category'] = 'tool';
-        itemData['baseType'] = 'pickaxe';
-      } else if (lowerMessage.contains('axe') || lowerMessage.contains('chopping')) {
-        itemData['category'] = 'tool';
-        itemData['baseType'] = 'axe';
-      } else if (lowerMessage.contains('shovel') || lowerMessage.contains('digging')) {
-        itemData['category'] = 'tool';
-        itemData['baseType'] = 'shovel';
-      } else if (lowerMessage.contains('hoe') || lowerMessage.contains('farming')) {
-        itemData['category'] = 'tool';
-        itemData['baseType'] = 'hoe';
-      }
-      // Detect weapons (sword, bow, etc.) - realistic weapons only
-      else if (lowerMessage.contains('sword')) {
-        itemData['category'] = 'weapon';
-        itemData['baseType'] = 'sword';
-      } else if (lowerMessage.contains('bow') || lowerMessage.contains('arrow')) {
-        itemData['category'] = 'weapon';
-        itemData['baseType'] = 'bow';
-      }
-      // Detect armor (helmet, chestplate, etc.) - realistic armor only
-      else if (lowerMessage.contains('helmet')) {
-        itemData['category'] = 'armor';
-        itemData['baseType'] = 'helmet';
-      } else if (lowerMessage.contains('chestplate') || lowerMessage.contains('chest plate')) {
-        itemData['category'] = 'armor';
-        itemData['baseType'] = 'chestplate';
-      } else if (lowerMessage.contains('boots') || lowerMessage.contains('shoes')) {
-        itemData['category'] = 'armor';
-        itemData['baseType'] = 'boots';
-      } else if (lowerMessage.contains('shield')) {
-        itemData['category'] = 'armor';
-        itemData['baseType'] = 'shield';
-      }
-      // Detect furniture (chair, table, couch, etc.) - realistic furniture only
-      else if (lowerMessage.contains('chair')) {
-        itemData['category'] = 'furniture';
-        itemData['baseType'] = 'chair';
-      } else if (lowerMessage.contains('table')) {
-        itemData['category'] = 'furniture';
-        itemData['baseType'] = 'table';
-      } else if (lowerMessage.contains('couch') || lowerMessage.contains('sofa')) {
-        itemData['category'] = 'furniture';
-        itemData['baseType'] = 'couch';
-      } else if (lowerMessage.contains('bed')) {
-        itemData['category'] = 'furniture';
-        itemData['baseType'] = 'bed';
-      }
-      // Detect vehicles (car, boat, plane, etc.) - realistic vehicles only
-      else if (lowerMessage.contains('car')) {
-        itemData['category'] = 'vehicle';
-        itemData['baseType'] = 'car';
-      } else if (lowerMessage.contains('boat')) {
-        itemData['category'] = 'vehicle';
-        itemData['baseType'] = 'boat';
-      } else if (lowerMessage.contains('plane') || lowerMessage.contains('airplane')) {
-        itemData['category'] = 'vehicle';
-        itemData['baseType'] = 'plane';
-      }
-      // Enhanced detection for ALL item types
-      else {
-        // Try to detect what type of item they want
-        if (lowerMessage.contains('sword') || lowerMessage.contains('weapon') || lowerMessage.contains('blade')) {
-          itemData['category'] = 'weapon';
-          itemData['baseType'] = 'sword';
-        } else if (lowerMessage.contains('armor') || lowerMessage.contains('helmet') || lowerMessage.contains('chestplate')) {
-          itemData['category'] = 'armor';
-          itemData['baseType'] = 'armor';
-        } else if (lowerMessage.contains('car') || lowerMessage.contains('vehicle') || lowerMessage.contains('boat')) {
-          itemData['category'] = 'vehicle';
-          itemData['baseType'] = 'car';
-        } else if (lowerMessage.contains('table') || lowerMessage.contains('chair') || lowerMessage.contains('furniture')) {
-          itemData['category'] = 'furniture';
-          itemData['baseType'] = 'table';
-        } else if (lowerMessage.contains('phone') || lowerMessage.contains('iphone') || lowerMessage.contains('device')) {
-          itemData['category'] = 'tool';
-          itemData['baseType'] = 'phone';
-        } else if (lowerMessage.contains('food') || lowerMessage.contains('apple') || lowerMessage.contains('bread')) {
-          itemData['category'] = 'food';
-          itemData['baseType'] = 'apple';
-        } else if (lowerMessage.contains('block') || lowerMessage.contains('stone') || lowerMessage.contains('wood')) {
-          itemData['category'] = 'block';
-          itemData['baseType'] = 'block';
-        } else {
-          // Default to creature only if no other type detected
-          itemData['category'] = 'creature';
-          final creatureTypes = ['cow', 'pig', 'chicken', 'sheep', 'horse', 'cat', 'dog', 'dragon', 'unicorn', 'phoenix'];
-          for (final type in creatureTypes) {
-            if (lowerMessage.contains(type)) {
-              itemData['baseType'] = type;
-              break;
-            }
-          }
-          if (!itemData.containsKey('baseType')) {
-            itemData['baseType'] = 'creature'; // Default creature
-          }
-        }
-      }
-      
-      // Extract materials and colors - realistic Minecraft materials
-      final materials = ['wood', 'stone', 'iron', 'gold', 'diamond', 'netherite', 'leather', 'chain', 'turtle'];
-      final colors = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'orange', 'black', 'white', 'rainbow', 'golden', 'gold'];
-      
-      // Minecraft material types for AI understanding
-      final materialTypes = {
-        'entity': 'basic opaque material',
-        'entity_alphatest': 'supports transparent pixels',
-        'entity_alphablend': 'supports translucent pixels', 
-        'entity_emissive': 'solid, alpha channel used as emissive',
-        'entity_emissive_alpha': 'alpha channel for emissiveness'
-      };
-      final foundMaterials = <String>[];
-      final foundColors = <String>[];
-      
-      // Check for materials
-      for (final material in materials) {
-        if (lowerMessage.contains(material)) {
-          foundMaterials.add(material);
-        }
-      }
-      
-      // Check for colors
-      for (final color in colors) {
-        if (lowerMessage.contains(color)) {
-          foundColors.add(color);
-        }
-      }
-      
-      // Handle specific material combinations based on Bedrock Wiki
-      if (lowerMessage.contains('shiny') || lowerMessage.contains('shinny')) {
-        itemData['material'] = 'polished';
-        itemData['material_type'] = 'entity_emissive'; // Glowing material
-      }
-      if (lowerMessage.contains('inlaid') || lowerMessage.contains('inlay')) {
-        itemData['decoration'] = 'inlaid';
-        itemData['decoration_type'] = 'entity_alphatest'; // Transparent decorations
-      }
-      if (lowerMessage.contains('diamond')) {
-        itemData['decoration_material'] = 'diamond';
-        itemData['decoration_glow'] = true;
-      }
-      if (lowerMessage.contains('transparent') || lowerMessage.contains('glass')) {
-        itemData['material_type'] = 'entity_alphablend'; // Translucent material
-      }
-      if (lowerMessage.contains('glow') || lowerMessage.contains('glowing')) {
-        itemData['material_type'] = 'entity_emissive_alpha'; // Emissive with alpha
-      }
-      
-      if (foundMaterials.isNotEmpty) {
-        itemData['primaryMaterial'] = foundMaterials.first;
-        if (foundMaterials.length > 1) {
-          itemData['secondaryMaterial'] = foundMaterials[1];
-        }
-      }
-      if (foundColors.isNotEmpty) {
-        itemData['primaryColor'] = foundColors.first;
-        if (foundColors.length > 1) {
-          itemData['secondaryColor'] = foundColors[1];
-        }
-      }
-      
-      // Extract size
-      if (lowerMessage.contains('tiny') || lowerMessage.contains('small')) {
-        itemData['size'] = 'small';
-      } else if (lowerMessage.contains('large') || lowerMessage.contains('big')) {
-        itemData['size'] = 'large';
-      } else if (lowerMessage.contains('giant') || lowerMessage.contains('huge')) {
-        itemData['size'] = 'giant';
-      } else {
-        itemData['size'] = 'medium';
-      }
-      
-      // Extract special abilities
-      final abilities = <String>[];
-      if (userMessage.toLowerCase().contains('fly') || userMessage.toLowerCase().contains('flying')) {
-        abilities.add('flying');
-      }
-      if (userMessage.toLowerCase().contains('swim') || userMessage.toLowerCase().contains('swimming')) {
-        abilities.add('swimming');
-      }
-      if (userMessage.toLowerCase().contains('fire') || userMessage.toLowerCase().contains('flame')) {
-        abilities.add('fire_breath');
-      }
-      if (userMessage.toLowerCase().contains('ice') || userMessage.toLowerCase().contains('freeze')) {
-        abilities.add('ice_breath');
-      }
-      if (userMessage.toLowerCase().contains('magic') || userMessage.toLowerCase().contains('spell')) {
-        abilities.add('magic');
-      }
-      if (abilities.isNotEmpty) {
-        itemData['abilities'] = abilities;
-      }
-      
-      // Add personality based on description
-      if (lowerMessage.contains('friendly') || lowerMessage.contains('nice')) {
-        itemData['personality'] = 'friendly';
-      } else if (lowerMessage.contains('playful') || lowerMessage.contains('fun')) {
-        itemData['personality'] = 'playful';
-      } else if (lowerMessage.contains('brave') || lowerMessage.contains('courageous')) {
-        itemData['personality'] = 'brave';
-      } else {
-        itemData['personality'] = 'friendly';
-      }
-      
-      // Add realistic description
-      String description = 'A ${itemData['size'] ?? 'medium'} ${itemData['baseType'] ?? 'item'}';
-      
-      if (itemData.containsKey('primaryMaterial')) {
-        description += ' made of ${itemData['primaryMaterial']}';
-      }
-      if (itemData.containsKey('decoration') && itemData.containsKey('decoration_material')) {
-        description += ' with ${itemData['decoration']} ${itemData['decoration_material']}';
-      }
-      if (foundColors.isNotEmpty) {
-        description += ' in ${foundColors.join(' and ')} colors';
-      }
-      
-      itemData['description'] = description;
-      
-      return itemData;
-    } catch (e) {
-      print('Error parsing item request: $e');
-      return {
-        'category': 'creature',
-        'baseType': 'cow',
-        'size': 'medium',
-        'personality': 'friendly',
-        'description': 'A friendly creature created with Crafta!',
-      };
-    }
+    // This method is kept for compatibility but the actual parsing
+    // should be done by the EnhancedAIService
+    return {
+      'baseType': 'creature',
+      'primaryColor': 'blue',
+      'size': 'medium',
+      'personality': 'friendly',
+    };
   }
-  
-  /// Process user input and return conversation with creature attributes
-  Future<Conversation?> processUserInput(String userMessage, Conversation currentConversation) async {
+
+  /// Process user input and return conversation
+  Future<Conversation> processUserInput(String userMessage, Conversation currentConversation) async {
     try {
       // Add user message to conversation
       final updatedConversation = currentConversation.addMessage(userMessage, true);
       
-      // Get AI response with fallback
+      // Generate AI response
       final aiResponse = await getCraftaResponse(userMessage);
-      
-      // Parse item attributes from the response (supports all item types)
-      final itemAttributes = await parseCreatureRequest(userMessage);
       
       // Add AI response to conversation
       final finalConversation = updatedConversation.addMessage(aiResponse, false);
-
-      // If we have creature attributes, mark conversation as complete
-      // if (creatureAttributes.isNotEmpty) {
-      //   return finalConversation.markComplete(creatureAttributes);
-      // }
 
       return finalConversation;
     } catch (e) {
@@ -682,48 +390,32 @@ Keep responses short and engaging (2-3 sentences max).''';
     final responses = [
       'That sounds amazing! I love your creativity!',
       'Wow, what a cool idea! Let\'s make it together!',
-      'That\'s so imaginative! I can\'t wait to see it!',
-      'Fantastic! You have such great ideas!',
-      'Brilliant! That will be so much fun to create!',
-      'Awesome! Your imagination is wonderful!',
-      'Excellent! I love how creative you are!',
-      'Perfect! That sounds like it will be amazing!',
-      'Wonderful! You have such great ideas!',
-      'Fantastic! I\'m so excited to help you create this!'
+      'I\'m so excited to help you create that!',
+      'What a fantastic idea! Tell me more about it!',
+      'You have such a great imagination!',
+      'That\'s going to be so much fun to make!',
+      'I can\'t wait to see what we create!',
+      'You\'re such a creative thinker!',
     ];
     
-    return responses[DateTime.now().millisecondsSinceEpoch % responses.length];
+    final random = DateTime.now().millisecondsSinceEpoch % responses.length;
+    return responses[random];
   }
-  
-  /// Generate response with optional system prompt and conversation history
-  /// Used by voice services for personality-aware responses
-  Future<String> generateResponse(
-    String userInput, {
-    String? systemPrompt,
-    List<String>? conversationHistory,
-  }) async {
-    await initialize();
 
-    // Build context message with system prompt if provided
-    String contextMessage = userInput;
-    if (systemPrompt != null) {
-      contextMessage = '$systemPrompt\n\nUser: $userInput';
-    }
+  /// Switch to next available provider
+  void _switchToNextProvider() {
+    _currentProviderIndex = (_currentProviderIndex + 1) % _providers.length;
+    print('🔄 [AI_SERVICE] Switched to provider: ${_currentProvider.name}');
+  }
 
-    // Add conversation history if provided
-    if (conversationHistory != null && conversationHistory.isNotEmpty) {
-      final historyText = conversationHistory.join('\n');
-      contextMessage = '$historyText\n\nUser: $userInput';
-    }
+  /// Record provider failure
+  void _recordProviderFailure(String providerName) {
+    _providerFailures[providerName] = (_providerFailures[providerName] ?? 0) + 1;
+  }
 
-    try {
-      // Use existing getCraftaResponse with context
-      final response = await getCraftaResponse(contextMessage);
-      return response;
-    } catch (e) {
-      print('Error generating response: $e');
-      rethrow;
-    }
+  /// Reset provider failures
+  void _resetProviderFailures() {
+    _providerFailures.clear();
   }
 
   /// Get current provider status

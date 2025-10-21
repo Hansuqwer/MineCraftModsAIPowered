@@ -11,9 +11,13 @@ class EnhancedAIService {
 
   /// Get API key from secure storage or .env file
   static Future<String?> _getApiKey() async {
+    print('🔍 [ENHANCED_AI] Checking for API key...');
+    
     // Try to get from ApiKeyService first
     final apiKeyService = ApiKeyService();
     final storedKey = await apiKeyService.getApiKey();
+    
+    print('🔍 [ENHANCED_AI] Stored key result: ${storedKey != null ? 'FOUND (${storedKey.substring(0, 7)}...)' : 'NOT FOUND'}');
 
     if (storedKey != null && storedKey.isNotEmpty) {
       print('✅ [ENHANCED_AI] Using API key from secure storage');
@@ -22,6 +26,8 @@ class EnhancedAIService {
 
     // Fall back to .env file
     final envKey = dotenv.env['OPENAI_API_KEY'];
+    print('🔍 [ENHANCED_AI] .env key result: ${envKey != null ? 'FOUND (${envKey.substring(0, 7)}...)' : 'NOT FOUND'}');
+    
     if (envKey != null && envKey.isNotEmpty) {
       print('⚠️ [ENHANCED_AI] Using API key from .env file');
       return envKey;
@@ -44,6 +50,8 @@ class EnhancedAIService {
         print('⚠️ [ENHANCED_AI] No API key available, using fallback');
         return _getDefaultAttributes(userMessage);
       }
+
+      print('🚀 [ENHANCED_AI] Making API call with key: ${apiKey.substring(0, 7)}...');
 
       final response = await http.post(
         Uri.parse(_baseUrl),
@@ -71,9 +79,11 @@ class EnhancedAIService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final content = data['choices'][0]['message']['content'];
+        print('✅ [ENHANCED_AI] API call successful, parsing response');
+        print('🤖 [ENHANCED_AI] AI Response: $content');
         return _parseAIResponse(content);
       } else {
-        print('AI API error: ${response.statusCode}');
+        print('❌ [ENHANCED_AI] API error: ${response.statusCode} - ${response.body}');
         return _getDefaultAttributes(userMessage);
       }
     } catch (e) {
@@ -85,42 +95,64 @@ class EnhancedAIService {
   /// Get enhanced system prompt for advanced parsing
   static String _getEnhancedSystemPrompt() {
     return '''
-You are Crafta, an AI assistant that helps children create custom Minecraft creatures through natural language.
+You are Crafta, an AI assistant that helps children create custom Minecraft items through natural language.
 
-Your task is to parse user requests and extract detailed creature attributes including:
+IMPORTANT: When a child asks for something specific, use EXACTLY what they ask for. Don't change their requests.
 
-1. BASE TYPE: dragon, cat, robot, unicorn, dinosaur, etc.
-2. COLORS: primary, secondary, accent colors
-3. SIZE: tiny, small, medium, large, giant
-4. PERSONALITY: friendly, playful, shy, brave, curious
-5. ABILITIES: flying, swimming, fire breath, ice breath, magic, teleportation, invisibility, super strength, super speed, healing, shapeshifting, weather control
-6. ACCESSORIES: wizard hat, crown, sunglasses, armor, magic wand, crystal ball, etc.
-7. PATTERNS: stripes, spots, sparkles, rainbow, stars, hearts
-8. TEXTURE: smooth, rough, scaly, furry, metallic, glassy
-9. GLOW EFFECT: none, soft, bright, pulsing, rainbow
-10. ANIMATION STYLE: natural, bouncy, graceful, energetic, calm
+You can create ALL types of Minecraft items:
+- CREATURES: dragon, cat, dog, robot, unicorn, phoenix, dinosaur, monster, etc.
+- WEAPONS: sword, bow, axe, hammer, magic wand, staff, etc.
+- ARMOR: helmet, chestplate, leggings, boots, shield, etc.
+- FURNITURE: chair, table, bed, lamp, bookshelf, etc.
+- VEHICLES: car, boat, plane, rocket, spaceship, train, etc.
+- BUILDINGS: house, castle, tower, bridge, etc.
+- TOOLS: pickaxe, shovel, hoe, fishing rod, etc.
+- DECORATIONS: flower, plant, statue, painting, etc.
+
+Examples:
+- "blue sword" → baseType: "sword", primaryColor: "blue", category: "weapon"
+- "dragon with red eyes and it should be black" → baseType: "dragon", primaryColor: "black", accessories: ["red eyes"], category: "creature"
+- "make me a blue sword" → baseType: "sword", primaryColor: "blue", category: "weapon"
+- "red chair" → baseType: "chair", primaryColor: "red", category: "furniture"
+- "golden helmet" → baseType: "helmet", primaryColor: "gold", category: "armor"
+
+Your task is to parse user requests and extract these attributes:
+
+1. BASE TYPE: What they want (sword, dragon, chair, helmet, etc.)
+2. CATEGORY: creature, weapon, armor, furniture, vehicle, building, tool, decoration
+3. PRIMARY COLOR: The main color they specify
+4. SIZE: tiny, small, medium, large, giant (default: medium)
+5. PERSONALITY: friendly, playful, shy, brave, curious (for creatures only)
+6. ABILITIES: flying, swimming, fireBreath, iceBreath, magic, etc. (for creatures only)
+7. ACCESSORIES: red eyes, wizard hat, crown, etc.
+8. PATTERNS: stripes, spots, sparkles, rainbow, stars, hearts
+9. TEXTURE: smooth, rough, scaly, furry, metallic, glassy
+10. GLOW EFFECT: none, soft, bright, pulsing, rainbow
+11. ANIMATION STYLE: natural, bouncy, graceful, energetic, calm (for creatures only)
 
 Respond with a JSON object containing these attributes. Be creative and child-friendly.
 
 Example response format:
 {
-  "baseType": "dragon",
-  "primaryColor": "red",
-  "secondaryColor": "gold",
-  "accentColor": "orange",
-  "size": "large",
-  "abilities": ["flying", "fireBreath", "magic"],
-  "accessories": ["wizard hat", "magic wand"],
-  "personality": "brave",
-  "patterns": ["sparkles", "rainbow"],
-  "texture": "scaly",
-  "glowEffect": "bright",
-  "animationStyle": "energetic",
-  "customName": "Firewing",
-  "description": "A brave dragon with magical powers"
+  "baseType": "sword",
+  "category": "weapon",
+  "primaryColor": "blue",
+  "secondaryColor": "silver",
+  "accentColor": "white",
+  "size": "medium",
+  "abilities": [],
+  "accessories": [],
+  "personality": "friendly",
+  "patterns": [],
+  "texture": "metallic",
+  "glowEffect": "none",
+  "animationStyle": "natural",
+  "customName": "Blue Sword",
+  "description": "A blue sword for adventures"
 }
 
 Always be safe, kind, and imaginative. Focus on positive, creative attributes.
+Use EXACTLY what the child asks for - don't change their requests.
 ''';
   }
 
@@ -132,17 +164,20 @@ Always be safe, kind, and imaginative. Focus on positive, creative attributes.
       final jsonEnd = content.lastIndexOf('}') + 1;
       
       if (jsonStart == -1 || jsonEnd == 0) {
+        print('⚠️ [ENHANCED_AI] No JSON found in response, using fallback');
         return _getDefaultAttributes(content);
       }
-      
+
       final jsonString = content.substring(jsonStart, jsonEnd);
-      final data = jsonDecode(jsonString);
+      print('🔍 [ENHANCED_AI] Extracted JSON: $jsonString');
+      
+      final Map<String, dynamic> data = jsonDecode(jsonString);
       
       return EnhancedCreatureAttributes(
         baseType: data['baseType'] ?? 'creature',
-        primaryColor: _parseColor(data['primaryColor']) ?? Colors.blue,
-        secondaryColor: _parseColor(data['secondaryColor']) ?? Colors.blue.shade300,
-        accentColor: _parseColor(data['accentColor']) ?? Colors.blue.shade100,
+        primaryColor: _parseColor(data['primaryColor']),
+        secondaryColor: _parseColor(data['secondaryColor']),
+        accentColor: _parseColor(data['accentColor']),
         size: _parseSize(data['size']),
         abilities: _parseAbilities(data['abilities']),
         accessories: _parseAccessories(data['accessories']),
@@ -151,240 +186,56 @@ Always be safe, kind, and imaginative. Focus on positive, creative attributes.
         texture: _parseTexture(data['texture']),
         glowEffect: _parseGlowEffect(data['glowEffect']),
         animationStyle: _parseAnimationStyle(data['animationStyle']),
-        customName: data['customName'] ?? 'My Creature',
-        description: data['description'] ?? 'A wonderful creature created with Crafta',
+        customName: data['customName'] ?? '',
+        description: data['description'] ?? '',
       );
     } catch (e) {
-      print('Error parsing AI response: $e');
+      print('❌ [ENHANCED_AI] Error parsing AI response: $e');
       return _getDefaultAttributes(content);
     }
   }
 
-  /// Get default attributes when parsing fails
-  static EnhancedCreatureAttributes _getDefaultAttributes(String userMessage) {
-    return EnhancedCreatureAttributes(
-      baseType: _extractBaseType(userMessage),
-      primaryColor: Colors.blue,
-      secondaryColor: Colors.blue.shade300,
-      accentColor: Colors.blue.shade100,
-      size: CreatureSize.medium,
-      abilities: [],
-      accessories: [],
-      personality: PersonalityType.friendly,
-      patterns: [],
-      texture: TextureType.smooth,
-      glowEffect: GlowEffect.none,
-      animationStyle: CreatureAnimationStyle.natural,
-      customName: 'My Creature',
-      description: 'A wonderful creature created with Crafta',
-    );
-  }
-
-  /// Extract base type from user message
-  static String _extractBaseType(String message) {
-    final lowerMessage = message.toLowerCase();
+  /// Parse color from string
+  static Color _parseColor(String? colorString) {
+    if (colorString == null) return Colors.blue;
     
-    if (lowerMessage.contains('dragon')) return 'dragon';
-    if (lowerMessage.contains('cat')) return 'cat';
-    if (lowerMessage.contains('dog')) return 'dog';
-    if (lowerMessage.contains('robot')) return 'robot';
-    if (lowerMessage.contains('unicorn')) return 'unicorn';
-    if (lowerMessage.contains('dinosaur')) return 'dinosaur';
-    if (lowerMessage.contains('bird')) return 'bird';
-    if (lowerMessage.contains('fish')) return 'fish';
-    if (lowerMessage.contains('bear')) return 'bear';
-    if (lowerMessage.contains('lion')) return 'lion';
-    if (lowerMessage.contains('tiger')) return 'tiger';
-    if (lowerMessage.contains('elephant')) return 'elephant';
-    if (lowerMessage.contains('monkey')) return 'monkey';
-    if (lowerMessage.contains('penguin')) return 'penguin';
-    if (lowerMessage.contains('owl')) return 'owl';
-    if (lowerMessage.contains('butterfly')) return 'butterfly';
-    if (lowerMessage.contains('spider')) return 'spider';
-    if (lowerMessage.contains('snake')) return 'snake';
-    if (lowerMessage.contains('frog')) return 'frog';
-    if (lowerMessage.contains('rabbit')) return 'rabbit';
-    if (lowerMessage.contains('mouse')) return 'mouse';
-    if (lowerMessage.contains('horse')) return 'horse';
-    if (lowerMessage.contains('cow')) return 'cow';
-    if (lowerMessage.contains('pig')) return 'pig';
-    if (lowerMessage.contains('sheep')) return 'sheep';
-    if (lowerMessage.contains('chicken')) return 'chicken';
-    if (lowerMessage.contains('duck')) return 'duck';
-    if (lowerMessage.contains('goose')) return 'goose';
-    if (lowerMessage.contains('turkey')) return 'turkey';
-    if (lowerMessage.contains('goat')) return 'goat';
-    if (lowerMessage.contains('deer')) return 'deer';
-    if (lowerMessage.contains('wolf')) return 'wolf';
-    if (lowerMessage.contains('fox')) return 'fox';
-    if (lowerMessage.contains('raccoon')) return 'raccoon';
-    if (lowerMessage.contains('squirrel')) return 'squirrel';
-    if (lowerMessage.contains('chipmunk')) return 'chipmunk';
-    if (lowerMessage.contains('hedgehog')) return 'hedgehog';
-    if (lowerMessage.contains('hamster')) return 'hamster';
-    if (lowerMessage.contains('guinea pig')) return 'guinea pig';
-    if (lowerMessage.contains('ferret')) return 'ferret';
-    if (lowerMessage.contains('skunk')) return 'skunk';
-    if (lowerMessage.contains('opossum')) return 'opossum';
-    if (lowerMessage.contains('beaver')) return 'beaver';
-    if (lowerMessage.contains('otter')) return 'otter';
-    if (lowerMessage.contains('seal')) return 'seal';
-    if (lowerMessage.contains('walrus')) return 'walrus';
-    if (lowerMessage.contains('whale')) return 'whale';
-    if (lowerMessage.contains('dolphin')) return 'dolphin';
-    if (lowerMessage.contains('shark')) return 'shark';
-    if (lowerMessage.contains('octopus')) return 'octopus';
-    if (lowerMessage.contains('squid')) return 'squid';
-    if (lowerMessage.contains('jellyfish')) return 'jellyfish';
-    if (lowerMessage.contains('starfish')) return 'starfish';
-    if (lowerMessage.contains('crab')) return 'crab';
-    if (lowerMessage.contains('lobster')) return 'lobster';
-    if (lowerMessage.contains('shrimp')) return 'shrimp';
-    if (lowerMessage.contains('snail')) return 'snail';
-    if (lowerMessage.contains('slug')) return 'slug';
-    if (lowerMessage.contains('worm')) return 'worm';
-    if (lowerMessage.contains('ant')) return 'ant';
-    if (lowerMessage.contains('bee')) return 'bee';
-    if (lowerMessage.contains('wasp')) return 'wasp';
-    if (lowerMessage.contains('hornet')) return 'hornet';
-    if (lowerMessage.contains('beetle')) return 'beetle';
-    if (lowerMessage.contains('ladybug')) return 'ladybug';
-    if (lowerMessage.contains('dragonfly')) return 'dragonfly';
-    if (lowerMessage.contains('damselfly')) return 'damselfly';
-    if (lowerMessage.contains('mantis')) return 'mantis';
-    if (lowerMessage.contains('cricket')) return 'cricket';
-    if (lowerMessage.contains('grasshopper')) return 'grasshopper';
-    if (lowerMessage.contains('katydid')) return 'katydid';
-    if (lowerMessage.contains('cicada')) return 'cicada';
-    if (lowerMessage.contains('locust')) return 'locust';
-    if (lowerMessage.contains('moth')) return 'moth';
-    if (lowerMessage.contains('caterpillar')) return 'caterpillar';
-    if (lowerMessage.contains('chrysalis')) return 'chrysalis';
-    if (lowerMessage.contains('cocoon')) return 'cocoon';
-    if (lowerMessage.contains('pupa')) return 'pupa';
-    if (lowerMessage.contains('larva')) return 'larva';
-    if (lowerMessage.contains('nymph')) return 'nymph';
-    if (lowerMessage.contains('grub')) return 'grub';
-    if (lowerMessage.contains('maggot')) return 'maggot';
-    if (lowerMessage.contains('fly')) return 'fly';
-    if (lowerMessage.contains('mosquito')) return 'mosquito';
-    if (lowerMessage.contains('gnat')) return 'gnat';
-    if (lowerMessage.contains('midge')) return 'midge';
-    if (lowerMessage.contains('flea')) return 'flea';
-    if (lowerMessage.contains('tick')) return 'tick';
-    if (lowerMessage.contains('mite')) return 'mite';
-    if (lowerMessage.contains('louse')) return 'louse';
-    if (lowerMessage.contains('bedbug')) return 'bedbug';
-    if (lowerMessage.contains('cockroach')) return 'cockroach';
-    if (lowerMessage.contains('termite')) return 'termite';
-    if (lowerMessage.contains('earwig')) return 'earwig';
-    if (lowerMessage.contains('silverfish')) return 'silverfish';
-    if (lowerMessage.contains('firebrat')) return 'firebrat';
-    if (lowerMessage.contains('booklice')) return 'booklice';
-    if (lowerMessage.contains('psocid')) return 'psocid';
-    if (lowerMessage.contains('thrips')) return 'thrips';
-    if (lowerMessage.contains('aphid')) return 'aphid';
-    if (lowerMessage.contains('scale')) return 'scale';
-    if (lowerMessage.contains('mealybug')) return 'mealybug';
-    if (lowerMessage.contains('whitefly')) return 'whitefly';
-    if (lowerMessage.contains('leafhopper')) return 'leafhopper';
-    if (lowerMessage.contains('planthopper')) return 'planthopper';
-    if (lowerMessage.contains('treehopper')) return 'treehopper';
-    if (lowerMessage.contains('froghopper')) return 'froghopper';
-    if (lowerMessage.contains('spittlebug')) return 'spittlebug';
-    if (lowerMessage.contains('leafminer')) return 'leafminer';
-    if (lowerMessage.contains('gall wasp')) return 'gall wasp';
-    if (lowerMessage.contains('gall fly')) return 'gall fly';
-    if (lowerMessage.contains('gall midge')) return 'gall midge';
-    if (lowerMessage.contains('gall gnat')) return 'gall gnat';
-    if (lowerMessage.contains('gall aphid')) return 'gall aphid';
-    if (lowerMessage.contains('gall mite')) return 'gall mite';
-    if (lowerMessage.contains('gall thrips')) return 'gall thrips';
-    if (lowerMessage.contains('gall beetle')) return 'gall beetle';
-    if (lowerMessage.contains('gall weevil')) return 'gall weevil';
-    if (lowerMessage.contains('gall sawfly')) return 'gall sawfly';
-    if (lowerMessage.contains('gall moth')) return 'gall moth';
-    if (lowerMessage.contains('gall butterfly')) return 'gall butterfly';
-    if (lowerMessage.contains('gall skipper')) return 'gall skipper';
-    if (lowerMessage.contains('gall skipper')) return 'gall skipper';
-    
-    return 'creature';
-  }
-
-  // Helper methods for parsing
-  static Color? _parseColor(String? color) {
-    if (color == null) return null;
-    switch (color.toLowerCase()) {
+    switch (colorString.toLowerCase()) {
       case 'red': return Colors.red;
       case 'blue': return Colors.blue;
       case 'green': return Colors.green;
       case 'yellow': return Colors.yellow;
       case 'purple': return Colors.purple;
-      case 'orange': return Colors.orange;
       case 'pink': return Colors.pink;
-      case 'brown': return Colors.brown;
+      case 'orange': return Colors.orange;
       case 'black': return Colors.black;
       case 'white': return Colors.white;
-      case 'gold': return Colors.amber;
-      case 'silver': return Colors.grey;
-      case 'cyan': return Colors.cyan;
-      case 'magenta': return Colors.pink;
-      case 'lime': return Colors.lime;
-      case 'indigo': return Colors.indigo;
-      case 'violet': return Colors.deepPurple;
+      case 'brown': return Colors.brown;
+      case 'grey': case 'gray': return Colors.grey;
+      case 'gold': case 'amber': return Colors.amber;
+      case 'silver': return Colors.grey[400]!;
       default: return Colors.blue;
     }
   }
 
-  static CreatureSize _parseSize(String? size) {
-    switch (size?.toLowerCase()) {
+  /// Parse size from string
+  static CreatureSize _parseSize(String? sizeString) {
+    if (sizeString == null) return CreatureSize.medium;
+    
+    switch (sizeString.toLowerCase()) {
       case 'tiny': return CreatureSize.tiny;
       case 'small': return CreatureSize.small;
+      case 'medium': return CreatureSize.medium;
       case 'large': return CreatureSize.large;
       case 'giant': return CreatureSize.giant;
       default: return CreatureSize.medium;
     }
   }
 
-  static List<SpecialAbility> _parseAbilities(List<dynamic>? abilities) {
-    if (abilities == null) return [];
+  /// Parse personality from string
+  static PersonalityType _parsePersonality(String? personalityString) {
+    if (personalityString == null) return PersonalityType.friendly;
     
-    List<SpecialAbility> result = [];
-    for (String ability in abilities) {
-      switch (ability.toLowerCase()) {
-        case 'flying': result.add(SpecialAbility.flying); break;
-        case 'swimming': result.add(SpecialAbility.swimming); break;
-        case 'fire breath': result.add(SpecialAbility.fireBreath); break;
-        case 'ice breath': result.add(SpecialAbility.iceBreath); break;
-        case 'magic': result.add(SpecialAbility.magic); break;
-        case 'teleportation': result.add(SpecialAbility.teleportation); break;
-        case 'invisibility': result.add(SpecialAbility.invisibility); break;
-        case 'super strength': result.add(SpecialAbility.superStrength); break;
-        case 'super speed': result.add(SpecialAbility.superSpeed); break;
-        case 'healing': result.add(SpecialAbility.healing); break;
-        case 'shapeshifting': result.add(SpecialAbility.shapeshifting); break;
-        case 'weather control': result.add(SpecialAbility.weatherControl); break;
-      }
-    }
-    return result;
-  }
-
-  static List<AccessoryType> _parseAccessories(List<dynamic>? accessories) {
-    if (accessories == null) return [];
-    
-    List<AccessoryType> result = [];
-    for (String accessory in accessories) {
-      final found = AccessoryType.values.firstWhere(
-        (a) => a.name.toLowerCase() == accessory.toLowerCase(),
-        orElse: () => AccessoryType.hat,
-      );
-      result.add(found);
-    }
-    return result;
-  }
-
-  static PersonalityType _parsePersonality(String? personality) {
-    switch (personality?.toLowerCase()) {
+    switch (personalityString.toLowerCase()) {
       case 'friendly': return PersonalityType.friendly;
       case 'playful': return PersonalityType.playful;
       case 'shy': return PersonalityType.shy;
@@ -394,25 +245,79 @@ Always be safe, kind, and imaginative. Focus on positive, creative attributes.
     }
   }
 
-  static List<Pattern> _parsePatterns(List<dynamic>? patterns) {
-    if (patterns == null) return [];
+  /// Parse abilities from list
+  static List<SpecialAbility> _parseAbilities(dynamic abilitiesData) {
+    if (abilitiesData == null || abilitiesData is! List) return [];
     
-    List<Pattern> result = [];
-    for (String pattern in patterns) {
-      switch (pattern.toLowerCase()) {
-        case 'stripes': result.add(Pattern.stripes); break;
-        case 'spots': result.add(Pattern.spots); break;
-        case 'sparkles': result.add(Pattern.sparkles); break;
-        case 'rainbow': result.add(Pattern.rainbow); break;
-        case 'stars': result.add(Pattern.stars); break;
-        case 'hearts': result.add(Pattern.hearts); break;
+    final List<SpecialAbility> abilities = [];
+    for (final ability in abilitiesData) {
+      if (ability is String) {
+        switch (ability.toLowerCase()) {
+          case 'flying': abilities.add(SpecialAbility.flying); break;
+          case 'swimming': abilities.add(SpecialAbility.swimming); break;
+          case 'firebreath': case 'fire_breath': abilities.add(SpecialAbility.fireBreath); break;
+          case 'icebreath': case 'ice_breath': abilities.add(SpecialAbility.iceBreath); break;
+          case 'magic': abilities.add(SpecialAbility.magic); break;
+          case 'teleportation': abilities.add(SpecialAbility.teleportation); break;
+          case 'invisibility': abilities.add(SpecialAbility.invisibility); break;
+          case 'superstrength': case 'super_strength': abilities.add(SpecialAbility.superStrength); break;
+          case 'superspeed': case 'super_speed': abilities.add(SpecialAbility.superSpeed); break;
+          case 'healing': abilities.add(SpecialAbility.healing); break;
+          case 'shapeshifting': abilities.add(SpecialAbility.shapeshifting); break;
+          case 'weathercontrol': case 'weather_control': abilities.add(SpecialAbility.weatherControl); break;
+        }
       }
     }
-    return result;
+    return abilities;
   }
 
-  static TextureType _parseTexture(String? texture) {
-    switch (texture?.toLowerCase()) {
+  /// Parse accessories from list
+  static List<AccessoryType> _parseAccessories(dynamic accessoriesData) {
+    if (accessoriesData == null || accessoriesData is! List) return [];
+    
+    final List<AccessoryType> accessories = [];
+    for (final accessory in accessoriesData) {
+      if (accessory is String) {
+        final lowerAccessory = accessory.toLowerCase();
+        if (lowerAccessory.contains('hat') || lowerAccessory.contains('crown')) {
+          accessories.add(AccessoryType.hat);
+        } else if (lowerAccessory.contains('glass') || lowerAccessory.contains('eye')) {
+          accessories.add(AccessoryType.glasses);
+        } else if (lowerAccessory.contains('armor') || lowerAccessory.contains('armour')) {
+          accessories.add(AccessoryType.armor);
+        } else if (lowerAccessory.contains('magic') || lowerAccessory.contains('wand')) {
+          accessories.add(AccessoryType.magical);
+        }
+      }
+    }
+    return accessories;
+  }
+
+  /// Parse patterns from list
+  static List<Pattern> _parsePatterns(dynamic patternsData) {
+    if (patternsData == null || patternsData is! List) return [];
+    
+    final List<Pattern> patterns = [];
+    for (final pattern in patternsData) {
+      if (pattern is String) {
+        switch (pattern.toLowerCase()) {
+          case 'stripes': patterns.add(Pattern.stripes); break;
+          case 'spots': patterns.add(Pattern.spots); break;
+          case 'sparkles': patterns.add(Pattern.sparkles); break;
+          case 'rainbow': patterns.add(Pattern.rainbow); break;
+          case 'stars': patterns.add(Pattern.stars); break;
+          case 'hearts': patterns.add(Pattern.hearts); break;
+        }
+      }
+    }
+    return patterns;
+  }
+
+  /// Parse texture from string
+  static TextureType _parseTexture(String? textureString) {
+    if (textureString == null) return TextureType.smooth;
+    
+    switch (textureString.toLowerCase()) {
       case 'smooth': return TextureType.smooth;
       case 'rough': return TextureType.rough;
       case 'scaly': return TextureType.scaly;
@@ -423,8 +328,12 @@ Always be safe, kind, and imaginative. Focus on positive, creative attributes.
     }
   }
 
-  static GlowEffect _parseGlowEffect(String? glow) {
-    switch (glow?.toLowerCase()) {
+  /// Parse glow effect from string
+  static GlowEffect _parseGlowEffect(String? glowString) {
+    if (glowString == null) return GlowEffect.none;
+    
+    switch (glowString.toLowerCase()) {
+      case 'none': return GlowEffect.none;
       case 'soft': return GlowEffect.soft;
       case 'bright': return GlowEffect.bright;
       case 'pulsing': return GlowEffect.pulsing;
@@ -433,8 +342,12 @@ Always be safe, kind, and imaginative. Focus on positive, creative attributes.
     }
   }
 
-  static CreatureAnimationStyle _parseAnimationStyle(String? style) {
-    switch (style?.toLowerCase()) {
+  /// Parse animation style from string
+  static CreatureAnimationStyle _parseAnimationStyle(String? animationString) {
+    if (animationString == null) return CreatureAnimationStyle.natural;
+    
+    switch (animationString.toLowerCase()) {
+      case 'natural': return CreatureAnimationStyle.natural;
       case 'bouncy': return CreatureAnimationStyle.bouncy;
       case 'graceful': return CreatureAnimationStyle.graceful;
       case 'energetic': return CreatureAnimationStyle.energetic;
@@ -443,90 +356,97 @@ Always be safe, kind, and imaginative. Focus on positive, creative attributes.
     }
   }
 
-  /// Get contextual suggestions based on creature attributes
-  static List<String> getContextualSuggestions(EnhancedCreatureAttributes attributes) {
-    List<String> suggestions = [];
+  /// Get default attributes when AI fails
+  static EnhancedCreatureAttributes _getDefaultAttributes(String userMessage) {
+    print('⚠️ [ENHANCED_AI] Using default attributes for: $userMessage');
     
-    // Base type suggestions
-    switch (attributes.baseType.toLowerCase()) {
-      case 'dragon':
-        suggestions.addAll([
-          'Add fire breath ability',
-          'Make it fly with wings',
-          'Give it magical powers',
-          'Add a crown for royalty',
-        ]);
-        break;
-      case 'cat':
-        suggestions.addAll([
-          'Make it playful and bouncy',
-          'Add super speed ability',
-          'Give it a wizard hat',
-          'Make it rainbow colored',
-        ]);
-        break;
-      case 'robot':
-        suggestions.addAll([
-          'Add super strength',
-          'Make it metallic texture',
-          'Give it magic abilities',
-          'Add glowing effects',
-        ]);
-        break;
-      default:
-        suggestions.addAll([
-          'Add special abilities',
-          'Change the size',
-          'Add accessories',
-          'Customize colors',
-        ]);
-    }
+    // Try to extract basic info from user message
+    final lowerMessage = userMessage.toLowerCase();
     
-    // Personality-based suggestions
-    switch (attributes.personality) {
-      case PersonalityType.friendly:
-        suggestions.add('Add healing ability');
-        break;
-      case PersonalityType.playful:
-        suggestions.add('Make it bouncy animation');
-        break;
-      case PersonalityType.brave:
-        suggestions.add('Add super strength');
-        break;
-      case PersonalityType.curious:
-        suggestions.add('Add teleportation ability');
-        break;
-      case PersonalityType.shy:
-        suggestions.add('Add invisibility ability');
-        break;
-    }
+    String baseType = 'creature';
+    Color primaryColor = Colors.blue;
     
-    return suggestions.take(4).toList();
+    // Enhanced keyword matching for all item types
+    if (lowerMessage.contains('sword')) baseType = 'sword';
+    else if (lowerMessage.contains('bow')) baseType = 'bow';
+    else if (lowerMessage.contains('axe')) baseType = 'axe';
+    else if (lowerMessage.contains('hammer')) baseType = 'hammer';
+    else if (lowerMessage.contains('wand')) baseType = 'magic wand';
+    else if (lowerMessage.contains('staff')) baseType = 'staff';
+    else if (lowerMessage.contains('helmet')) baseType = 'helmet';
+    else if (lowerMessage.contains('chestplate')) baseType = 'chestplate';
+    else if (lowerMessage.contains('leggings')) baseType = 'leggings';
+    else if (lowerMessage.contains('boots')) baseType = 'boots';
+    else if (lowerMessage.contains('shield')) baseType = 'shield';
+    else if (lowerMessage.contains('chair')) baseType = 'chair';
+    else if (lowerMessage.contains('table')) baseType = 'table';
+    else if (lowerMessage.contains('bed')) baseType = 'bed';
+    else if (lowerMessage.contains('lamp')) baseType = 'lamp';
+    else if (lowerMessage.contains('bookshelf')) baseType = 'bookshelf';
+    else if (lowerMessage.contains('car')) baseType = 'car';
+    else if (lowerMessage.contains('boat')) baseType = 'boat';
+    else if (lowerMessage.contains('plane')) baseType = 'plane';
+    else if (lowerMessage.contains('rocket')) baseType = 'rocket';
+    else if (lowerMessage.contains('spaceship')) baseType = 'spaceship';
+    else if (lowerMessage.contains('house')) baseType = 'house';
+    else if (lowerMessage.contains('castle')) baseType = 'castle';
+    else if (lowerMessage.contains('tower')) baseType = 'tower';
+    else if (lowerMessage.contains('bridge')) baseType = 'bridge';
+    else if (lowerMessage.contains('pickaxe')) baseType = 'pickaxe';
+    else if (lowerMessage.contains('shovel')) baseType = 'shovel';
+    else if (lowerMessage.contains('hoe')) baseType = 'hoe';
+    else if (lowerMessage.contains('fishing rod')) baseType = 'fishing rod';
+    else if (lowerMessage.contains('flower')) baseType = 'flower';
+    else if (lowerMessage.contains('plant')) baseType = 'plant';
+    else if (lowerMessage.contains('statue')) baseType = 'statue';
+    else if (lowerMessage.contains('painting')) baseType = 'painting';
+    else if (lowerMessage.contains('dragon')) baseType = 'dragon';
+    else if (lowerMessage.contains('cat')) baseType = 'cat';
+    else if (lowerMessage.contains('dog')) baseType = 'dog';
+    else if (lowerMessage.contains('robot')) baseType = 'robot';
+    else if (lowerMessage.contains('unicorn')) baseType = 'unicorn';
+    else if (lowerMessage.contains('phoenix')) baseType = 'phoenix';
+    else if (lowerMessage.contains('dinosaur')) baseType = 'dinosaur';
+    else if (lowerMessage.contains('monster')) baseType = 'monster';
+    
+    if (lowerMessage.contains('blue')) primaryColor = Colors.blue;
+    else if (lowerMessage.contains('red')) primaryColor = Colors.red;
+    else if (lowerMessage.contains('green')) primaryColor = Colors.green;
+    else if (lowerMessage.contains('yellow')) primaryColor = Colors.yellow;
+    else if (lowerMessage.contains('purple')) primaryColor = Colors.purple;
+    else if (lowerMessage.contains('black')) primaryColor = Colors.black;
+    else if (lowerMessage.contains('white')) primaryColor = Colors.white;
+    else if (lowerMessage.contains('gold')) primaryColor = Colors.amber;
+    else if (lowerMessage.contains('silver')) primaryColor = Colors.grey[400]!;
+    
+    return EnhancedCreatureAttributes(
+      baseType: baseType,
+      primaryColor: primaryColor,
+      secondaryColor: Colors.grey,
+      accentColor: Colors.white,
+      size: CreatureSize.medium,
+      abilities: [],
+      accessories: [],
+      personality: PersonalityType.friendly,
+      patterns: [],
+      texture: TextureType.smooth,
+      glowEffect: GlowEffect.none,
+      animationStyle: CreatureAnimationStyle.natural,
+      customName: '',
+      description: 'A $baseType created with AI',
+    );
   }
 
-  /// Get age-appropriate suggestions
-  static List<String> getEnhancedAgeSuggestions(int age) {
-    if (age <= 5) {
-      return [
-        'Create a friendly animal',
-        'Make it colorful and bright',
-        'Add sparkles and magic',
-        'Make it small and cute',
-      ];
-    } else if (age <= 8) {
-      return [
-        'Create a magical creature',
-        'Add special powers',
-        'Make it fly or swim',
-        'Give it a cool name',
-      ];
-    } else {
-      return [
-        'Create a complex creature',
-        'Add multiple abilities',
-        'Customize all attributes',
-        'Create a unique design',
-      ];
-    }
+  /// Check if API key is available
+  static Future<bool> isApiKeyAvailable() async {
+    final key = await _getApiKey();
+    return key != null && key.isNotEmpty;
+  }
+
+  /// Get API key status for debugging
+  static Future<String> getApiKeyStatus() async {
+    final key = await _getApiKey();
+    if (key == null) return 'No API key found';
+    return 'API key available: ${key.substring(0, 7)}...';
   }
 }

@@ -194,3 +194,6 @@ temp/
 *.tmp
 *.bak
 *.cache
+.env
+test_api_key_flow.dart
+*.backup*

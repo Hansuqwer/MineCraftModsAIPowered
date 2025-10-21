@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/language_selector.dart';
 import '../services/ai_service.dart';
+import '../services/api_key_service.dart';
 import '../services/app_localizations.dart';
 
 class ParentSettingsScreen extends StatefulWidget {
@@ -25,16 +26,23 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
   String _selectedAgeGroup = '4-6';
   String _selectedSafetyLevel = 'High';
 
+  final ApiKeyService _apiKeyService = ApiKeyService();
+  final TextEditingController _apiKeyController = TextEditingController();
+  bool _apiKeyConfigured = false;
+  bool _showApiKey = false;
+
   @override
   void initState() {
     super.initState();
-    
+
+    _loadApiKey();
+
     // Security animation
     _securityController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
-    
+
     _securityAnimation = Tween<double>(
       begin: 0.8,
       end: 1.1,
@@ -42,13 +50,13 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
       parent: _securityController,
       curve: Curves.easeInOut,
     ));
-    
+
     // History animation
     _historyController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat();
-    
+
     _historyAnimation = Tween<double>(
       begin: 0.9,
       end: 1.05,
@@ -58,10 +66,64 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
     ));
   }
 
+  Future<void> _loadApiKey() async {
+    final key = await _apiKeyService.getApiKey();
+    if (key != null && mounted) {
+      setState(() {
+        _apiKeyConfigured = true;
+        _apiKeyController.text = key;
+      });
+    }
+  }
+
+  Future<void> _saveApiKey() async {
+    final key = _apiKeyController.text.trim();
+    if (key.isEmpty) return;
+
+    try {
+      await _apiKeyService.saveApiKey(key);
+      if (mounted) {
+        setState(() => _apiKeyConfigured = true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ API Key saved successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _removeApiKey() async {
+    await _apiKeyService.removeApiKey();
+    if (mounted) {
+      setState(() {
+        _apiKeyConfigured = false;
+        _apiKeyController.clear();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('API Key removed'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _securityController.dispose();
     _historyController.dispose();
+    _apiKeyController.dispose();
     super.dispose();
   }
 
@@ -138,6 +200,114 @@ class _ParentSettingsScreenState extends State<ParentSettingsScreen>
                     ),
                   );
                 },
+              ),
+              const SizedBox(height: 32),
+
+              // API Key Configuration Section
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.blue.shade200,
+                    width: 2,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.key, color: Colors.blue.shade700, size: 32),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            '🔑 OpenAI API Key',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade900,
+                            ),
+                          ),
+                        ),
+                        if (_apiKeyConfigured)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'Configured ✓',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Required for AI to create items. Get your free key at platform.openai.com',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _apiKeyController,
+                      obscureText: !_showApiKey,
+                      decoration: InputDecoration(
+                        labelText: 'Enter API Key',
+                        hintText: 'sk-proj-...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        suffixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                _showApiKey ? Icons.visibility_off : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(() => _showApiKey = !_showApiKey);
+                              },
+                            ),
+                            if (_apiKeyConfigured)
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: _removeApiKey,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _saveApiKey,
+                        icon: const Icon(Icons.save),
+                        label: const Text('Save API Key'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue.shade700,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.all(16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 32),
 

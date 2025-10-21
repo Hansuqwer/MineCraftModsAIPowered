@@ -209,7 +209,7 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Item type display
+              // Generic creation header
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -224,13 +224,14 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
                 ),
                 child: Column(
                   children: [
+                    // Magic wand icon
                     Text(
-                      _selectedItemType.emoji,
+                      '✨',
                       style: const TextStyle(fontSize: 64),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Create a ${_selectedItemType.displayName}',
+                      'What do you want to create?',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -239,11 +240,12 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _selectedItemType.description,
+                      'I can create anything! Dragons, swords, chairs, castles... just tell me!',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                        fontSize: 16,
+                        color: Colors.grey[700],
+                        height: 1.4,
                       ),
                     ),
                   ],
@@ -251,33 +253,73 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
               ),
               const SizedBox(height: 32),
 
-              // Input field
-              TextField(
-                controller: _textController,
-                decoration: InputDecoration(
-                  hintText: 'Describe your ${_selectedItemType.displayName.toLowerCase()}...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+              // Input field with microphone
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _textController,
+                      decoration: InputDecoration(
+                        hintText: 'blue sword, red dragon, gold castle...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: const Icon(Icons.create),
+                      ),
+                      maxLines: 3,
+                    ),
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  prefixIcon: const Icon(Icons.create),
-                ),
-                maxLines: 3,
+                  const SizedBox(width: 12),
+                  // Microphone button
+                  Container(
+                    height: 90,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade400,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.mic, size: 40, color: Colors.white),
+                      onPressed: () {
+                        // TODO: Add voice input functionality
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('🎤 Voice input coming soon! For now, please type.'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
 
               // Create button
-              ElevatedButton.icon(
-                onPressed: _handleCreate,
-                icon: const Icon(Icons.check),
-                label: const Text('Create'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF98D8C8),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              SizedBox(
+                width: double.infinity,
+                height: 60,
+                child: ElevatedButton.icon(
+                  onPressed: _handleCreate,
+                  icon: const Icon(Icons.auto_awesome, size: 28),
+                  label: const Text('Create!', style: TextStyle(fontSize: 22)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF98D8C8),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
                   ),
                 ),
               ),

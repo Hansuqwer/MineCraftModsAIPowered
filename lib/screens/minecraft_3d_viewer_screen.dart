@@ -6,12 +6,8 @@ import '../services/tts_service.dart';
 import '../services/language_service.dart';
 import '../services/ai_minecraft_export_service.dart';
 import '../models/enhanced_creature_attributes.dart';
-import '../widgets/minecraft_3d_preview.dart';
-import '../widgets/simple_3d_preview.dart';
-import '../widgets/enhanced_minecraft_3d_preview.dart';
+import '../widgets/babylon_3d_preview.dart';
 import '../theme/minecraft_theme.dart';
-import '../services/firebase_image_service.dart';
-import 'dart:convert';
 
 /// Minecraft 3D Viewer Screen - Shows items exactly as they will look in Minecraft
 /// Includes AI suggestions with voice interaction for kids ages 3-5
@@ -471,13 +467,9 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
                               ),
                             ),
                           )
-                        : EnhancedMinecraft3DPreview(
+                        : Babylon3DPreview(
                             creatureAttributes: _currentAttributes.toMap(),
-                            size: 400,
-                            enableGestures: true,
-                            enableAnimations: true,
-                            showEnvironment: true,
-                            showSizeReference: true,
+                            height: 400,
                           ),
                   ),
                 ),

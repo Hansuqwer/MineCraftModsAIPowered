@@ -21,8 +21,6 @@ import 'screens/creature_sharing_screen.dart';
 import 'screens/dragon_couch_preview.dart';
 import 'screens/ai_setup_screen.dart';
 import 'screens/minecraft_3d_viewer_screen.dart';
-import 'screens/enhanced_modern_screen.dart';
-import 'screens/community_gallery_screen.dart';
 import 'screens/kid_friendly_screen.dart';
 import 'screens/voice_calibration_screen.dart';
 import 'screens/voice_settings_screen.dart';
@@ -35,9 +33,6 @@ import 'screens/creature_preview_approval_screen.dart';
 import 'screens/tutorial_screen.dart';
 import 'models/enhanced_creature_attributes.dart';
 import 'models/item_type.dart';
-import 'services/google_cloud_service.dart';
-import 'services/enhanced_voice_ai_service.dart';
-import 'services/firebase_image_service.dart';
 
 /// Main entry point for Crafta app
 /// Loads environment variables and initializes the app
@@ -57,17 +52,8 @@ Future<void> main() async {
     GlobalErrorHandler.initialize();
     developer.log('Error handling system initialized');
     
-    // Initialize Google Cloud service
-    await GoogleCloudService.initialize();
-    developer.log('Google Cloud service initialized');
-    
-    // Initialize Enhanced Voice AI service
-    await EnhancedVoiceAIService().initialize();
-    developer.log('Enhanced Voice AI service initialized');
-
-    // Initialize Firebase Image Service (for 3D preview image generation)
-    await FirebaseImageService.initialize();
-    developer.log('Firebase Image Service initialized');
+    // Initialize OpenAI service (primary AI)
+    developer.log('OpenAI service ready (with offline fallback)');
   } catch (e) {
     developer.log('Warning: Could not load .env file. Make sure to create one from .env.example', level: 1000);
     developer.log('Error: $e', level: 1000);
@@ -180,8 +166,6 @@ class _CraftaAppState extends State<CraftaApp> {
             creatureName: args['creatureName'] as String,
           );
         },
-        '/enhanced-modern': (context) => const EnhancedModernScreen(),
-        '/community-gallery': (context) => const CommunityGalleryScreen(),
         '/kid-friendly': (context) => const KidFriendlyScreen(),
         '/voice-calibration': (context) => const VoiceCalibrationScreen(),
         '/voice-settings': (context) => const VoiceSettingsScreen(),

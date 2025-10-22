@@ -303,13 +303,17 @@ class KidVoiceService {
       if (attributes is Map) {
         // Already a map
         result['baseType'] = attributes['baseType'] ?? 'creature';
+        result['creatureType'] = attributes['baseType'] ?? 'creature'; // Add creatureType for Babylon.js
         result['primaryColor'] = attributes['primaryColor'] ?? Colors.blue;
+        result['color'] = _getColorName(attributes['primaryColor'] ?? Colors.blue); // Add color name
         result['category'] = _getItemCategory(attributes['baseType'] ?? 'creature');
       } else {
         // It's an EnhancedCreatureAttributes object
         // Access properties via reflection or toString
         result['baseType'] = attributes.baseType ?? 'creature';
+        result['creatureType'] = attributes.baseType ?? 'creature'; // Add creatureType for Babylon.js
         result['primaryColor'] = attributes.primaryColor ?? Colors.blue;
+        result['color'] = _getColorName(attributes.primaryColor ?? Colors.blue); // Add color name
         result['category'] = _getItemCategory(attributes.baseType ?? 'creature');
         result['size'] = attributes.size?.toString().split('.').last ?? 'medium';
         result['personality'] = attributes.personality?.toString().split('.').last ?? 'friendly';
@@ -359,6 +363,24 @@ class KidVoiceService {
       default:
         return 'creature';
     }
+  }
+
+  /// Convert Flutter Color to color name string
+  String _getColorName(Color color) {
+    if (color == Colors.red) return 'red';
+    if (color == Colors.blue) return 'blue';
+    if (color == Colors.green) return 'green';
+    if (color == Colors.yellow) return 'yellow';
+    if (color == Colors.purple) return 'purple';
+    if (color == Colors.pink) return 'pink';
+    if (color == Colors.orange) return 'orange';
+    if (color == Colors.black) return 'black';
+    if (color == Colors.white) return 'white';
+    if (color == Colors.amber) return 'gold';
+    if (color == Colors.grey) return 'gray';
+    if (color == Colors.cyan) return 'cyan';
+    if (color == Colors.lime) return 'lime';
+    return 'blue'; // Default fallback
   }
 
   /// Get color from color name

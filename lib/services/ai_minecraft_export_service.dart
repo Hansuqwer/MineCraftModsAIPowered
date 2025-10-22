@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:archive/archive.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/enhanced_creature_attributes.dart';
 import 'ai_animation_service.dart';
 
@@ -23,8 +24,9 @@ class AIMinecraftExportService {
       print('   Size: ${itemAttributes.size}');
       print('   Color: ${itemAttributes.primaryColor}');
       
-      // Create export directory structure
-      final exportDir = Directory('exports/${itemName.toLowerCase().replaceAll(' ', '_')}');
+      // Create export directory in app documents (reliable access)
+      final appDir = await getApplicationDocumentsDirectory();
+      final exportDir = Directory('${appDir.path}/Crafta_Exports/${itemName.toLowerCase().replaceAll(' ', '_')}');
       print('📁 Export directory: ${exportDir.path}');
       
       if (await exportDir.exists()) {
@@ -57,6 +59,8 @@ class AIMinecraftExportService {
       await _createMcpackFile(exportDir, itemName);
       
       print('✅ Export completed successfully!');
+      print('📁 Files saved to: ${exportDir.path}');
+      print('📦 .mcpack file saved to: ${appDir.path}/Crafta_Exports/${itemName.toLowerCase().replaceAll(' ', '_')}.mcpack');
       return true;
     } catch (e) {
       print('❌ Error exporting AI item: $e');
@@ -330,7 +334,9 @@ class AIMinecraftExportService {
   /// Create .mcpack file from export directory
   Future<void> _createMcpackFile(Directory exportDir, String itemName) async {
     try {
-      final mcpackPath = '${itemName.toLowerCase().replaceAll(' ', '_')}.mcpack';
+      // Save .mcpack file to app documents (reliable access)
+      final appDir = await getApplicationDocumentsDirectory();
+      final mcpackPath = '${appDir.path}/Crafta_Exports/${itemName.toLowerCase().replaceAll(' ', '_')}.mcpack';
       final mcpackFile = File(mcpackPath);
       print('📦 Creating .mcpack file: $mcpackPath');
       
@@ -366,5 +372,17 @@ class AIMinecraftExportService {
       print('❌ Error creating .mcpack file: $e');
       print('❌ Stack trace: ${StackTrace.current}');
     }
+  }
+  
+  /// Get the path where exported files are saved (for sharing)
+  Future<String> getExportPath(String itemName) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    return '${appDir.path}/Crafta_Exports/${itemName.toLowerCase().replaceAll(' ', '_')}.mcpack';
+  }
+  
+  /// Check if export file exists
+  Future<bool> exportExists(String itemName) async {
+    final exportPath = await getExportPath(itemName);
+    return await File(exportPath).exists();
   }
 }

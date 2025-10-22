@@ -1,0 +1,7 @@
+# This would be a 128x128 PNG texture file
+# For now, creating a placeholder that indicates where the texture should be
+# In a real implementation, this would be a proper PNG file with:
+# - Dark charcoal black body (#101010)
+# - Green scales (#007F00 with lighter green highlights)
+# - Glowing red eyes (#FF0000)
+# - Proper UV mapping for the dragon geometry

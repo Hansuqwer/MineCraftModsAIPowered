@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/enhanced_creature_attributes.dart';
 import './api_key_service.dart';
+import './ai_model_generator_service.dart';
 
 /// Enhanced AI service for advanced creature customization
 class EnhancedAIService {
@@ -114,12 +115,11 @@ class EnhancedAIService {
       print('🔍 [ENHANCED_AI] Step 1: Loading API key...');
       final apiKey = await _getApiKey();
 
-      // If no API key, use offline mode
+      // If no API key, require internet setup
       if (apiKey == null) {
-        print('❌ [ENHANCED_AI] FAILED: No API key found in storage or .env');
-        print('💡 [ENHANCED_AI] User needs to configure API key in settings');
-        print('⚠️ [ENHANCED_AI] Falling back to offline mode (default creature)');
-        return _getDefaultAttributes(userMessage);
+        print('❌ [ENHANCED_AI] No API key found - internet connection required');
+        print('💡 [ENHANCED_AI] Please configure OpenAI API key in settings');
+        throw Exception('Internet connection and API key required. Please configure OpenAI API key in app settings.');
       }
 
       print('✅ [ENHANCED_AI] Step 1: API key loaded: ${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}');
@@ -204,13 +204,15 @@ class EnhancedAIService {
         print('💡 [ENHANCED_AI] Unexpected error - See details above');
       }
 
-      print('⚠️ [ENHANCED_AI] Falling back to offline mode');
-      return _getDefaultAttributes(userMessage);
+      print('⚠️ [ENHANCED_AI] Internet connection required for AI features');
+      print('🤖 [ENHANCED_AI] Using AI model generator as fallback...');
+      return AIModelGeneratorService.createAttributesFromRequest(userMessage);
     } catch (e) {
       print('❌ [ENHANCED_AI] === UNEXPECTED ERROR ===');
       print('❌ [ENHANCED_AI] Error: $e');
-      print('⚠️ [ENHANCED_AI] Falling back to offline mode');
-      return _getDefaultAttributes(userMessage);
+      print('⚠️ [ENHANCED_AI] Internet connection required for AI features');
+      print('🤖 [ENHANCED_AI] Using AI model generator as fallback...');
+      return AIModelGeneratorService.createAttributesFromRequest(userMessage);
     }
   }
 

@@ -110,6 +110,7 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
 
       print('🔍 [CREATOR] Mapped creatureType: ${_currentItem!['creatureType']}');
       print('🔍 [CREATOR] Mapped color: ${_currentItem!['color']}');
+      print('🔍 [CREATOR] Full _currentItem map: $_currentItem');
 
       // Close loading dialog
       if (mounted) Navigator.pop(context);

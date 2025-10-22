@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/creature_preview.dart';
-import '../widgets/creature_3d_preview.dart';
-import '../widgets/enhanced_creature_preview.dart';
+import '../widgets/babylon_3d_preview.dart';
 import '../services/tts_service.dart';
 import '../services/quick_minecraft_export_service.dart';
 import '../services/minecraft_launcher_service.dart';
-import '../services/firebase_image_service.dart';
-import 'dart:convert';
 
 class CreaturePreviewScreen extends StatefulWidget {
   final Map<String, dynamic> creatureAttributes;
@@ -31,11 +27,6 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
   
   final TTSService _ttsService = TTSService();
   bool _isPlayingSound = false;
-  bool _is3DView = false;
-  bool _isEnhancedView = false;
-  String? _generatedImageBase64;
-  bool _isGeneratingImage = false;
-  bool _imageGenerationFailed = false;
 
   @override
   void initState() {
@@ -95,52 +86,7 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
     _isPlayingSound = false;
   }
 
-  Future<void> _generate3DImage() async {
-    if (_generatedImageBase64 != null) return; // Already generated
-    
-    setState(() {
-      _isGeneratingImage = true;
-      _imageGenerationFailed = false;
-    });
-
-    try {
-      print('🎨 [3D_PREVIEW] Generating 3D image for: ${widget.creatureName}');
-      print('🔍 [3D_PREVIEW] Attributes: ${widget.creatureAttributes}');
-      
-      // Add timeout to prevent infinite loading
-      final imageBase64 = await FirebaseImageService.generateMinecraftImage(
-        creatureAttributes: widget.creatureAttributes,
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          print('⏰ [3D_PREVIEW] Image generation timed out after 30 seconds');
-          return null;
-        },
-      );
-
-      if (mounted) {
-        setState(() {
-          _generatedImageBase64 = imageBase64;
-          _isGeneratingImage = false;
-          _imageGenerationFailed = imageBase64 == null;
-        });
-        
-        if (imageBase64 != null) {
-          print('✅ [3D_PREVIEW] Image generated successfully');
-        } else {
-          print('⚠️ [3D_PREVIEW] Image generation failed - no data returned');
-        }
-      }
-    } catch (e) {
-      print('❌ [3D_PREVIEW] Error generating image: $e');
-      if (mounted) {
-        setState(() {
-          _isGeneratingImage = false;
-          _imageGenerationFailed = true;
-        });
-      }
-    }
-  }
+  // Removed Firebase image generation - now using Babylon.js 3D previews
 
   @override
   void dispose() {
@@ -230,23 +176,9 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
                         alignment: WrapAlignment.center,
                         spacing: 8,
                         children: [
-                          _buildViewButton('2D', !_is3DView && !_isEnhancedView, () {
-                            setState(() {
-                              _is3DView = false;
-                              _isEnhancedView = false;
-                            });
-                          }),
-                          _buildViewButton('3D', _is3DView, () {
-                            setState(() {
-                              _is3DView = true;
-                              _isEnhancedView = false;
-                            });
-                          }),
-                          _buildViewButton('Enhanced', _isEnhancedView, () {
-                            setState(() {
-                              _is3DView = false;
-                              _isEnhancedView = true;
-                            });
+                          // Simplified to single 3D preview only
+                          _buildViewButton('3D Preview', true, () {
+                            // Single 3D preview mode
                           }),
                         ],
                       ),
@@ -263,21 +195,7 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
                       builder: (context, child) {
                         return Transform.scale(
                           scale: 1.0 + (_sparkleAnimation.value * 0.1),
-                          child: _isEnhancedView
-                              ? EnhancedCreaturePreview(
-                                  creatureAttributes: widget.creatureAttributes,
-                                  size: 300,
-                                  isAnimated: true,
-                                  enableInteraction: true,
-                                  enableAdvancedEffects: true,
-                                )
-                              : _is3DView
-                                  ? _build3DPreview()
-                                  : CreaturePreview(
-                                      creatureAttributes: widget.creatureAttributes,
-                                      size: 300,
-                                      isAnimated: true,
-                                    ),
+                          child: _build3DPreview(),
                         );
                       },
                     ),
@@ -523,11 +441,12 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
         );
       } else {
         // Minecraft not installed - show instructions
+        // Show success message with file location
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('⚠️ Minecraft not detected. File saved to Downloads.'),
-            duration: const Duration(seconds: 5),
-            backgroundColor: Colors.orange,
+            content: Text('✅ File saved to Downloads: ${mcpackPath.split('/').last}'),
+            duration: const Duration(seconds: 8),
+            backgroundColor: Colors.green,
             action: SnackBarAction(
               label: 'More Info',
               onPressed: () {
@@ -613,85 +532,7 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
   }
 
   Widget _build3DPreview() {
-    // Generate image when switching to 3D view
-    if (_is3DView && _generatedImageBase64 == null && !_isGeneratingImage) {
-      _generate3DImage();
-    }
-
-    if (_isGeneratingImage) {
-      return Container(
-        width: 300,
-        height: 300,
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Generating 3D preview...'),
-          ],
-        ),
-      );
-    }
-
-    if (_imageGenerationFailed || _generatedImageBase64 == null) {
-      return Container(
-        width: 300,
-        height: 300,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.blue[100]!,
-              Colors.purple[100]!,
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              _getCreatureIcon(),
-              size: 80,
-              color: _getCreatureColor(),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              widget.creatureName,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '3D Preview\n(Image generation unavailable)',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Show the generated image
+    // Use Babylon.js 3D preview instead of Firebase image generation
     return Container(
       width: 300,
       height: 300,
@@ -707,23 +548,9 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: Image.memory(
-          base64Decode(_generatedImageBase64!),
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            print('❌ [3D_PREVIEW] Error displaying image: $error');
-            return Container(
-              color: Colors.grey[200],
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error, size: 48, color: Colors.red),
-                  SizedBox(height: 16),
-                  Text('Failed to load image'),
-                ],
-              ),
-            );
-          },
+        child: Babylon3DPreview(
+          creatureAttributes: widget.creatureAttributes,
+          height: 300,
         ),
       ),
     );

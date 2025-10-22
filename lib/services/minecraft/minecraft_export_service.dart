@@ -483,19 +483,24 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     String downloadsPath;
     
     try {
-      // Try to get Downloads directory
+      // Try to use external storage first (accessible to users)
       downloadsDir = await getExternalStorageDirectory();
       if (downloadsDir != null) {
-        downloadsPath = path.join(downloadsDir.path, 'Download');
+        // Create a Crafta_Exports folder in external storage
+        downloadsPath = path.join(downloadsDir.path, 'Crafta_Exports');
       } else {
-        // Fallback to app documents directory
-        downloadsDir = await getApplicationDocumentsDirectory();
-        downloadsPath = path.join(downloadsDir.path, 'Downloads');
+        throw Exception('External storage not available');
       }
     } catch (e) {
       // Fallback to app documents directory
-      downloadsDir = await getApplicationDocumentsDirectory();
-      downloadsPath = path.join(downloadsDir.path, 'Downloads');
+      try {
+        downloadsDir = await getApplicationDocumentsDirectory();
+        downloadsPath = path.join(downloadsDir.path, 'Crafta_Exports');
+      } catch (e2) {
+        // Final fallback to temp directory
+        downloadsDir = Directory.systemTemp;
+        downloadsPath = path.join(downloadsDir.path, 'Crafta_Exports');
+      }
     }
     
     // Create Downloads directory if it doesn't exist

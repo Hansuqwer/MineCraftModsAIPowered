@@ -45,9 +45,7 @@ dependencies:
   vector_math: ^2.1.4
   # Native 3D rendering for mobile
   # flutter_3d_controller: ^2.1.0  # Has compatibility issues
-  # Animation and effects
-  rive: ^0.12.4
-  # WebView for 3D previews (fallback)
+  # WebView for 3D previews with Babylon.js
   webview_flutter: ^4.4.2
   # File handling for 3D models
   file_picker: ^8.0.0+1
@@ -73,14 +71,8 @@ dependencies:
   # App updater
   package_info_plus: ^8.0.0
   url_launcher: ^6.3.1
-  # Google authentication and cloud storage
-  google_sign_in: ^6.2.1
-  firebase_auth: ^5.3.1
-  cloud_firestore: ^5.4.3
-  firebase_storage: ^12.3.2
-  firebase_core: ^3.6.0
-  # Google Generative AI (Gemini/Imagen for 3D image generation)
-  google_generative_ai: ^0.4.0
+  # Removed Firebase and Google Cloud dependencies
+  # App now requires internet connection for OpenAI only
 
 dev_dependencies:
   flutter_test:
@@ -110,6 +102,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - .env
+    - assets/babylon/preview.html
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

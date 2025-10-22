@@ -1,0 +1,14 @@
+# This is a placeholder for the black_dragon.png texture file
+# In a real implementation, this would be a 128x128 PNG image
+# with the following features:
+# - Dark black scales for the body
+# - Green scale highlights
+# - Glowing red eyes
+# - Wing membrane texture
+# - Tail and horn details
+# 
+# To create a real texture, you would:
+# 1. Use a pixel art editor (Aseprite, GIMP, etc.)
+# 2. Create a 128x128 texture with Minecraft-style pixel art
+# 3. Include UV mapping for the dragon model
+# 4. Replace this placeholder file

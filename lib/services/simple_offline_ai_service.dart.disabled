@@ -1,0 +1,215 @@
+import 'dart:math';
+import 'package:flutter/material.dart';
+import '../models/enhanced_creature_attributes.dart';
+
+/// Simple Offline AI Service
+/// Provides intelligent responses without any external APIs
+/// Perfect for kids - no setup, no costs, always works!
+class SimpleOfflineAIService {
+  static final Random _random = Random();
+
+  /// Parse user request and return creature attributes
+  static EnhancedCreatureAttributes parseCreatureRequest(String userMessage) {
+    print('🤖 [OFFLINE_AI] Processing: "$userMessage"');
+    
+    // Extract key information from user message
+    final message = userMessage.toLowerCase();
+    
+    // Detect creature type
+    final baseType = _detectCreatureType(message);
+    
+    // Detect color
+    final primaryColor = _detectColor(message);
+    
+    // Detect size
+    final size = _detectSize(message);
+    
+    // Detect special abilities
+    final abilities = _detectAbilities(message);
+    
+    // Generate custom name
+    final customName = _generateCustomName(baseType, primaryColor);
+    
+    print('✅ [OFFLINE_AI] Generated: $baseType, $primaryColor, $size');
+    
+    return EnhancedCreatureAttributes(
+      baseType: baseType,
+      customName: customName,
+      primaryColor: primaryColor,
+      secondaryColor: _getSecondaryColor(primaryColor),
+      size: size,
+      abilities: abilities,
+      accessories: _detectAccessories(message),
+      glowEffect: _detectGlowEffect(message),
+    );
+  }
+
+  /// Detect creature type from user message
+  static String _detectCreatureType(String message) {
+    // Dragons
+    if (message.contains('dragon')) return 'dragon';
+    if (message.contains('wyvern')) return 'dragon';
+    
+    // Creatures
+    if (message.contains('cat')) return 'cat';
+    if (message.contains('dog')) return 'dog';
+    if (message.contains('bird')) return 'bird';
+    if (message.contains('fish')) return 'fish';
+    if (message.contains('bear')) return 'bear';
+    if (message.contains('wolf')) return 'wolf';
+    if (message.contains('lion')) return 'lion';
+    if (message.contains('tiger')) return 'tiger';
+    if (message.contains('elephant')) return 'elephant';
+    if (message.contains('unicorn')) return 'unicorn';
+    
+    // Weapons
+    if (message.contains('sword')) return 'sword';
+    if (message.contains('axe')) return 'axe';
+    if (message.contains('bow')) return 'bow';
+    if (message.contains('shield')) return 'shield';
+    if (message.contains('staff')) return 'staff';
+    if (message.contains('wand')) return 'wand';
+    
+    // Armor
+    if (message.contains('helmet')) return 'helmet';
+    if (message.contains('armor')) return 'chestplate';
+    if (message.contains('boots')) return 'boots';
+    
+    // Furniture
+    if (message.contains('chair')) return 'chair';
+    if (message.contains('table')) return 'table';
+    if (message.contains('couch')) return 'couch';
+    if (message.contains('bed')) return 'bed';
+    
+    // Default to dragon (most popular with kids)
+    return 'dragon';
+  }
+
+  /// Detect color from user message
+  static Color _detectColor(String message) {
+    if (message.contains('red')) return Colors.red;
+    if (message.contains('blue')) return Colors.blue;
+    if (message.contains('green')) return Colors.green;
+    if (message.contains('yellow')) return Colors.yellow;
+    if (message.contains('purple')) return Colors.purple;
+    if (message.contains('pink')) return Colors.pink;
+    if (message.contains('orange')) return Colors.orange;
+    if (message.contains('black')) return Colors.black;
+    if (message.contains('white')) return Colors.white;
+    if (message.contains('gold') || message.contains('golden')) return Colors.amber;
+    if (message.contains('silver')) return Colors.grey;
+    if (message.contains('brown')) return Colors.brown;
+    
+    // Default to blue (safe, popular color)
+    return Colors.blue;
+  }
+
+  /// Detect size from user message
+  static CreatureSize _detectSize(String message) {
+    if (message.contains('tiny') || message.contains('small')) return CreatureSize.tiny;
+    if (message.contains('big') || message.contains('large') || message.contains('giant')) return CreatureSize.large;
+    if (message.contains('huge') || message.contains('massive')) return CreatureSize.giant;
+    
+    // Default to medium
+    return CreatureSize.medium;
+  }
+
+  /// Detect special abilities
+  static List<SpecialAbility> _detectAbilities(String message) {
+    final abilities = <SpecialAbility>[];
+    
+    if (message.contains('fly') || message.contains('wing')) {
+      abilities.add(SpecialAbility.flying);
+    }
+    if (message.contains('fire') || message.contains('flame')) {
+      abilities.add(SpecialAbility.fireBreath);
+    }
+    if (message.contains('ice') || message.contains('freeze')) {
+      abilities.add(SpecialAbility.iceBreath);
+    }
+    if (message.contains('magic') || message.contains('spell')) {
+      abilities.add(SpecialAbility.magic);
+    }
+    if (message.contains('invisible') || message.contains('stealth')) {
+      abilities.add(SpecialAbility.invisibility);
+    }
+    
+    return abilities;
+  }
+
+  /// Detect accessories
+  static List<Accessory> _detectAccessories(String message) {
+    final accessories = <Accessory>[];
+    
+    if (message.contains('crown') || message.contains('hat')) {
+      accessories.add(Accessory.crown);
+    }
+    if (message.contains('wing')) {
+      accessories.add(Accessory.wings);
+    }
+    if (message.contains('horn')) {
+      accessories.add(Accessory.horns);
+    }
+    
+    return accessories;
+  }
+
+  /// Detect glow effect
+  static GlowEffect _detectGlowEffect(String message) {
+    if (message.contains('glow') || message.contains('bright')) return GlowEffect.bright;
+    if (message.contains('sparkle') || message.contains('shimmer')) return GlowEffect.soft;
+    if (message.contains('fire') || message.contains('flame')) return GlowEffect.flames;
+    
+    return GlowEffect.none;
+  }
+
+  /// Generate a custom name based on type and color
+  static String _generateCustomName(String baseType, Color color) {
+    final colorName = _getColorName(color);
+    final typeName = baseType.toUpperCase();
+    
+    final names = [
+      '$colorName $typeName',
+      'Magic $colorName $typeName',
+      'Sparkly $colorName $typeName',
+      'Amazing $colorName $typeName',
+      'Super $colorName $typeName',
+    ];
+    
+    return names[_random.nextInt(names.length)];
+  }
+
+  /// Get color name from Color object
+  static String _getColorName(Color color) {
+    if (color == Colors.red) return 'Red';
+    if (color == Colors.blue) return 'Blue';
+    if (color == Colors.green) return 'Green';
+    if (color == Colors.yellow) return 'Yellow';
+    if (color == Colors.purple) return 'Purple';
+    if (color == Colors.pink) return 'Pink';
+    if (color == Colors.orange) return 'Orange';
+    if (color == Colors.black) return 'Black';
+    if (color == Colors.white) return 'White';
+    if (color == Colors.amber) return 'Golden';
+    if (color == Colors.grey) return 'Silver';
+    if (color == Colors.brown) return 'Brown';
+    return 'Blue';
+  }
+
+  /// Get secondary color that complements primary
+  static Color _getSecondaryColor(Color primary) {
+    if (primary == Colors.red) return Colors.orange;
+    if (primary == Colors.blue) return Colors.cyan;
+    if (primary == Colors.green) return Colors.lightGreen;
+    if (primary == Colors.yellow) return Colors.amber;
+    if (primary == Colors.purple) return Colors.pink;
+    if (primary == Colors.pink) return Colors.purple;
+    if (primary == Colors.orange) return Colors.red;
+    if (primary == Colors.black) return Colors.grey;
+    if (primary == Colors.white) return Colors.grey;
+    if (primary == Colors.amber) return Colors.yellow;
+    if (primary == Colors.grey) return Colors.white;
+    if (primary == Colors.brown) return Colors.amber;
+    return Colors.white;
+  }
+}

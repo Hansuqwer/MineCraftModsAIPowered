@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Dragon Preview - Crafta</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            z-index: 100;
+        }
+
+        .error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff6b6b;
+            font-size: 16px;
+            text-align: center;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading" class="loading">🐉 Loading Black Dragon...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <canvas id="renderCanvas"></canvas>
+
+    <script>
+        console.log('🐉 [BLACK_DRAGON] Initializing preview...');
+
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+
+        // Camera setup for optimal viewing
+        const camera = new BABYLON.ArcRotateCamera("camera",
+            Math.PI / 2, Math.PI / 3, 8,
+            BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        camera.lowerRadiusLimit = 3;
+        camera.upperRadiusLimit = 15;
+        camera.wheelPrecision = 50;
+
+        // Enhanced lighting
+        const light = new BABYLON.HemisphericLight("light",
+            new BABYLON.Vector3(1, 1, 0), scene);
+        light.intensity = 0.8;
+
+        // Additional directional light for better shadows
+        const dirLight = new BABYLON.DirectionalLight("dirLight",
+            new BABYLON.Vector3(-1, -1, -1), scene);
+        dirLight.intensity = 0.5;
+
+        // Try to load the GLB model
+        console.log('🐉 [BLACK_DRAGON] Attempting to load GLB model...');
+
+        BABYLON.SceneLoader.ImportMeshAsync("", "./", "black_dragon.glb", scene)
+            .then(result => {
+                console.log('✅ [BLACK_DRAGON] GLB model loaded successfully');
+                console.log('   Meshes found:', result.meshes.length);
+
+                if (result.meshes.length > 0) {
+                    const dragon = result.meshes[0];
+                    dragon.scaling = new BABYLON.Vector3(1.4, 1.4, 1.4);
+
+                    // Create material with texture
+                    const mat = new BABYLON.StandardMaterial("dragonMat", scene);
+
+                    // Try to load texture
+                    try {
+                        mat.diffuseTexture = new BABYLON.Texture("./black_dragon.png", scene);
+                        console.log('✅ [BLACK_DRAGON] Texture loaded successfully');
+                    } catch (e) {
+                        console.log('⚠️ [BLACK_DRAGON] Texture failed, using solid color');
+                        mat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1); // Dark color
+                    }
+
+                    // Add glowing red eyes effect
+                    mat.emissiveColor = new BABYLON.Color3(0.2, 0, 0); // Slight red glow
+                    dragon.material = mat;
+
+                    // Hide loading
+                    document.getElementById('loading').style.display = 'none';
+
+                    console.log('🎉 [BLACK_DRAGON] Black Dragon preview ready!');
+                } else {
+                    throw new Error('No meshes found in GLB file');
+                }
+            })
+            .catch(error => {
+                console.log('❌ [BLACK_DRAGON] GLB loading failed:', error);
+                console.log('🔄 [BLACK_DRAGON] Falling back to procedural dragon...');
+
+                // Fallback: Create procedural dragon
+                createProceduralDragon(scene);
+                document.getElementById('loading').style.display = 'none';
+            });
+
+        // Procedural dragon fallback
+        function createProceduralDragon(scene) {
+            console.log('🐉 [BLACK_DRAGON] Creating procedural dragon...');
+
+            // Main body
+            const body = BABYLON.MeshBuilder.CreateBox("body", {
+                width: 2, height: 2, depth: 3
+            }, scene);
+            body.position.y = 1;
+
+            // Head
+            const head = BABYLON.MeshBuilder.CreateBox("head", {
+                width: 1.5, height: 1.5, depth: 1.5
+            }, scene);
+            head.position = new BABYLON.Vector3(0, 1.5, -1.5);
+
+            // Wings
+            const wingLeft = BABYLON.MeshBuilder.CreateBox("wingLeft", {
+                width: 3, height: 0.2, depth: 2
+            }, scene);
+            wingLeft.position = new BABYLON.Vector3(1.5, 1.5, 0);
+            wingLeft.rotation.z = Math.PI / 6;
+
+            const wingRight = BABYLON.MeshBuilder.CreateBox("wingRight", {
+                width: 3, height: 0.2, depth: 2
+            }, scene);
+            wingRight.position = new BABYLON.Vector3(-1.5, 1.5, 0);
+            wingRight.rotation.z = -Math.PI / 6;
+
+            // Tail
+            const tail = BABYLON.MeshBuilder.CreateBox("tail", {
+                width: 1, height: 1, depth: 2
+            }, scene);
+            tail.position = new BABYLON.Vector3(0, 0.5, 2);
+
+            // Legs
+            const leg1 = BABYLON.MeshBuilder.CreateBox("leg1", {
+                width: 0.5, height: 1, depth: 0.5
+            }, scene);
+            leg1.position = new BABYLON.Vector3(0.5, 0, -1);
+
+            const leg2 = BABYLON.MeshBuilder.CreateBox("leg2", {
+                width: 0.5, height: 1, depth: 0.5
+            }, scene);
+            leg2.position = new BABYLON.Vector3(-0.5, 0, -1);
+
+            const leg3 = BABYLON.MeshBuilder.CreateBox("leg3", {
+                width: 0.5, height: 1, depth: 0.5
+            }, scene);
+            leg3.position = new BABYLON.Vector3(0.5, 0, 1);
+
+            const leg4 = BABYLON.MeshBuilder.CreateBox("leg4", {
+                width: 0.5, height: 1, depth: 0.5
+            }, scene);
+            leg4.position = new BABYLON.Vector3(-0.5, 0, 1);
+
+            // Eyes (glowing red)
+            const eyeLeft = BABYLON.MeshBuilder.CreateSphere("eyeLeft", {
+                diameter: 0.2
+            }, scene);
+            eyeLeft.position = new BABYLON.Vector3(-0.5, 1.5, -2);
+
+            const eyeRight = BABYLON.MeshBuilder.CreateSphere("eyeRight", {
+                diameter: 0.2
+            }, scene);
+            eyeRight.position = new BABYLON.Vector3(0.5, 1.5, -2);
+
+            // Create materials
+            const dragonMat = new BABYLON.StandardMaterial("dragonMat", scene);
+            dragonMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1); // Dark color
+
+            const eyeMat = new BABYLON.StandardMaterial("eyeMat", scene);
+            eyeMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+            eyeMat.emissiveColor = new BABYLON.Color3(1, 0, 0); // Glowing red
+
+            // Apply materials
+            [body, head, wingLeft, wingRight, tail, leg1, leg2, leg3, leg4].forEach(mesh => {
+                mesh.material = dragonMat;
+            });
+
+            eyeLeft.material = eyeMat;
+            eyeRight.material = eyeMat;
+
+            console.log('✅ [BLACK_DRAGON] Procedural dragon created');
+        }
+
+        // Start render loop
+        engine.runRenderLoop(() => scene.render());
+
+        // Handle resize
+        window.addEventListener("resize", () => engine.resize());
+
+        console.log('🎉 [BLACK_DRAGON] Preview initialized successfully');
+    </script>
+</body>
+
+</html>

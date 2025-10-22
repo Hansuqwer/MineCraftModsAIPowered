@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dragon Preview - Crafta</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        .info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="info">
+        🐉 Black Dragon Preview<br>
+        Touch/Mouse: Rotate | Scroll: Zoom<br>
+        <span id="status">Loading...</span>
+    </div>
+    <canvas id="renderCanvas"></canvas>
+
+    <script>
+        console.log('🐉 [TEST] Initializing dragon preview...');
+
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+
+        // Camera setup
+        const camera = new BABYLON.ArcRotateCamera("camera",
+            Math.PI / 2, Math.PI / 3, 8,
+            BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        camera.lowerRadiusLimit = 3;
+        camera.upperRadiusLimit = 15;
+
+        // Lighting
+        const light = new BABYLON.HemisphericLight("light",
+            new BABYLON.Vector3(1, 1, 0), scene);
+        light.intensity = 0.8;
+
+        // Create procedural dragon (since we don't have real GLB yet)
+        console.log('🐉 [TEST] Creating procedural dragon...');
+        createProceduralDragon(scene);
+
+        document.getElementById('status').textContent = 'Dragon loaded!';
+
+        function createProceduralDragon(scene) {
+            // Main body
+            const body = BABYLON.MeshBuilder.CreateBox("body", {
+                width: 2, height: 2, depth: 3
+            }, scene);
+            body.position.y = 1;
+
+            // Head
+            const head = BABYLON.MeshBuilder.CreateBox("head", {
+                width: 1.5, height: 1.5, depth: 1.5
+            }, scene);
+            head.position = new BABYLON.Vector3(0, 1.5, -1.5);
+
+            // Wings
+            const wingLeft = BABYLON.MeshBuilder.CreateBox("wingLeft", {
+                width: 3, height: 0.2, depth: 2
+            }, scene);
+            wingLeft.position = new BABYLON.Vector3(1.5, 1.5, 0);
+            wingLeft.rotation.z = Math.PI / 6;
+
+            const wingRight = BABYLON.MeshBuilder.CreateBox("wingRight", {
+                width: 3, height: 0.2, depth: 2
+            }, scene);
+            wingRight.position = new BABYLON.Vector3(-1.5, 1.5, 0);
+            wingRight.rotation.z = -Math.PI / 6;
+
+            // Tail
+            const tail = BABYLON.MeshBuilder.CreateBox("tail", {
+                width: 1, height: 1, depth: 2
+            }, scene);
+            tail.position = new BABYLON.Vector3(0, 0.5, 2);
+
+            // Legs
+            const leg1 = BABYLON.MeshBuilder.CreateBox("leg1", {
+                width: 0.5, height: 1, depth: 0.5
+            }, scene);
+            leg1.position = new BABYLON.Vector3(0.5, 0, -1);
+
+            const leg2 = BABYLON.MeshBuilder.CreateBox("leg2", {
+                width: 0.5, height: 1, depth: 0.5
+            }, scene);
+            leg2.position = new BABYLON.Vector3(-0.5, 0, -1);
+
+            const leg3 = BABYLON.MeshBuilder.CreateBox("leg3", {
+                width: 0.5, height: 1, depth: 0.5
+            }, scene);
+            leg3.position = new BABYLON.Vector3(0.5, 0, 1);
+
+            const leg4 = BABYLON.MeshBuilder.CreateBox("leg4", {
+                width: 0.5, height: 1, depth: 0.5
+            }, scene);
+            leg4.position = new BABYLON.Vector3(-0.5, 0, 1);
+
+            // Eyes (glowing red)
+            const eyeLeft = BABYLON.MeshBuilder.CreateSphere("eyeLeft", {
+                diameter: 0.2
+            }, scene);
+            eyeLeft.position = new BABYLON.Vector3(-0.5, 1.5, -2);
+
+            const eyeRight = BABYLON.MeshBuilder.CreateSphere("eyeRight", {
+                diameter: 0.2
+            }, scene);
+            eyeRight.position = new BABYLON.Vector3(0.5, 1.5, -2);
+
+            // Create materials
+            const dragonMat = new BABYLON.StandardMaterial("dragonMat", scene);
+            dragonMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1); // Dark color
+
+            const eyeMat = new BABYLON.StandardMaterial("eyeMat", scene);
+            eyeMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+            eyeMat.emissiveColor = new BABYLON.Color3(1, 0, 0); // Glowing red
+
+            // Apply materials
+            [body, head, wingLeft, wingRight, tail, leg1, leg2, leg3, leg4].forEach(mesh => {
+                mesh.material = dragonMat;
+            });
+
+            eyeLeft.material = eyeMat;
+            eyeRight.material = eyeMat;
+
+            console.log('✅ [TEST] Procedural dragon created');
+        }
+
+        // Start render loop
+        engine.runRenderLoop(() => scene.render());
+
+        // Handle resize
+        window.addEventListener("resize", () => engine.resize());
+
+        console.log('🎉 [TEST] Dragon preview ready!');
+    </script>
+</body>
+
+</html>

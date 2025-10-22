@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import '../widgets/creature_preview.dart';
+import '../widgets/babylon_3d_preview.dart';
 import '../services/tts_service.dart';
 import '../services/enhanced_ai_service.dart';
 import '../services/quick_minecraft_export_service.dart';
 import '../services/minecraft_launcher_service.dart';
-import '../services/firebase_image_service.dart';
 
 /// PHASE E: Creature Preview & Approval Screen
 /// Shows 3D preview and asks user for approval before export
@@ -33,11 +32,6 @@ class _CreaturePreviewApprovalScreenState
   final TTSService _ttsService = TTSService();
   bool _isLoading = false;
   int _generationAttempt = 1;
-  
-  // Firebase 3D image state
-  String? _generatedImageBase64;
-  bool _isGeneratingImage = false;
-  bool _imageGenerationFailed = false;
 
   @override
   void initState() {
@@ -46,7 +40,6 @@ class _CreaturePreviewApprovalScreenState
         '🎨 [PHASE E] Preview approval screen initialized for: ${widget.creatureName}');
     _initializeAnimations();
     _initializeTTS();
-    _initializeFirebaseImage();
     _announcePreview();
   }
 
@@ -69,65 +62,12 @@ class _CreaturePreviewApprovalScreenState
     await _ttsService.initialize();
   }
 
-  void _initializeFirebaseImage() async {
-    print('🔥 [FIREBASE_3D] Initializing Firebase image generation...');
-    
-    // Initialize Firebase service
-    await FirebaseImageService.initialize();
-    
-    // Generate image for the creature
-    _generateFirebaseImage();
-  }
-
   void _announcePreview() async {
     // Welcome the user and ask about the creature
     await Future.delayed(const Duration(milliseconds: 500));
     await _ttsService.speak(
       'Here is your ${widget.creatureName}! Do you like it?',
     );
-  }
-
-  /// Generate Firebase 3D image for the creature
-  Future<void> _generateFirebaseImage() async {
-    if (!mounted) return;
-
-    setState(() {
-      _isGeneratingImage = true;
-      _imageGenerationFailed = false;
-    });
-
-    print('🎨 [FIREBASE_3D] Generating 3D image for: ${widget.creatureName}');
-
-    try {
-      final imageBase64 = await FirebaseImageService.generateMinecraftImage(
-        creatureAttributes: widget.creatureAttributes,
-      );
-
-      if (!mounted) return;
-
-      if (imageBase64 != null) {
-        setState(() {
-          _generatedImageBase64 = imageBase64;
-          _isGeneratingImage = false;
-          _imageGenerationFailed = false;
-        });
-        print('✅ [FIREBASE_3D] Image generated successfully');
-      } else {
-        setState(() {
-          _isGeneratingImage = false;
-          _imageGenerationFailed = true;
-        });
-        print('⚠️ [FIREBASE_3D] Image generation failed, using fallback');
-      }
-    } catch (e) {
-      print('❌ [FIREBASE_3D] Error generating image: $e');
-      if (mounted) {
-        setState(() {
-          _isGeneratingImage = false;
-          _imageGenerationFailed = true;
-        });
-      }
-    }
   }
 
   @override
@@ -286,17 +226,6 @@ class _CreaturePreviewApprovalScreenState
                           (widget.creatureAttributes['abilities'] as List)
                               .join(', '),
                         ),
-                      // Firebase 3D status
-                      _buildDetailRow(
-                        '3D Preview',
-                        _isGeneratingImage 
-                            ? 'Generating...' 
-                            : _generatedImageBase64 != null 
-                                ? 'Ready ✅' 
-                                : _imageGenerationFailed 
-                                    ? 'Failed ❌' 
-                                    : 'Loading...',
-                      ),
                     ],
                   ),
                 ),
@@ -379,110 +308,16 @@ class _CreaturePreviewApprovalScreenState
     );
   }
 
-  /// Build the preview content - either Firebase image or fallback
+  /// Build the preview content with Babylon.js 3D preview
   Widget _buildPreviewContent() {
-    // Show loading indicator while generating image
-    if (_isGeneratingImage) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Color(0xFFFF6B9D),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            '🎨 Creating 3D preview...',
-            style: const TextStyle(
-              fontSize: 16,
-              color: Color(0xFF666666),
-            ),
-          ),
-        ],
-      );
-    }
-
-    // Show Firebase generated image if available
-    if (_generatedImageBase64 != null && !_imageGenerationFailed) {
-      return AnimatedBuilder(
-        animation: _sparkleAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: 1.0 + (_sparkleAnimation.value * 0.05),
-            child: Container(
-              width: 280,
-              height: 280,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  width: 200, // Fixed width to prevent overflow
-                  height: 200, // Fixed height to prevent overflow
-                  child: Image.memory(
-                    base64Decode(_generatedImageBase64!),
-                    fit: BoxFit.contain, // Changed from cover to contain to prevent pixel overload
-                    errorBuilder: (context, error, stackTrace) {
-                      print('❌ [FIREBASE_3D] Error displaying image: $error');
-                      print('❌ [FIREBASE_3D] Stack trace: $stackTrace');
-                      return _buildFallbackPreview();
-                    },
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      );
-    }
-
-    // Show fallback with retry option if image generation failed
-    if (_imageGenerationFailed) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildFallbackPreview(),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: _generateFirebaseImage,
-            icon: const Icon(Icons.refresh, size: 16),
-            label: const Text('Retry 3D Preview'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF6B9D),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    // Fallback to original CreaturePreview
-    return _buildFallbackPreview();
-  }
-
-  /// Build fallback preview using original CreaturePreview widget
-  Widget _buildFallbackPreview() {
     return AnimatedBuilder(
       animation: _sparkleAnimation,
       builder: (context, child) {
         return Transform.scale(
           scale: 1.0 + (_sparkleAnimation.value * 0.05),
-          child: CreaturePreview(
+          child: Babylon3DPreview(
             creatureAttributes: widget.creatureAttributes,
-            size: 280,
-            isAnimated: true,
+            height: 350,
           ),
         );
       },
@@ -636,9 +471,6 @@ class _CreaturePreviewApprovalScreenState
         widget.creatureAttributes.addAll(modifiedAttributes);
         _isLoading = false;
       });
-
-      // Regenerate Firebase image for the modified creature
-      _generateFirebaseImage();
 
       // Announce the modification
       await _ttsService.speak(

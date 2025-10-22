@@ -32,10 +32,12 @@ import 'screens/enhanced_creator_basic.dart';
 import 'screens/voice_test_screen.dart';
 import 'screens/voice_first_creator.dart';
 import 'screens/creature_preview_approval_screen.dart';
+import 'screens/tutorial_screen.dart';
 import 'models/enhanced_creature_attributes.dart';
 import 'models/item_type.dart';
 import 'services/google_cloud_service.dart';
 import 'services/enhanced_voice_ai_service.dart';
+import 'services/firebase_image_service.dart';
 
 /// Main entry point for Crafta app
 /// Loads environment variables and initializes the app
@@ -62,6 +64,10 @@ Future<void> main() async {
     // Initialize Enhanced Voice AI service
     await EnhancedVoiceAIService().initialize();
     developer.log('Enhanced Voice AI service initialized');
+
+    // Initialize Firebase Image Service (for 3D preview image generation)
+    await FirebaseImageService.initialize();
+    developer.log('Firebase Image Service initialized');
   } catch (e) {
     developer.log('Warning: Could not load .env file. Make sure to create one from .env.example', level: 1000);
     developer.log('Error: $e', level: 1000);
@@ -164,8 +170,13 @@ class _CraftaAppState extends State<CraftaApp> {
         '/ai-setup': (context) => const AISetupScreen(),
         '/minecraft-3d-viewer': (context) {
           final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          
+          // Convert Map to EnhancedCreatureAttributes
+          final Map<String, dynamic> attributesMap = args['creatureAttributes'] as Map<String, dynamic>;
+          final creatureAttributes = EnhancedCreatureAttributes.fromMap(attributesMap);
+          
           return Minecraft3DViewerScreen(
-            creatureAttributes: args['creatureAttributes'] as EnhancedCreatureAttributes,
+            creatureAttributes: creatureAttributes,
             creatureName: args['creatureName'] as String,
           );
         },
@@ -189,6 +200,7 @@ class _CraftaAppState extends State<CraftaApp> {
             creatureName: args['creatureName'],
           );
         },
+        '/tutorial': (context) => const TutorialScreen(),
             },
     );
   }

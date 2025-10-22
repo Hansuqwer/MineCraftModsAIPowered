@@ -22,11 +22,14 @@ class _VoiceCalibrationScreenState extends State<VoiceCalibrationScreen>
 
   bool _isInitialized = false;
   bool _isCalibrating = false;
+  bool _isListening = false;
   double _calibrationProgress = 0.0;
   String _currentInstruction = '';
   String _statusMessage = 'Tap "Start" to set up your voice!';
   bool _calibrationComplete = false;
   double _finalCalibrationLevel = 0.0;
+  int _currentTestStep = 0;
+  List<String> _testResults = [];
 
   @override
   void initState() {
@@ -78,35 +81,98 @@ class _VoiceCalibrationScreenState extends State<VoiceCalibrationScreen>
       _isCalibrating = true;
       _calibrationProgress = 0.0;
       _calibrationComplete = false;
+      _currentTestStep = 0;
+      _testResults = [];
     });
 
-    final result = await _speechService.calibrateVoice(
-      onInstruction: (instruction) {
+    // Start with first instruction
+    await _giveNextInstruction();
+  }
+
+  Future<void> _giveNextInstruction() async {
+    final instructions = [
+      'Say "Hello Crafta!" loudly!',
+      'Great! Now say "I love creating creatures!"',
+      'Awesome! Now say it slowly: "Purple... Dragon... With... Wings"'
+    ];
+
+    if (_currentTestStep < instructions.length) {
+      setState(() {
+        _currentInstruction = instructions[_currentTestStep];
+        _statusMessage = 'Listen to the instruction, then tap the microphone button when ready!';
+      });
+
+      // Stop any ongoing TTS before speaking new instruction
+      await _ttsService.stop();
+      await _ttsService.speak(_currentInstruction);
+      
+      setState(() {
+        _statusMessage = 'Tap the microphone button to start listening!';
+      });
+    } else {
+      // All tests completed
+      await _completeCalibration();
+    }
+  }
+
+  Future<void> _startListening() async {
+    if (_isListening) return;
+
+    setState(() {
+      _isListening = true;
+      _statusMessage = 'Listening... Speak now!';
+    });
+
+    try {
+      final result = await _speechService.listen();
+      
+      setState(() {
+        _isListening = false;
+      });
+
+      if (result != null && result.isNotEmpty) {
+        _testResults.add(result);
         setState(() {
-          _currentInstruction = instruction;
+          _calibrationProgress = (_currentTestStep + 1) / 3.0;
+          _statusMessage = 'Great! I heard: "$result"';
         });
-        _ttsService.speak(instruction);
-      },
-      onProgress: (progress) {
+
+        // Move to next test after a delay
+        await Future.delayed(const Duration(seconds: 2));
+        _currentTestStep++;
+        await _giveNextInstruction();
+      } else {
         setState(() {
-          _calibrationProgress = progress;
+          _statusMessage = 'I didn\'t hear anything. Try again!';
         });
-      },
-    );
+      }
+    } catch (e) {
+      setState(() {
+        _isListening = false;
+        _statusMessage = 'Error listening. Try again!';
+      });
+    }
+  }
+
+  Future<void> _completeCalibration() async {
+    // Calculate calibration level based on results
+    double calibrationLevel = 0.5;
+    if (_testResults.length >= 3) {
+      calibrationLevel = 0.8; // Good calibration
+    } else if (_testResults.length >= 1) {
+      calibrationLevel = 0.6; // Basic calibration
+    }
 
     setState(() {
       _isCalibrating = false;
-      _calibrationComplete = result.success;
-      _finalCalibrationLevel = result.calibrationLevel;
-      _statusMessage = result.message;
+      _calibrationComplete = true;
+      _finalCalibrationLevel = calibrationLevel;
+      _statusMessage = 'Voice setup complete!';
+      _currentInstruction = 'All done! Your voice is ready!';
     });
 
-    if (result.success) {
-      _celebrationController.forward();
-      await _ttsService.playCelebrationSound();
-    } else {
-      await _ttsService.speak('Don\'t worry! Let\'s try again when you\'re ready.');
-    }
+    _celebrationController.forward();
+    await _ttsService.playCelebrationSound();
   }
 
   void _finish() {
@@ -158,10 +224,14 @@ class _VoiceCalibrationScreenState extends State<VoiceCalibrationScreen>
                       // Voice feedback visualization
                       if (_isCalibrating)
                         VoiceFeedbackWidget(
-                          isListening: _isCalibrating,
+                          isListening: _isListening,
                           soundLevel: _calibrationProgress,
                           style: VoiceFeedbackStyle.pulse,
                         ),
+
+                      // Microphone button for manual activation
+                      if (_isCalibrating && !_isListening && _currentInstruction.isNotEmpty)
+                        _buildMicrophoneButton(),
 
                       // Celebration animation
                       if (_calibrationComplete)
@@ -405,6 +475,47 @@ class _VoiceCalibrationScreenState extends State<VoiceCalibrationScreen>
     );
   }
 
+  Widget _buildMicrophoneButton() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: _isListening ? null : _startListening,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _isListening ? Colors.red : Colors.blue,
+                boxShadow: [
+                  BoxShadow(
+                    color: (_isListening ? Colors.red : Colors.blue).withOpacity(0.3),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: Icon(
+                _isListening ? Icons.mic : Icons.mic_none,
+                size: 60,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _isListening ? 'Listening...' : 'Tap to speak',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: _isListening ? Colors.red : Colors.blue,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildActionButtons() {
     return Container(
       padding: const EdgeInsets.all(24.0),
@@ -445,12 +556,12 @@ class _VoiceCalibrationScreenState extends State<VoiceCalibrationScreen>
               icon: Icon(
                 _calibrationComplete
                     ? Icons.check
-                    : (_isCalibrating ? Icons.mic : Icons.play_arrow),
+                    : Icons.play_arrow,
               ),
               label: Text(
                 _calibrationComplete
                     ? 'Finish'
-                    : (_isCalibrating ? 'Calibrating...' : 'Start Calibration'),
+                    : 'Start Calibration',
               ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),

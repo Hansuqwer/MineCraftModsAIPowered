@@ -1,0 +1,1 @@
+ /home/rickard/MineCraftModsAIPowered/crafta/.dart_tool/flutter_build/612062744f219b78bd11811023540c3f/native_assets.yaml: 

@@ -69,6 +69,16 @@ class _EnhancedMinecraft3DPreviewState extends State<EnhancedMinecraft3DPreview>
         },
       )
       ..loadHtmlString(_generateEnhancedHTML());
+
+    // Fallback timeout: if WebView content didn't load properly, show simple fallback
+    Future.delayed(const Duration(seconds: 6), () {
+      if (mounted && _isLoading) {
+        setState(() {
+          _errorMessage = 'Timed out loading 3D preview';
+          _isLoading = false;
+        });
+      }
+    });
   }
 
   String _generateEnhancedHTML() {
@@ -265,8 +275,23 @@ class _EnhancedMinecraft3DPreviewState extends State<EnhancedMinecraft3DPreview>
                     const scale = modelSize === 'giant' ? 2.0 : modelSize === 'tiny' ? 0.5 : 1.0;
 
                     // Create different models based on type
-                    if (type.includes('dragon')) {
+                    let normType = (type || '').toLowerCase();
+                    if (normType.includes('helm')) normType = 'helmet';
+                    if (normType.includes('chair')) normType = 'chair';
+                    if (normType.includes('sword')) normType = 'sword';
+
+                    if (normType.includes('dragon')) {
                         model = createDragon(modelColor, hasWings, scale);
+                    } else if (normType.includes('sword')) {
+                        model = createSword(modelColor, scale);
+                    } else if (normType.includes('helmet')) {
+                        model = createHelmet(modelColor, scale);
+                    } else if (normType.includes('armor') || normType.includes('chestplate')) {
+                        model = createArmor(modelColor, scale);
+                    } else if (normType.includes('shield')) {
+                        model = createShield(modelColor, scale);
+                    } else if (normType.includes('chair')) {
+                        model = createChair(modelColor, scale);
                     } else {
                         model = createCreature(modelColor, hasWings, scale);
                     }
@@ -439,6 +464,203 @@ class _EnhancedMinecraft3DPreviewState extends State<EnhancedMinecraft3DPreview>
                         if (!mesh.material) {
                             mesh.material = material;
                         }
+                    });
+
+                    return parent;
+                }
+
+                function createSword(color, scale) {
+                    const parent = new BABYLON.TransformNode('sword');
+                    
+                    // Blade
+                    const blade = BABYLON.MeshBuilder.CreateBox('blade', {
+                        width: 0.1 * scale,
+                        height: 1.2 * scale,
+                        depth: 0.1 * scale
+                    }, scene);
+                    blade.position = new BABYLON.Vector3(0, 0.6 * scale, 0);
+                    blade.parent = parent;
+                    
+                    // Crossguard
+                    const crossguard = BABYLON.MeshBuilder.CreateBox('crossguard', {
+                        width: 0.3 * scale,
+                        height: 0.1 * scale,
+                        depth: 0.1 * scale
+                    }, scene);
+                    crossguard.position = new BABYLON.Vector3(0, 0.1 * scale, 0);
+                    crossguard.parent = parent;
+                    
+                    // Handle
+                    const handle = BABYLON.MeshBuilder.CreateCylinder('handle', {
+                        diameter: 0.08 * scale,
+                        height: 0.4 * scale
+                    }, scene);
+                    handle.position = new BABYLON.Vector3(0, -0.2 * scale, 0);
+                    handle.parent = parent;
+                    
+                    // Pommel
+                    const pommel = BABYLON.MeshBuilder.CreateSphere('pommel', {
+                        diameter: 0.12 * scale
+                    }, scene);
+                    pommel.position = new BABYLON.Vector3(0, -0.4 * scale, 0);
+                    pommel.parent = parent;
+                    
+                    // Apply material
+                    const material = createColorMaterial(color);
+                    parent.getChildMeshes().forEach(mesh => {
+                        mesh.material = material;
+                    });
+                    
+                    return parent;
+                }
+
+                function createHelmet(color, scale) {
+                    const parent = new BABYLON.TransformNode('helmet');
+                    
+                    // Main helmet body
+                    const helmet = BABYLON.MeshBuilder.CreateSphere('helmet', {
+                        diameter: 1.2 * scale,
+                        segments: 16
+                    }, scene);
+                    helmet.position = new BABYLON.Vector3(0, 0, 0);
+                    helmet.scaling = new BABYLON.Vector3(1, 0.8, 1);
+                    helmet.parent = parent;
+                    
+                    // Visor
+                    const visor = BABYLON.MeshBuilder.CreateBox('visor', {
+                        width: 0.8 * scale,
+                        height: 0.3 * scale,
+                        depth: 0.1 * scale
+                    }, scene);
+                    visor.position = new BABYLON.Vector3(0, 0.1 * scale, 0.5 * scale);
+                    visor.parent = parent;
+                    
+                    // Crest/Plume
+                    const crest = BABYLON.MeshBuilder.CreateBox('crest', {
+                        width: 0.1 * scale,
+                        height: 0.6 * scale,
+                        depth: 0.1 * scale
+                    }, scene);
+                    crest.position = new BABYLON.Vector3(0, 0.7 * scale, 0);
+                    crest.parent = parent;
+                    
+                    // Apply material
+                    const material = createColorMaterial(color);
+                    parent.getChildMeshes().forEach(mesh => {
+                        mesh.material = material;
+                    });
+                    
+                    return parent;
+                }
+
+                function createArmor(color, scale) {
+                    const parent = new BABYLON.TransformNode('armor');
+                    
+                    // Chestplate
+                    const chestplate = BABYLON.MeshBuilder.CreateBox('chestplate', {
+                        width: 1.0 * scale,
+                        height: 1.2 * scale,
+                        depth: 0.3 * scale
+                    }, scene);
+                    chestplate.position = new BABYLON.Vector3(0, 0, 0);
+                    chestplate.parent = parent;
+                    
+                    // Shoulder pads
+                    [-0.6, 0.6].forEach((x) => {
+                        const shoulder = BABYLON.MeshBuilder.CreateBox('shoulder', {
+                            width: 0.3 * scale,
+                            height: 0.3 * scale,
+                            depth: 0.3 * scale
+                        }, scene);
+                        shoulder.position = new BABYLON.Vector3(x * scale, 0.4 * scale, 0);
+                        shoulder.parent = parent;
+                    });
+                    
+                    // Apply material
+                    const material = createColorMaterial(color);
+                    parent.getChildMeshes().forEach(mesh => {
+                        mesh.material = material;
+                    });
+                    
+                    return parent;
+                }
+
+                function createShield(color, scale) {
+                    const parent = new BABYLON.TransformNode('shield');
+                    
+                    // Shield body
+                    const shield = BABYLON.MeshBuilder.CreateCylinder('shield', {
+                        diameter: 1.0 * scale,
+                        height: 0.1 * scale,
+                        tessellation: 8
+                    }, scene);
+                    shield.position = new BABYLON.Vector3(0, 0, 0);
+                    shield.parent = parent;
+                    
+                    // Boss (center)
+                    const boss = BABYLON.MeshBuilder.CreateCylinder('boss', {
+                        diameter: 0.2 * scale,
+                        height: 0.15 * scale
+                    }, scene);
+                    boss.position = new BABYLON.Vector3(0, 0, 0.05 * scale);
+                    boss.parent = parent;
+                    
+                    // Handle
+                    const handle = BABYLON.MeshBuilder.CreateBox('handle', {
+                        width: 0.05 * scale,
+                        height: 0.4 * scale,
+                        depth: 0.05 * scale
+                    }, scene);
+                    handle.position = new BABYLON.Vector3(0, 0, -0.3 * scale);
+                    handle.parent = parent;
+                    
+                    // Apply material
+                    const material = createColorMaterial(color);
+                    parent.getChildMeshes().forEach(mesh => {
+                        mesh.material = material;
+                    });
+                    
+                    return parent;
+                }
+
+                function createChair(color, scale) {
+                    const parent = new BABYLON.TransformNode('chair');
+
+                    // Seat
+                    const seat = BABYLON.MeshBuilder.CreateBox('seat', {
+                        width: 1.2 * scale,
+                        height: 0.2 * scale,
+                        depth: 1.2 * scale
+                    }, scene);
+                    seat.position = new BABYLON.Vector3(0, 0.6 * scale, 0);
+                    seat.parent = parent;
+
+                    // Backrest
+                    const back = BABYLON.MeshBuilder.CreateBox('back', {
+                        width: 1.2 * scale,
+                        height: 1.0 * scale,
+                        depth: 0.2 * scale
+                    }, scene);
+                    back.position = new BABYLON.Vector3(0, 1.2 * scale, -0.5 * scale);
+                    back.parent = parent;
+
+                    // Legs
+                    const legPositions = [
+                        [-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]
+                    ];
+                    legPositions.forEach((pos, i) => {
+                        const leg = BABYLON.MeshBuilder.CreateCylinder('leg' + i, {
+                            diameter: 0.15 * scale,
+                            height: 0.6 * scale
+                        }, scene);
+                        leg.position = new BABYLON.Vector3(pos[0] * scale, 0.3 * scale, pos[1] * scale);
+                        leg.parent = parent;
+                    });
+
+                    // Apply material
+                    const material = createColorMaterial(color);
+                    parent.getChildMeshes().forEach(mesh => {
+                        mesh.material = material;
                     });
 
                     return parent;
@@ -658,7 +880,7 @@ class _EnhancedMinecraft3DPreviewState extends State<EnhancedMinecraft3DPreview>
             if (_errorMessage == null)
               WebViewWidget(controller: _webViewController),
             if (_errorMessage != null)
-              _buildErrorWidget(),
+              _buildDesktopFallback(),
             if (_isLoading)
               Container(
                 decoration: const BoxDecoration(

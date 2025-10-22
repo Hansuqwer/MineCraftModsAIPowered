@@ -37,6 +37,71 @@ class EnhancedAIService {
     return null;
   }
 
+  /// Validate that AI response matches user input
+  static bool _validateResponse(String userInput, Map<String, dynamic> response) {
+    final userLower = userInput.toLowerCase();
+    final baseType = (response['baseType'] ?? '').toString().toLowerCase();
+    final primaryColor = (response['primaryColor'] ?? '').toString().toLowerCase();
+
+    // Check if user mentioned a specific item type
+    final itemTypes = ['sword', 'dragon', 'chair', 'table', 'armor', 'helmet',
+                       'shield', 'axe', 'bow', 'castle', 'house', 'car', 'boat'];
+
+    for (final type in itemTypes) {
+      if (userLower.contains(type)) {
+        // User mentioned this type, so baseType MUST match
+        if (!baseType.contains(type) && baseType != type) {
+          print('❌ [VALIDATION] User said "$type" but AI returned "$baseType" - REJECTED!');
+          return false;
+        }
+      }
+    }
+
+    // Check if user mentioned a specific color (with variants)
+    final colorVariants = {
+      'black': ['black'],
+      'white': ['white'],
+      'red': ['red'],
+      'blue': ['blue'],
+      'green': ['green'],
+      'yellow': ['yellow'],
+      'purple': ['purple', 'violet'],
+      'pink': ['pink'],
+      'orange': ['orange'],
+      'brown': ['brown'],
+      'gray': ['gray', 'grey'],
+      'gold': ['gold', 'golden', 'amber'],
+      'silver': ['silver'],
+    };
+
+    for (final entry in colorVariants.entries) {
+      final colorName = entry.key;
+      final variants = entry.value;
+
+      // Check if user mentioned any variant of this color
+      for (final variant in variants) {
+        if (userLower.contains(variant)) {
+          // User mentioned this color, so primaryColor MUST match
+          bool matches = false;
+          for (final checkVariant in variants) {
+            if (primaryColor.contains(checkVariant) || primaryColor == checkVariant) {
+              matches = true;
+              break;
+            }
+          }
+
+          if (!matches) {
+            print('❌ [VALIDATION] User said "$variant" but AI returned "$primaryColor" - REJECTED!');
+            return false;
+          }
+        }
+      }
+    }
+
+    print('✅ [VALIDATION] Response matches user input');
+    return true;
+  }
+
   /// Parse enhanced creature request with advanced attributes
   static Future<EnhancedCreatureAttributes> parseEnhancedCreatureRequest(
     String userMessage,
@@ -84,8 +149,9 @@ class EnhancedAIService {
               'content': userMessage,
             },
           ],
-          'temperature': 0.7,
+          'temperature': 0.1,  // Low temperature = more literal, less creative
           'max_tokens': 1000,
+          'response_format': {'type': 'json_object'},  // FORCE JSON-only output
         }),
       ).timeout(
         const Duration(seconds: 30),
@@ -106,7 +172,7 @@ class EnhancedAIService {
         final content = data['choices'][0]['message']['content'];
         print('✅ [ENHANCED_AI] === API CALL SUCCESS ===');
         print('🤖 [ENHANCED_AI] Response preview: ${content.substring(0, content.length > 100 ? 100 : content.length)}...');
-        return _parseAIResponse(content);
+        return _parseAIResponse(content, userMessage);
       } else {
         print('❌ [ENHANCED_AI] FAILED: OpenAI API returned error status');
         print('❌ [ENHANCED_AI] Status: ${response.statusCode}');
@@ -151,44 +217,59 @@ class EnhancedAIService {
   /// Get enhanced system prompt for advanced parsing
   static String _getEnhancedSystemPrompt() {
     return '''
-You are Crafta, an AI assistant that helps children create custom Minecraft items through natural language.
+You are a strict JSON parser. Output ONLY valid JSON, absolutely NO other text.
 
-IMPORTANT: When a child asks for something specific, use EXACTLY what they ask for. Don't change their requests.
+CRITICAL - DO NOT CHANGE USER INPUT:
+- If user says "sword" → baseType MUST be "sword" (NOT dragon, NOT anything else)
+- If user says "dragon" → baseType MUST be "dragon" (NOT sword, NOT anything else)
+- If user says "black" → primaryColor MUST be "black" (NOT blue, NOT anything else)
+- If user says "chair" → baseType MUST be "chair" (NOT dragon, NOT creature)
 
-You can create ALL types of Minecraft items:
-- CREATURES: dragon, cat, dog, robot, unicorn, phoenix, dinosaur, monster, etc.
-- WEAPONS: sword, bow, axe, hammer, magic wand, staff, etc.
-- ARMOR: helmet, chestplate, leggings, boots, shield, etc.
-- FURNITURE: chair, table, bed, lamp, bookshelf, etc.
-- VEHICLES: car, boat, plane, rocket, spaceship, train, etc.
-- BUILDINGS: house, castle, tower, bridge, etc.
-- TOOLS: pickaxe, shovel, hoe, fishing rod, etc.
-- DECORATIONS: flower, plant, statue, painting, etc.
+YOU ARE NOT ALLOWED TO BE CREATIVE WITH THE BASE TYPE OR COLOR.
+Use EXACTLY what the user typed. DO NOT substitute words.
 
-Examples:
-- "blue sword" → baseType: "sword", primaryColor: "blue", category: "weapon"
-- "dragon with red eyes and it should be black" → baseType: "dragon", primaryColor: "black", accessories: ["red eyes"], category: "creature"
-- "make me a blue sword" → baseType: "sword", primaryColor: "blue", category: "weapon"
-- "red chair" → baseType: "chair", primaryColor: "red", category: "furniture"
-- "golden helmet" → baseType: "helmet", primaryColor: "gold", category: "armor"
+JSON Schema (REQUIRED fields marked with *):
+{
+  "baseType": string*,        // EXACTLY what they asked for: "dragon", "sword", "chair", etc.
+  "category": string*,        // "creature", "weapon", "armor", "furniture", "vehicle", "tool", "decoration"
+  "primaryColor": string*,    // "black", "blue", "red", "green", "yellow", "purple", "pink", "orange", "white", "brown", "gold", "silver"
+  "secondaryColor": string,   // Optional second color
+  "accentColor": string,      // Optional accent color
+  "size": string,             // "tiny", "small", "medium", "large", "giant" (default: "medium")
+  "abilities": array,         // ["flying", "swimming", "fireBreath", "iceBreath", "magic", "invisible", "teleport"]
+  "accessories": array,       // ["red eyes", "wizard hat", "crown", "diamond handle", "golden trim"]
+  "personality": string,      // "friendly", "playful", "shy", "brave", "curious", "fierce"
+  "patterns": array,          // ["stripes", "spots", "sparkles", "rainbow", "stars", "hearts"]
+  "texture": string,          // "smooth", "rough", "scaly", "furry", "metallic", "glassy"
+  "glowEffect": string,       // "none", "soft", "bright", "pulsing", "rainbow"
+  "animationStyle": string,   // "natural", "bouncy", "graceful", "energetic", "calm"
+  "customName": string*,      // Creative name based on description
+  "description": string*      // One-sentence description
+}
 
-Your task is to parse user requests and extract these attributes:
+EXAMPLES:
 
-1. BASE TYPE: What they want (sword, dragon, chair, helmet, etc.)
-2. CATEGORY: creature, weapon, armor, furniture, vehicle, building, tool, decoration
-3. PRIMARY COLOR: The main color they specify
-4. SIZE: tiny, small, medium, large, giant (default: medium)
-5. PERSONALITY: friendly, playful, shy, brave, curious (for creatures only)
-6. ABILITIES: flying, swimming, fireBreath, iceBreath, magic, etc. (for creatures only)
-7. ACCESSORIES: red eyes, wizard hat, crown, etc.
-8. PATTERNS: stripes, spots, sparkles, rainbow, stars, hearts
-9. TEXTURE: smooth, rough, scaly, furry, metallic, glassy
-10. GLOW EFFECT: none, soft, bright, pulsing, rainbow
-11. ANIMATION STYLE: natural, bouncy, graceful, energetic, calm (for creatures only)
+Input: "black dragon"
+Output:
+{
+  "baseType": "dragon",
+  "category": "creature",
+  "primaryColor": "black",
+  "secondaryColor": "gray",
+  "size": "giant",
+  "abilities": ["flying", "fireBreath"],
+  "accessories": [],
+  "personality": "fierce",
+  "patterns": [],
+  "texture": "scaly",
+  "glowEffect": "none",
+  "animationStyle": "natural",
+  "customName": "Black Dragon",
+  "description": "A fierce black dragon that breathes fire"
+}
 
-Respond with a JSON object containing these attributes. Be creative and child-friendly.
-
-Example response format:
+Input: "blue sword with diamonds in handle"
+Output:
 {
   "baseType": "sword",
   "category": "weapon",
@@ -197,28 +278,67 @@ Example response format:
   "accentColor": "white",
   "size": "medium",
   "abilities": [],
+  "accessories": ["diamond handle"],
+  "personality": "friendly",
+  "patterns": ["sparkles"],
+  "texture": "metallic",
+  "glowEffect": "soft",
+  "animationStyle": "natural",
+  "customName": "Diamond Blue Sword",
+  "description": "A shiny blue sword with diamonds in the handle"
+}
+
+Input: "red dragon with green scales"
+Output:
+{
+  "baseType": "dragon",
+  "category": "creature",
+  "primaryColor": "red",
+  "secondaryColor": "green",
+  "size": "giant",
+  "abilities": ["flying", "fireBreath"],
+  "accessories": [],
+  "personality": "fierce",
+  "patterns": ["spots"],
+  "texture": "scaly",
+  "glowEffect": "none",
+  "animationStyle": "natural",
+  "customName": "Red Dragon",
+  "description": "A red dragon with green scales"
+}
+
+Input: "black glowing sword"
+Output:
+{
+  "baseType": "sword",
+  "category": "weapon",
+  "primaryColor": "black",
+  "secondaryColor": "gray",
+  "size": "medium",
+  "abilities": [],
   "accessories": [],
   "personality": "friendly",
   "patterns": [],
   "texture": "metallic",
-  "glowEffect": "none",
+  "glowEffect": "bright",
   "animationStyle": "natural",
-  "customName": "Blue Sword",
-  "description": "A blue sword for adventures"
+  "customName": "Black Glowing Sword",
+  "description": "A black sword that glows brightly"
 }
 
-Always be safe, kind, and imaginative. Focus on positive, creative attributes.
-Use EXACTLY what the child asks for - don't change their requests.
+CRITICAL: If user mentions "sword", baseType MUST be "sword". If user mentions "dragon", baseType MUST be "dragon". NEVER substitute one for the other!
+
+Remember: ONLY JSON output, nothing else!
 ''';
   }
 
   /// Parse AI response into enhanced attributes
-  static EnhancedCreatureAttributes _parseAIResponse(String content) {
+  static EnhancedCreatureAttributes _parseAIResponse(String content, String userInput) {
     try {
       // Extract JSON from response
       final jsonStart = content.indexOf('{');
       final jsonEnd = content.lastIndexOf('}') + 1;
-      
+
       if (jsonStart == -1 || jsonEnd == 0) {
         print('⚠️ [ENHANCED_AI] No JSON found in response, using fallback');
         return _getDefaultAttributes(content);
@@ -226,9 +346,16 @@ Use EXACTLY what the child asks for - don't change their requests.
 
       final jsonString = content.substring(jsonStart, jsonEnd);
       print('🔍 [ENHANCED_AI] Extracted JSON: $jsonString');
-      
+
       final Map<String, dynamic> data = jsonDecode(jsonString);
-      
+
+      // VALIDATE: Check if response matches user input
+      if (!_validateResponse(userInput, data)) {
+        print('❌ [ENHANCED_AI] Validation failed - AI changed user input!');
+        print('💡 [ENHANCED_AI] Using fallback with user\'s exact words');
+        return _getDefaultAttributes(userInput);
+      }
+
       return EnhancedCreatureAttributes(
         baseType: data['baseType'] ?? 'creature',
         primaryColor: _parseColor(data['primaryColor']),
@@ -267,7 +394,7 @@ Use EXACTLY what the child asks for - don't change their requests.
       case 'white': return Colors.white;
       case 'brown': return Colors.brown;
       case 'grey': case 'gray': return Colors.grey;
-      case 'gold': case 'amber': return Colors.amber;
+      case 'gold': case 'amber': case 'golden': return Colors.amber;
       case 'silver': return Colors.grey[400]!;
       default: return Colors.blue;
     }
@@ -412,12 +539,26 @@ Use EXACTLY what the child asks for - don't change their requests.
     }
   }
 
+  /// Test function to verify color mapping
+  static void testColorMapping() {
+    print('🧪 [TEST] Testing color mapping...');
+    final testCases = ['golden helmet', 'blue sword', 'red chair', 'green dragon'];
+    
+    for (final testCase in testCases) {
+      final result = _getDefaultAttributes(testCase);
+      print('🧪 [TEST] "$testCase" -> baseType: ${result.baseType}, color: ${result.primaryColor}');
+    }
+  }
+
   /// Get default attributes when AI fails
   static EnhancedCreatureAttributes _getDefaultAttributes(String userMessage) {
     print('⚠️ [ENHANCED_AI] Using default attributes for: $userMessage');
     
     // Try to extract basic info from user message
-    final lowerMessage = userMessage.toLowerCase();
+    final lowerMessage = userMessage.toLowerCase().trim();
+    print('🔍 [ENHANCED_AI] Lower message: $lowerMessage');
+    print('🔍 [ENHANCED_AI] Message length: ${userMessage.length} chars');
+    print('🔍 [ENHANCED_AI] Lower length: ${lowerMessage.length} chars');
     
     String baseType = 'creature';
     Color primaryColor = Colors.blue;
@@ -435,10 +576,18 @@ Use EXACTLY what the child asks for - don't change their requests.
     else if (lowerMessage.contains('boots')) baseType = 'boots';
     else if (lowerMessage.contains('shield')) baseType = 'shield';
     else if (lowerMessage.contains('chair')) baseType = 'chair';
+    else if (lowerMessage.contains('couch')) baseType = 'couch';
+    else if (lowerMessage.contains('sofa')) baseType = 'couch';
     else if (lowerMessage.contains('table')) baseType = 'table';
+    else if (lowerMessage.contains('desk')) baseType = 'desk';
     else if (lowerMessage.contains('bed')) baseType = 'bed';
     else if (lowerMessage.contains('lamp')) baseType = 'lamp';
     else if (lowerMessage.contains('bookshelf')) baseType = 'bookshelf';
+    else if (lowerMessage.contains('cabinet')) baseType = 'cabinet';
+    else if (lowerMessage.contains('dresser')) baseType = 'dresser';
+    else if (lowerMessage.contains('wardrobe')) baseType = 'wardrobe';
+    else if (lowerMessage.contains('stool')) baseType = 'stool';
+    else if (lowerMessage.contains('bench')) baseType = 'bench';
     else if (lowerMessage.contains('car')) baseType = 'car';
     else if (lowerMessage.contains('boat')) baseType = 'boat';
     else if (lowerMessage.contains('plane')) baseType = 'plane';
@@ -465,16 +614,62 @@ Use EXACTLY what the child asks for - don't change their requests.
     else if (lowerMessage.contains('dinosaur')) baseType = 'dinosaur';
     else if (lowerMessage.contains('monster')) baseType = 'monster';
     
-    if (lowerMessage.contains('blue')) primaryColor = Colors.blue;
-    else if (lowerMessage.contains('red')) primaryColor = Colors.red;
-    else if (lowerMessage.contains('green')) primaryColor = Colors.green;
-    else if (lowerMessage.contains('yellow')) primaryColor = Colors.yellow;
-    else if (lowerMessage.contains('purple')) primaryColor = Colors.purple;
-    else if (lowerMessage.contains('black')) primaryColor = Colors.black;
-    else if (lowerMessage.contains('white')) primaryColor = Colors.white;
-    else if (lowerMessage.contains('gold')) primaryColor = Colors.amber;
-    else if (lowerMessage.contains('silver')) primaryColor = Colors.grey[400]!;
+    // Find FIRST color mentioned (prioritize first color in text)
+    final colorMap = {
+      'black': Colors.black,
+      'white': Colors.white,
+      'red': Colors.red,
+      'blue': Colors.blue,
+      'green': Colors.green,
+      'yellow': Colors.yellow,
+      'purple': Colors.purple,
+      'violet': Colors.purple,
+      'pink': Colors.pink,
+      'orange': Colors.orange,
+      'brown': Colors.brown,
+      'gold': Colors.amber,
+      'golden': Colors.amber,
+      'amber': Colors.amber,
+      'silver': Colors.grey[400]!,
+      'gray': Colors.grey,
+      'grey': Colors.grey,
+    };
+
+    int firstColorIndex = lowerMessage.length;
+
+    colorMap.forEach((colorName, color) {
+      final index = lowerMessage.indexOf(colorName);
+      if (index != -1 && index < firstColorIndex) {
+        firstColorIndex = index;
+        primaryColor = color;
+        print('🎨 [ENHANCED_AI] Found color: $colorName -> $color at index $index');
+      }
+    });
     
+    print('🎨 [ENHANCED_AI] Final primary color: $primaryColor');
+
+    // Detect glow effect
+    GlowEffect glowEffect = GlowEffect.none;
+    if (lowerMessage.contains('glow')) glowEffect = GlowEffect.bright;
+
+    // Generate a name from the attributes
+    String colorName = 'Blue'; // Default
+    if (primaryColor == Colors.black) colorName = 'Black';
+    else if (primaryColor == Colors.white) colorName = 'White';
+    else if (primaryColor == Colors.red) colorName = 'Red';
+    else if (primaryColor == Colors.green) colorName = 'Green';
+    else if (primaryColor == Colors.yellow) colorName = 'Yellow';
+    else if (primaryColor == Colors.purple) colorName = 'Purple';
+    else if (primaryColor == Colors.pink) colorName = 'Pink';
+    else if (primaryColor == Colors.orange) colorName = 'Orange';
+    else if (primaryColor == Colors.brown) colorName = 'Brown';
+    else if (primaryColor == Colors.amber) colorName = 'Golden';
+    else if (primaryColor == Colors.grey) colorName = 'Gray';
+    else if (primaryColor == Colors.grey[400]) colorName = 'Silver';
+
+    String glowText = glowEffect == GlowEffect.bright ? 'Glowing ' : '';
+    String customName = '$glowText$colorName ${baseType[0].toUpperCase()}${baseType.substring(1)}';
+
     return EnhancedCreatureAttributes(
       baseType: baseType,
       primaryColor: primaryColor,
@@ -486,9 +681,9 @@ Use EXACTLY what the child asks for - don't change their requests.
       personality: PersonalityType.friendly,
       patterns: [],
       texture: TextureType.smooth,
-      glowEffect: GlowEffect.none,
+      glowEffect: glowEffect,
       animationStyle: CreatureAnimationStyle.natural,
-      customName: '',
+      customName: customName,
       description: 'A $baseType created with AI',
     );
   }

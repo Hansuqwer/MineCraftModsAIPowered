@@ -362,12 +362,13 @@ class EnhancedSpeechService {
     }
 
     try {
-      onInstruction('Let\'s set up your voice! Say "Hello Crafta!" when you\'re ready.');
-      await Future.delayed(const Duration(seconds: 2));
+      await onInstruction('Let\'s set up your voice! Say "Hello Crafta!" when you\'re ready.');
+      await Future.delayed(const Duration(seconds: 3)); // Wait for TTS to complete
 
       // Test 1: Volume calibration
       onProgress(0.1);
-      onInstruction('Say "Hello Crafta!" loudly!');
+      await onInstruction('Say "Hello Crafta!" loudly!');
+      await Future.delayed(const Duration(milliseconds: 2000)); // Wait for TTS to complete
       final loudResult = await listen();
 
       if (loudResult == null || loudResult.isEmpty) {
@@ -379,17 +380,19 @@ class EnhancedSpeechService {
       }
 
       onProgress(0.3);
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       // Test 2: Clarity calibration
-      onInstruction('Great! Now say "I love creating creatures!"');
+      await onInstruction('Great! Now say "I love creating creatures!"');
+      await Future.delayed(const Duration(milliseconds: 2000)); // Wait for TTS to complete
       final clarityResult = await listen();
 
       onProgress(0.6);
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       // Test 3: Speed calibration
-      onInstruction('Awesome! Now say it slowly: "Purple... Dragon... With... Wings"');
+      await onInstruction('Awesome! Now say it slowly: "Purple... Dragon... With... Wings"');
+      await Future.delayed(const Duration(milliseconds: 2000)); // Wait for TTS to complete
       final speedResult = await listen();
 
       onProgress(0.9);

@@ -4,6 +4,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## 🚨 CURRENT WORK (October 22, 2025)
+
+**Status**: Firebase Image Service infrastructure complete - Ready to integrate into preview screen
+
+**Latest APK**: `~/Downloads/Crafta_FIREBASE_READY_20251022.apk` (65MB)
+
+### Recent Fixes (Oct 21-22, 2025):
+1. ✅ **Type validation** - OpenAI returning wrong types (sword→dragon) is caught by validation
+2. ✅ **Color validation** - OpenAI returning wrong colors (black→red) is caught by validation
+3. ✅ **Fallback system** - If AI fails validation, local parser extracts type/color from user input
+4. ✅ **Name generation** - Fallback creates names like "Black Sword", "Golden Helmet"
+5. ✅ **JSON mode** - Forced OpenAI to return JSON only (no conversational text)
+6. ✅ **Temperature lowered** - 0.7 → 0.1 for more literal responses
+
+### Known Issues:
+- ⚠️ **No image previews** - Currently shows 2D emoji placeholders only
+- ⚠️ **Suggestions irrelevant** - "Export" button suggests unrelated items
+
+### Next Steps:
+1. **Add Firebase Imagen** for real 3D-style Minecraft images (IN PROGRESS)
+2. Fix suggestion algorithm to match created item
+3. Test on real device
+
+**Testing Results** (User feedback Oct 22):
+- ✅ "golden helmet" → type: helmet, color: gold (AFTER fix)
+- ✅ "glowing red sword" → type: sword, color: red
+- ✅ "black dragon red eyes" → type: dragon, color: black
+- ✅ Names display correctly
+
+**See `FIREBASE_IMAGEN_INTEGRATION.md` for implementation details.**
+
+---
+
 ## Project Vision: Crafta - AI-Powered Minecraft Mod Creator for Kids
 
 **Core Mission**: Empower children ages 3-10 (especially non-readers) to become game creators using voice interaction. Kids describe what they want to create → AI generates it → AI suggests improvements → User agrees/disagrees via voice → 3D preview → Export to Minecraft.

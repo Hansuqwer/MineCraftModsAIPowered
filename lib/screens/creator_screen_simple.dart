@@ -37,12 +37,33 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
     super.dispose();
   }
 
+  /// Convert Flutter Color to string name
+  String _colorToString(Color color) {
+    if (color == Colors.black || color.value == Colors.black.value) return 'black';
+    if (color == Colors.blue || color.value == Colors.blue.value) return 'blue';
+    if (color == Colors.red || color.value == Colors.red.value) return 'red';
+    if (color == Colors.green || color.value == Colors.green.value) return 'green';
+    if (color == Colors.yellow || color.value == Colors.yellow.value) return 'yellow';
+    if (color == Colors.purple || color.value == Colors.purple.value) return 'purple';
+    if (color == Colors.pink || color.value == Colors.pink.value) return 'pink';
+    if (color == Colors.orange || color.value == Colors.orange.value) return 'orange';
+    if (color == Colors.white || color.value == Colors.white.value) return 'white';
+    if (color == Colors.brown || color.value == 0xFF795548) return 'brown';
+    if (color == Colors.grey || color.value == Colors.grey.value) return 'gray';
+    if (color == Colors.amber || color.value == Colors.amber.value) return 'golden';
+    if (color == Colors.amber.shade600 || color.value == 0xFFFFD700) return 'golden';
+    return 'blue'; // Default
+  }
+
   Future<void> _handleCreate() async {
     final text = _textController.text;
     if (text.isEmpty) return;
 
     print('🎨 [CREATOR] User requested: "$text"');
     print('🎨 [CREATOR] Item type: $_selectedItemType');
+    
+    // Test color mapping
+    EnhancedAIService.testColorMapping();
 
     // Show loading indicator
     if (!mounted) return;
@@ -72,11 +93,23 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
       print('🔍 [CREATOR] Primary color: ${aiResponse.primaryColor}');
       print('🔍 [CREATOR] Size: ${aiResponse.size}');
 
-      // Use toMap() method for proper conversion
-      _currentItem = aiResponse.toMap();
+      // Convert to map with proper field names for preview screen
+      _currentItem = {
+        // Field names expected by creature_preview_approval_screen.dart
+        'creatureType': aiResponse.baseType,  // Preview expects 'creatureType'
+        'color': _colorToString(aiResponse.primaryColor),  // Preview expects 'color' as string
+        'baseType': aiResponse.baseType,
+        'customName': aiResponse.customName,
+        'size': aiResponse.size.name,
+        'abilities': aiResponse.abilities.map((a) => a.name).toList(),
+        'accessories': aiResponse.accessories.map((a) => a.name).toList(),
+        'primaryColor': aiResponse.primaryColor.value,
+        'secondaryColor': aiResponse.secondaryColor.value,
+        'itemType': _selectedItemType.toString().split('.').last,
+      };
 
-      // Add item type for routing
-      _currentItem!['itemType'] = _selectedItemType.toString().split('.').last;
+      print('🔍 [CREATOR] Mapped creatureType: ${_currentItem!['creatureType']}');
+      print('🔍 [CREATOR] Mapped color: ${_currentItem!['color']}');
 
       // Close loading dialog
       if (mounted) Navigator.pop(context);
@@ -203,11 +236,10 @@ class _CreatorScreenSimpleState extends State<CreatorScreenSimple> {
         backgroundColor: MinecraftTheme.deepStone,
         foregroundColor: Colors.white,
       ),
-      body: Center(
-        child: Padding(
+      body: SafeArea(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Generic creation header
               Container(

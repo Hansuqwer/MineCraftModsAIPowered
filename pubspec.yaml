@@ -79,6 +79,8 @@ dependencies:
   cloud_firestore: ^5.4.3
   firebase_storage: ^12.3.2
   firebase_core: ^3.6.0
+  # Google Generative AI (Gemini/Imagen for 3D image generation)
+  google_generative_ai: ^0.4.0
 
 dev_dependencies:
   flutter_test:

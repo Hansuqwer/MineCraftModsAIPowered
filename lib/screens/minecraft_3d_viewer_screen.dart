@@ -10,6 +10,8 @@ import '../widgets/minecraft_3d_preview.dart';
 import '../widgets/simple_3d_preview.dart';
 import '../widgets/enhanced_minecraft_3d_preview.dart';
 import '../theme/minecraft_theme.dart';
+import '../services/firebase_image_service.dart';
+import 'dart:convert';
 
 /// Minecraft 3D Viewer Screen - Shows items exactly as they will look in Minecraft
 /// Includes AI suggestions with voice interaction for kids ages 3-5
@@ -56,6 +58,8 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
     _currentAttributes = widget.creatureAttributes;
     _currentName = widget.creatureName;
     _initializeAnimations();
+    // Don't block 3D viewer on voice/TTS init
+    _isLoading = false;
     _initializeServices();
   }
 
@@ -79,12 +83,9 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
   }
 
   Future<void> _initializeServices() async {
+    // Initialize in background; UI already shown
     await _speechService.initialize();
     await _ttsService.initialize();
-    
-    setState(() {
-      _isLoading = false;
-    });
 
     // Auto-generate first suggestion after a short delay
     Future.delayed(const Duration(seconds: 2), () {

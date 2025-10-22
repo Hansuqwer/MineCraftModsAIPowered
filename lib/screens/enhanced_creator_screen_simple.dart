@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import '../services/enhanced_voice_ai_service.dart';
 import '../services/voice_personality_service.dart';
 import '../services/educational_voice_service.dart';
@@ -33,6 +34,9 @@ class _EnhancedCreatorScreenSimpleState extends State<EnhancedCreatorScreenSimpl
   Conversation? _currentConversation;
   String _currentResponse = '';
   List<String> _achievements = [];
+  
+  // Debouncing for response updates
+  Timer? _responseDebounceTimer;
 
   @override
   void initState() {
@@ -59,12 +63,29 @@ class _EnhancedCreatorScreenSimpleState extends State<EnhancedCreatorScreenSimpl
       vsync: this,
     );
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
+      begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _slideController,
-      curve: Curves.easeOutBack,
+      curve: Curves.easeOutCubic,
     ));
+
+    // Start animations only once
+    _fadeController.forward();
+    _slideController.forward();
+    
+    // Stop animations after initial load to prevent flickering
+    _fadeController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _fadeController.stop();
+      }
+    });
+    
+    _slideController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _slideController.stop();
+      }
+    });
   }
 
   Future<void> _initializeServices() async {
@@ -87,23 +108,30 @@ class _EnhancedCreatorScreenSimpleState extends State<EnhancedCreatorScreenSimpl
 
   @override
   void dispose() {
+    _responseDebounceTimer?.cancel();
     _fadeController.dispose();
     _slideController.dispose();
     super.dispose();
   }
 
   void _onVoiceResponse(String response) {
-    setState(() {
-      _currentResponse = response;
+    // Cancel previous debounce timer
+    _responseDebounceTimer?.cancel();
+    
+    // Debounce response updates to prevent flickering
+    _responseDebounceTimer = Timer(const Duration(milliseconds: 100), () {
+      if (mounted) {
+        setState(() {
+          _currentResponse = response;
+          
+          // Award achievement for learning
+          final achievement = 'Had a conversation with Crafta!';
+          if (!_achievements.contains(achievement)) {
+            _achievements.add(achievement);
+          }
+        });
+      }
     });
-
-    // Award achievement for learning
-    final achievement = 'Had a conversation with Crafta!';
-    if (!_achievements.contains(achievement)) {
-      setState(() {
-        _achievements.add(achievement);
-      });
-    }
   }
 
   void _onVoiceError(String error) {
@@ -178,49 +206,38 @@ class _EnhancedCreatorScreenSimpleState extends State<EnhancedCreatorScreenSimpl
     return Scaffold(
       backgroundColor: KidFriendlyTheme.backgroundLight,
       body: SafeArea(
-        child: AnimatedBuilder(
-          animation: Listenable.merge([_fadeAnimation, _slideAnimation]),
-          builder: (context, child) {
-            return FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
+        child: Column(
+          children: [
+            // Header
+            _buildHeader(),
+            
+            // Main content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    // Header
-                    _buildHeader(),
+                    // Voice interaction widget - DISABLED: widget broken
+                    // ConversationalVoiceWidget(
+                    //   onResponse: _onVoiceResponse,
+                    //   onError: _onVoiceError,
+                    //   isEnabled: true,
+                    // ),
+
+                    const SizedBox(height: 32),
+
+                    // Response display - Optimized to prevent flickering
+                    _buildResponseArea(),
                     
-                    // Main content
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          children: [
-                            // Voice interaction widget - DISABLED: widget broken
-                            // ConversationalVoiceWidget(
-                            //   onResponse: _onVoiceResponse,
-                            //   onError: _onVoiceError,
-                            //   isEnabled: true,
-                            // ),
-
-                            const SizedBox(height: 32),
-
-                            // Response display
-                            _buildResponseArea(),
-                            
-                            const SizedBox(height: 32),
-                            
-                            // Achievements
-                            if (_achievements.isNotEmpty) _buildAchievements(),
-                          ],
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 32),
+                    
+                    // Achievements
+                    if (_achievements.isNotEmpty) _buildAchievements(),
                   ],
                 ),
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
@@ -309,24 +326,29 @@ class _EnhancedCreatorScreenSimpleState extends State<EnhancedCreatorScreenSimpl
           const SizedBox(height: 16),
           Expanded(
             child: Center(
-              child: _currentResponse.isNotEmpty
-                  ? Text(
-                      _currentResponse,
-                      style: TextStyle(
-                        fontSize: KidFriendlyTheme.bodyFontSize,
-                        color: KidFriendlyTheme.textDark,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: _currentResponse.isNotEmpty
+                    ? Text(
+                        _currentResponse,
+                        key: ValueKey(_currentResponse),
+                        style: TextStyle(
+                          fontSize: KidFriendlyTheme.bodyFontSize,
+                          color: KidFriendlyTheme.textDark,
+                        ),
+                        textAlign: TextAlign.center,
+                      )
+                    : Text(
+                        'Start talking to see Crafta\'s response!',
+                        key: const ValueKey('placeholder'),
+                        style: TextStyle(
+                          fontSize: KidFriendlyTheme.bodyFontSize,
+                          color: KidFriendlyTheme.textMedium,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    )
-                  : Text(
-                      'Start talking to see Crafta\'s response!',
-                      style: TextStyle(
-                        fontSize: KidFriendlyTheme.bodyFontSize,
-                        color: KidFriendlyTheme.textMedium,
-                        fontStyle: FontStyle.italic,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+              ),
             ),
           ),
         ],

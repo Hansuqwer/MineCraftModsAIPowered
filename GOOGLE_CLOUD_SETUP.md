@@ -24,19 +24,16 @@ Enable real 3D image generation using Vertex AI Imagen API with OAuth 2.0 authen
    - **Cloud Resource Manager API**
    - **Service Usage API**
 
-### 3. Create OAuth 2.0 Client ID
-1. Go to "APIs & Services" → "Credentials"
-2. Click "Create Credentials" → "OAuth 2.0 Client ID"
-3. If prompted, configure OAuth consent screen:
-   - User Type: External
-   - App name: "Crafta Minecraft AI"
-   - User support email: your email
-   - Developer contact: your email
-   - Add scopes: `https://www.googleapis.com/auth/cloud-platform`
-4. Application type: **Android**
-5. Name: "Crafta Android App"
-6. Package name: `com.crafta.minecraft.ai` (or your app's package)
-7. SHA-1 certificate fingerprint: Get from your keystore
+### 3. OAuth 2.0 Client ID (Already Created!)
+✅ **Your OAuth Client is already configured!**
+
+**Client Details:**
+- **Client ID:** `80309731075-j184cbi2pddojfo6vdioaipm13j0vqlt.apps.googleusercontent.com`
+- **Project ID:** `unified-ruler-475913-r5`
+- **Package name:** `com.example.crafta` (current app package)
+- **SHA-1 fingerprint:** `97:10:54:5D:AE:8A:68:13:BE:07:83:64:52:95:02:AC:FD:EB:E7:A2`
+
+**Note:** You may need to add the SHA-1 fingerprint to your existing OAuth client in Google Cloud Console.
 
 ### 4. Get SHA-1 Fingerprint
 Run this command to get your SHA-1 fingerprint:
@@ -48,12 +45,13 @@ keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -sto
 keytool -list -v -keystore /path/to/your/release.keystore -alias your-key-alias
 ```
 
-### 5. Update Environment Variables
-Edit `.env` file with your real values:
+### 5. Environment Variables (Already Updated!)
+✅ **Your .env file has been updated with real values:**
+
 ```env
 # Google Cloud Configuration
-GOOGLE_CLOUD_PROJECT_ID=your-real-project-id
-GOOGLE_CLOUD_CLIENT_ID=your-oauth-client-id.apps.googleusercontent.com
+GOOGLE_CLOUD_PROJECT_ID=unified-ruler-475913-r5
+GOOGLE_CLOUD_CLIENT_ID=80309731075-j184cbi2pddojfo6vdioaipm13j0vqlt.apps.googleusercontent.com
 
 # Keep existing keys
 OPENAI_API_KEY=sk-proj-placeholder-key-needs-real-key

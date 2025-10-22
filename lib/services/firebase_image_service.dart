@@ -257,13 +257,14 @@ Output: 512x512 PNG image with transparent or gradient background
 
   /// Check if Firebase image generation is available
   static bool isAvailable() {
-    return _isInitialized && _apiKey != null;
+    return _isInitialized && _projectId != null && _googleSignIn != null;
   }
 
   /// Get status message for debugging
   static String getStatus() {
     if (!_isInitialized) return 'Not initialized';
-    if (_apiKey == null) return 'API key is null';
-    return 'Ready';
+    if (_projectId == null) return 'Project ID is null';
+    if (_googleSignIn == null) return 'Google Sign-In not configured';
+    return 'Ready for OAuth authentication';
   }
 }

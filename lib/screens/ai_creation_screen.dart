@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/ai_content_generator.dart';
 import '../services/3d_model_generator.dart';
-// 3D preview removed - using cinematic preview instead
+import '../preview/crafta_cinematic_preview.dart';
+import '../ai/schema.dart';
+import '../services/minecraft_image_service.dart';
 import '../services/ai_minecraft_export_service.dart';
 import '../services/tts_service.dart';
 
@@ -310,31 +312,108 @@ class _AICreationScreenState extends State<AICreationScreen>
           ),
         ),
         const SizedBox(height: 12),
-        Container(
-          height: 300,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.image, size: 64, color: Colors.grey),
-                SizedBox(height: 16),
-                Text(
-                  '3D Preview Removed',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
-                Text(
-                  'Using Cinematic Preview Mode',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-              ],
-            ),
+        _buildCinematicPreview(),
+      ],
+    );
+  }
+
+  Widget _buildCinematicPreview() {
+    if (_currentBlueprint == null) {
+      return Container(
+        height: 300,
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.image, size: 64, color: Colors.grey),
+              SizedBox(height: 16),
+              Text(
+                'Generate a blueprint to see preview',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            ],
           ),
         ),
-      ],
+      );
+    }
+
+    // Convert ModelBlueprint to CreationSpec
+    final spec = CreationSpec(
+      object: _currentBlueprint!.object,
+      theme: _currentBlueprint!.theme,
+      colors: _currentBlueprint!.colorScheme,
+      size: _currentBlueprint!.size,
+      features: _currentBlueprint!.specialFeatures,
+    );
+
+    return GestureDetector(
+      onTap: () => _showFullScreenPreview(spec),
+      child: Container(
+        height: 300,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.blue, width: 2),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              // Placeholder for now - will be replaced with actual image
+              Container(
+                color: Colors.blue[50],
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.auto_awesome, size: 64, color: Colors.blue),
+                      SizedBox(height: 16),
+                      Text(
+                        'Cinematic Preview',
+                        style: TextStyle(fontSize: 18, color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'Tap to view full screen',
+                        style: TextStyle(fontSize: 14, color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    'Tap to expand',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showFullScreenPreview(CreationSpec spec) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CraftaCinematicPreview(
+          title: 'Your ${spec.theme} ${spec.object}',
+          image: const AssetImage('assets/images/default_placeholder.png'),
+        ),
+      ),
     );
   }
 

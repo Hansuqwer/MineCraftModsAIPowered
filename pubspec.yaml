@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^1.5.0
   flutter_tts: ^4.2.3
-  speech_to_text: ^6.6.0
+  speech_to_text: ^7.3.0
   archive: ^4.0.7
   path_provider: ^2.1.5
   provider: ^6.1.5+1
@@ -48,7 +48,7 @@ dependencies:
   # WebView for 3D previews with Babylon.js
   webview_flutter: ^4.4.2
   # File handling for 3D models
-  file_picker: ^8.0.0+1
+  file_picker: ^10.3.3
   # Environment variables
   flutter_dotenv: ^6.0.0
   # Secure storage
@@ -58,20 +58,20 @@ dependencies:
   # UUID generation for Minecraft manifests
   uuid: ^4.5.1
   # File sharing for exporting addons
-  share_plus: ^10.1.4
+  share_plus: ^12.0.1
   # Path manipulation (pinned by flutter_test)
   path: ^1.9.0
   # Image encoding for texture export
   image: ^4.3.0
   shared_preferences: ^2.5.3
   # Audio support for cinematic preview
-  audioplayers: ^5.2.1
+  audioplayers: ^6.4.0
   # Internationalization
   flutter_localizations:
     sdk: flutter
   intl: ^0.19.0
   # App updater
-  package_info_plus: ^8.0.0
+  package_info_plus: ^9.0.0
   url_launcher: ^6.3.1
   # Removed Firebase and Google Cloud dependencies
   # App now requires internet connection for OpenAI only

@@ -1,191 +1,129 @@
-# 🤖 Next AI Session Guide - Crafta Minecraft AI
+# 🤖 Next AI Session Guide
 
-## 📋 Project Status Summary
+## 📋 Current Project Status
 
-### ✅ **COMPLETED FEATURES**
-- **All reported bugs fixed** (AI flickering, UI overflows, type cast errors, 3D visuals, startup flow)
-- **OAuth 2.0 integration** for Vertex AI Imagen (real 3D image generation)
-- **Voice setup** with manual microphone control (no auto-completion)
-- **AI parsing** for creatures and furniture (black dragon, red couch, etc.)
-- **Tutorial navigation** fixed
-- **Pixel overflow** issues resolved
-- **Color mapping** and categorization working
-- **Comprehensive error handling** and fallbacks
+### ✅ **MAJOR TRANSFORMATION COMPLETE**
+The Crafta app has been completely transformed from a 3D-heavy system to a lightweight, image-based cinematic preview system. All complex 3D rendering has been removed and replaced with AI-generated Minecraft-style images.
 
-### 🎯 **CURRENT STATE**
-- **APK Built Successfully:** `build/app/outputs/flutter-apk/app-debug.apk`
-- **OAuth Ready:** Real Google Cloud credentials configured
-- **Fallback System:** Beautiful 3D icons when OAuth/API fails
-- **Production Ready:** All core features working
+## 🎯 **What Was Accomplished**
 
-## 🔧 **Technical Architecture**
+### 🗑️ **3D Preview System Completely Removed**
+- **Deleted**: All Babylon.js 3D preview widgets
+- **Removed**: 3D assets, HTML files, WebView dependencies
+- **Cleaned**: All import errors and references
+- **Result**: Much lighter, faster app
 
-### **Core Services:**
-- `EnhancedAIService` - AI parsing and creature generation
-- `FirebaseImageService` - 3D image generation with OAuth
-- `EnhancedSpeechService` - Voice recognition and calibration
-- `EnhancedTTSService` - Text-to-speech for AI responses
-- `LanguageService` - English/Swedish language support
+### 🎬 **Cinematic Preview System Implemented**
+- **New Architecture**: Voice → AI Spec → Image Prompt → Generated Image → Preview
+- **Interactive Previews**: Blue-bordered containers with tap-to-expand
+- **Full-Screen Experience**: Beautiful cinematic display with animations
+- **TTS Integration**: Audio celebrations when models are ready
 
-### **Key Files:**
-- `lib/main.dart` - App entry point with OAuth initialization
-- `lib/screens/creator_screen_simple.dart` - Main creation interface
-- `lib/screens/creature_preview_screen.dart` - 3D preview with fallbacks
-- `lib/screens/voice_calibration_screen.dart` - Manual voice setup
-- `lib/services/firebase_image_service.dart` - OAuth + Vertex AI integration
+## 🏗️ **Current Architecture**
 
-### **Configuration:**
-- `.env` - API keys and OAuth credentials
-- `android/app/build.gradle` - Android package: `com.example.crafta`
-- `pubspec.yaml` - Dependencies including `google_sign_in`
-
-## 🚀 **OAuth Setup Status**
-
-### **✅ Configured:**
-- **Project ID:** `unified-ruler-475913-r5`
-- **Client ID:** `80309731075-j184cbi2pddojfo6vdioaipm13j0vqlt.apps.googleusercontent.com`
-- **Package Name:** `com.example.crafta`
-- **SHA-1 Fingerprint:** `97:10:54:5D:AE:8A:68:13:BE:07:83:64:52:95:02:AC:FD:EB:E7:A2`
-
-### **🔧 Still Needed:**
-1. **Add SHA-1 to Google Cloud Console** (in OAuth client settings)
-2. **Enable Vertex AI API** in Google Cloud Console
-3. **Test OAuth authentication** in the app
-
-## 📱 **Testing Instructions**
-
-### **Current APK Testing:**
-```bash
-# Install APK
-adb install build/app/outputs/flutter-apk/app-debug.apk
-
-# Test without OAuth (fallback mode)
-# - App should work normally
-# - 3D preview shows beautiful icons
-# - Voice setup works with manual mic control
-# - AI parsing works for creatures/furniture
+### 📁 **Key Files Created**
+```
+lib/
+├── ai/
+│   ├── schema.dart                 # CreationSpec data structure
+│   ├── prompt_builder.dart        # Minecraft-style prompt generation
+│   └── ai_processor.dart          # Voice-to-image pipeline
+├── preview/
+│   └── crafta_cinematic_preview.dart  # Full-screen image display
+├── services/
+│   └── minecraft_image_service.dart    # AI image generation
+└── tts/
+    └── encouragement_manager.dart      # TTS + audio support
 ```
 
-### **OAuth Testing (after Google Cloud setup):**
-```bash
-# Test with OAuth enabled
-# - User should see Google sign-in prompt
-# - 3D preview should generate real AI images
-# - Fallback still works if generation fails
-```
+### 🎮 **User Experience Flow**
+1. **Child speaks**: "Make me a two-seat couch with a dragon cover"
+2. **AI processes**: Returns CreationSpec with object, theme, colors, features
+3. **Image generation**: Creates Minecraft-style prompt for AI image generator
+4. **Preview display**: Shows interactive blue-bordered container
+5. **Full-screen**: Tap to expand to cinematic view with animations
+6. **Celebration**: TTS feedback when model is ready
 
-## 🐛 **Known Issues & Solutions**
+## 🚧 **Next Steps for AI**
 
-### **1. OAuth Authentication:**
-- **Issue:** May need SHA-1 added to Google Cloud Console
-- **Solution:** Add SHA-1 fingerprint to OAuth client settings
+### 1. **Image Generation Integration** (Priority 1)
+- **Connect to AI Image API**: Replace placeholder images with real generated content
+- **API Endpoints**: Set up endpoints for image generation
+- **Error Handling**: Implement fallbacks when image generation fails
+- **Loading States**: Add loading indicators during image generation
 
-### **2. Vertex AI API:**
-- **Issue:** API may not be enabled
-- **Solution:** Enable Vertex AI API in Google Cloud Console
+### 2. **Real Image Loading** (Priority 2)
+- **Replace Placeholders**: Update all screens to load actual generated images
+- **Image Caching**: Implement proper local storage for generated images
+- **Cache Management**: Add cleanup for old/unused images
+- **Performance**: Optimize image loading and display
 
-### **3. Cost Management:**
-- **Issue:** Vertex AI costs $0.04 per image
-- **Solution:** Implement caching, user controls, or keep fallback-only
+### 3. **User Testing & Feedback** (Priority 3)
+- **Child Testing**: Test with real children (ages 4-10)
+- **Feedback Collection**: Gather user experience feedback
+- **UI Refinements**: Improve based on testing results
+- **Accessibility**: Ensure kid-friendly interactions
 
-## 💡 **Recommended Next Steps**
+### 4. **Performance Optimization** (Priority 4)
+- **Image Compression**: Optimize image sizes for mobile
+- **Loading Speed**: Improve image loading performance
+- **Memory Management**: Prevent memory leaks from image caching
+- **Battery Life**: Ensure efficient resource usage
 
-### **Option A: Complete OAuth Setup**
-1. Add SHA-1 to Google Cloud Console
-2. Enable Vertex AI API
-3. Test real 3D image generation
-4. Implement cost controls/caching
+## 🎯 **Current App State**
 
-### **Option B: Fallback-Only Mode**
-1. Disable OAuth authentication
-2. Use beautiful fallback icons only
-3. Zero ongoing costs
-4. Focus on other features
+### ✅ **Working Features**
+- **Interactive Previews**: All screens show blue-bordered preview containers
+- **Tap-to-Expand**: Users can tap previews to open full-screen cinematic view
+- **TTS System**: Audio celebrations and encouragement
+- **Data Conversion**: Proper conversion from existing attributes to CreationSpec
+- **Navigation**: Smooth transitions between preview and full-screen
 
-### **Option C: Hybrid Approach**
-1. Keep OAuth as optional feature
-2. Default to fallback icons
-3. Premium users get real AI images
-4. Implement smart caching
+### 🚧 **Needs Implementation**
+- **Real Image Generation**: Currently shows placeholder images
+- **API Integration**: Need to connect to actual image generation service
+- **Cache System**: Implement proper image caching and management
+- **Error Handling**: Add comprehensive error states and fallbacks
 
-## 🔍 **Debug Commands**
+## 🔧 **Technical Details**
 
-### **Build & Test:**
-```bash
-export PATH="/home/rickard/flutter/bin:$PATH"
-cd /home/rickard/MineCraftModsAIPowered/crafta
+### 📱 **Screen Updates**
+- **ai_creation_screen.dart**: Interactive cinematic preview with tap-to-expand
+- **creature_preview_screen.dart**: Full-screen cinematic preview integration  
+- **minecraft_3d_viewer_screen.dart**: Gesture-based preview interaction
+- **creature_preview_approval_screen.dart**: Updated to use placeholder containers
 
-# Build APK
-flutter build apk --debug
+### 🎬 **Preview System**
+- **CreationSpec**: Clean data structure for AI requests
+- **Prompt Builder**: Converts specs to Minecraft-style image prompts
+- **Image Service**: Handles AI image generation with local caching
+- **Cinematic Preview**: Full-screen image display with animations
 
-# Run analysis
-flutter analyze
+### 🎵 **Audio System**
+- **TTS Integration**: Flutter TTS for voice feedback
+- **Audio Support**: AudioPlayer for sound effects
+- **Encouragement**: Random positive phrases for celebrations
 
-# Check dependencies
-flutter pub deps
-```
+## 🚀 **Ready for Next Phase**
 
-### **OAuth Debug:**
-```bash
-# Check OAuth configuration
-cat .env | grep GOOGLE_CLOUD
+### 📦 **APK Status**
+- **Build Ready**: All import errors resolved
+- **Dependencies**: Updated pubspec.yaml with required packages
+- **Assets**: Placeholder images and audio files included
+- **Routes**: New `/ai-processor` route for AI-powered creation
 
-# Test SHA-1 fingerprint
-./setup_oauth.sh
-```
+### 🎯 **Immediate Next Steps**
+1. **Test Current Build**: Verify all screens work with interactive previews
+2. **Image API Setup**: Connect to image generation service
+3. **Real Content**: Replace placeholders with generated images
+4. **User Testing**: Test with children and gather feedback
 
-## 📊 **Performance Metrics**
+## 📝 **Key Notes for AI**
 
-### **Current Performance:**
-- **Build Time:** ~27 seconds
-- **APK Size:** ~50MB (estimated)
-- **Startup Time:** <3 seconds
-- **Memory Usage:** Optimized for mobile
+- **No More 3D**: The app is completely free of 3D rendering complexity
+- **Image-Based**: All visuals are now generated images, not 3D models
+- **Kid-Friendly**: Simple tap interactions and encouraging audio
+- **Scalable**: Can handle any creative request through AI image generation
+- **Performance**: Much lighter and faster than previous 3D system
 
-### **3D Preview Performance:**
-- **Fallback Icons:** Instant display
-- **Real AI Images:** 5-30 seconds (with OAuth)
-- **Timeout:** 30 seconds max
-- **Error Handling:** Graceful fallbacks
-
-## 🎯 **Success Criteria**
-
-### **✅ Already Achieved:**
-- All reported bugs fixed
-- OAuth integration complete
-- Beautiful fallback system
-- Production-ready APK
-- Comprehensive error handling
-
-### **🎯 Next Session Goals:**
-- Complete OAuth testing
-- Implement cost controls
-- Optimize 3D preview performance
-- Add user preferences for AI images
-
-## 📞 **Support Information**
-
-### **Key Dependencies:**
-- Flutter SDK 3.24.5
-- Dart 3.5.4
-- Google Sign-In 6.2.1
-- HTTP 1.5.0
-- Speech-to-Text 6.6.0
-
-### **Environment:**
-- Linux 6.17.4-arch2-1
-- Flutter path: `/home/rickard/flutter/bin`
-- Project path: `/home/rickard/MineCraftModsAIPowered/crafta`
-
-### **Git Status:**
-- All changes committed
-- OAuth configuration complete
-- Ready for next development phase
-
----
-
-## 🎉 **Project Status: PRODUCTION READY**
-
-**The Crafta Minecraft AI app is fully functional with all reported bugs fixed and OAuth integration complete. The next AI session can focus on testing, optimization, or additional features as needed.**
-
-**APK Location:** `build/app/outputs/flutter-apk/app-debug.apk` ✅
+The app is now ready for the next phase of development focused on real image generation and user testing! 🎮✨

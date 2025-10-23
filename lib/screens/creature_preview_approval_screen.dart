@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import '../widgets/babylon_3d_preview.dart';
+// 3D preview removed - using cinematic preview instead
 import '../services/tts_service.dart';
 import '../services/enhanced_ai_service.dart';
 import '../services/quick_minecraft_export_service.dart';

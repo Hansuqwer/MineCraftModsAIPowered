@@ -5,7 +5,7 @@ import '../widgets/kid_voice_button.dart';
 import '../widgets/kid_friendly_components.dart';
 import '../theme/kid_friendly_theme.dart';
 import '../models/enhanced_creature_attributes.dart';
-import '../widgets/simple_3d_preview.dart';
+// 3D preview removed - using cinematic preview instead
 
 /// 🎮 Kid-Friendly Screen
 /// Optimized for children ages 4-10 with enhanced voice interaction

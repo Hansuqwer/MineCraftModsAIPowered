@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/babylon_3d_preview_fixed.dart';
+import '../widgets/babylon_3d_preview_improved.dart';
 import '../services/tts_service.dart';
 import '../services/quick_minecraft_export_service.dart';
 import '../services/minecraft_launcher_service.dart';
@@ -548,8 +548,8 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: Babylon3DPreviewFixed(
-          creatureAttributes: widget.creatureAttributes,
+        child: Babylon3DPreviewImproved(
+          aiData: widget.creatureAttributes,
           height: 300,
         ),
       ),

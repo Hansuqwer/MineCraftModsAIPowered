@@ -104,6 +104,7 @@ flutter:
     - .env
     - assets/3d_preview/preview.html
     - assets/creators/
+    - assets/textures/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

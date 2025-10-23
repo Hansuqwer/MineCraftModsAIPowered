@@ -21,6 +21,7 @@ import 'screens/creature_sharing_screen.dart';
 import 'screens/dragon_couch_preview.dart';
 import 'screens/ai_setup_screen.dart';
 import 'screens/minecraft_3d_viewer_screen.dart';
+import 'screens/ai_creation_screen.dart';
 import 'screens/kid_friendly_screen.dart';
 import 'screens/voice_calibration_screen.dart';
 import 'screens/voice_settings_screen.dart';
@@ -166,6 +167,7 @@ class _CraftaAppState extends State<CraftaApp> {
             creatureName: args['creatureName'] as String,
           );
         },
+        '/ai-creation': (context) => const AICreationScreen(),
         '/kid-friendly': (context) => const KidFriendlyScreen(),
         '/voice-calibration': (context) => const VoiceCalibrationScreen(),
         '/voice-settings': (context) => const VoiceSettingsScreen(),

@@ -6,7 +6,7 @@ import '../services/tts_service.dart';
 import '../services/language_service.dart';
 import '../services/ai_minecraft_export_service.dart';
 import '../models/enhanced_creature_attributes.dart';
-import '../widgets/babylon_3d_preview.dart';
+import '../widgets/babylon_3d_preview_fixed.dart';
 import '../theme/minecraft_theme.dart';
 
 /// Minecraft 3D Viewer Screen - Shows items exactly as they will look in Minecraft
@@ -467,7 +467,7 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
                               ),
                             ),
                           )
-                        : Babylon3DPreview(
+                        : Babylon3DPreviewFixed(
                             creatureAttributes: _currentAttributes.toMap(),
                             height: 400,
                           ),

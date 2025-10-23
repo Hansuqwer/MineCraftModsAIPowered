@@ -4,216 +4,273 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Dragon Preview - Crafta</title>
+    <title>Black Dragon Preview - FIXED</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <style>
         html,
         body {
             margin: 0;
             overflow: hidden;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            font-family: Arial, sans-serif;
+            background: #161616;
         }
 
-        canvas {
-            width: 100%;
-            height: 100%;
+        #renderCanvas {
+            width: 100vw;
+            height: 100vh;
             touch-action: none;
+            display: block;
         }
 
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 18px;
-            z-index: 100;
+        #hud {
+            position: fixed;
+            left: 8px;
+            bottom: 8px;
+            right: 8px;
+            color: #eee;
+            font: 12px/1.4 system-ui, sans-serif;
+            pointer-events: none;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
-        .error {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        .err {
             color: #ff6b6b;
-            font-size: 16px;
-            text-align: center;
-            z-index: 100;
+        }
+
+        .success {
+            color: #4ade80;
+        }
+
+        .warning {
+            color: #fbbf24;
         }
     </style>
 </head>
 
 <body>
-    <div id="loading" class="loading">🐉 Loading Black Dragon...</div>
-    <div id="error" class="error" style="display: none;"></div>
     <canvas id="renderCanvas"></canvas>
-
+    <div id="hud"></div>
     <script>
-        console.log('🐉 [BLACK_DRAGON] Initializing preview...');
+        (async function () {
+            const log = (msg, cls = "") => {
+                const el = document.getElementById('hud');
+                el.innerHTML += `<div class="${cls}">${msg}</div>`;
+                console.log(`[HUD] ${msg}`);
+            };
 
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        const scene = new BABYLON.Scene(engine);
-        scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
-
-        // Camera setup for optimal viewing
-        const camera = new BABYLON.ArcRotateCamera("camera",
-            Math.PI / 2, Math.PI / 3, 8,
-            BABYLON.Vector3.Zero(), scene);
-        camera.attachControl(canvas, true);
-        camera.lowerRadiusLimit = 3;
-        camera.upperRadiusLimit = 15;
-        camera.wheelPrecision = 50;
-
-        // Enhanced lighting
-        const light = new BABYLON.HemisphericLight("light",
-            new BABYLON.Vector3(1, 1, 0), scene);
-        light.intensity = 0.8;
-
-        // Additional directional light for better shadows
-        const dirLight = new BABYLON.DirectionalLight("dirLight",
-            new BABYLON.Vector3(-1, -1, -1), scene);
-        dirLight.intensity = 0.5;
-
-        // Try to load the GLB model
-        console.log('🐉 [BLACK_DRAGON] Attempting to load GLB model...');
-
-        BABYLON.SceneLoader.ImportMeshAsync("", "./", "black_dragon.glb", scene)
-            .then(result => {
-                console.log('✅ [BLACK_DRAGON] GLB model loaded successfully');
-                console.log('   Meshes found:', result.meshes.length);
-
-                if (result.meshes.length > 0) {
-                    const dragon = result.meshes[0];
-                    dragon.scaling = new BABYLON.Vector3(1.4, 1.4, 1.4);
-
-                    // Create material with texture
-                    const mat = new BABYLON.StandardMaterial("dragonMat", scene);
-
-                    // Try to load texture
-                    try {
-                        mat.diffuseTexture = new BABYLON.Texture("./black_dragon.png", scene);
-                        console.log('✅ [BLACK_DRAGON] Texture loaded successfully');
-                    } catch (e) {
-                        console.log('⚠️ [BLACK_DRAGON] Texture failed, using solid color');
-                        mat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1); // Dark color
-                    }
-
-                    // Add glowing red eyes effect
-                    mat.emissiveColor = new BABYLON.Color3(0.2, 0, 0); // Slight red glow
-                    dragon.material = mat;
-
-                    // Hide loading
-                    document.getElementById('loading').style.display = 'none';
-
-                    console.log('🎉 [BLACK_DRAGON] Black Dragon preview ready!');
-                } else {
-                    throw new Error('No meshes found in GLB file');
-                }
-            })
-            .catch(error => {
-                console.log('❌ [BLACK_DRAGON] GLB loading failed:', error);
-                console.log('🔄 [BLACK_DRAGON] Falling back to procedural dragon...');
-
-                // Fallback: Create procedural dragon
-                createProceduralDragon(scene);
-                document.getElementById('loading').style.display = 'none';
+            // Enhanced error catching
+            window.addEventListener('error', e => {
+                log(`JS Error: ${e.message} at ${e.filename}:${e.lineno}`, 'err');
+            });
+            window.addEventListener('unhandledrejection', e => {
+                log(`Promise Error: ${e.reason}`, 'err');
             });
 
-        // Procedural dragon fallback
-        function createProceduralDragon(scene) {
-            console.log('🐉 [BLACK_DRAGON] Creating procedural dragon...');
+            const canvas = document.getElementById("renderCanvas");
+            const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+            const scene = new BABYLON.Scene(engine);
 
-            // Main body
-            const body = BABYLON.MeshBuilder.CreateBox("body", {
-                width: 2, height: 2, depth: 3
-            }, scene);
-            body.position.y = 1;
+            const camera = new BABYLON.ArcRotateCamera("cam",
+                Math.PI / 4, Math.PI / 3, 7, BABYLON.Vector3.Zero(), scene);
+            camera.wheelPrecision = 50;
+            camera.panningSensibility = 0;
+            camera.attachControl(canvas, true);
 
-            // Head
-            const head = BABYLON.MeshBuilder.CreateBox("head", {
-                width: 1.5, height: 1.5, depth: 1.5
-            }, scene);
-            head.position = new BABYLON.Vector3(0, 1.5, -1.5);
+            // Enhanced lighting for better visibility
+            const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0.5, 1, 0.2), scene);
+            hemi.intensity = 1.2; // Brighter ambient light
 
-            // Wings
-            const wingLeft = BABYLON.MeshBuilder.CreateBox("wingLeft", {
-                width: 3, height: 0.2, depth: 2
-            }, scene);
-            wingLeft.position = new BABYLON.Vector3(1.5, 1.5, 0);
-            wingLeft.rotation.z = Math.PI / 6;
+            const dir = new BABYLON.DirectionalLight("dir", new BABYLON.Vector3(-1, -2, -1), scene);
+            dir.position = new BABYLON.Vector3(5, 10, 5);
+            dir.intensity = 0.8; // Stronger directional light
 
-            const wingRight = BABYLON.MeshBuilder.CreateBox("wingRight", {
-                width: 3, height: 0.2, depth: 2
-            }, scene);
-            wingRight.position = new BABYLON.Vector3(-1.5, 1.5, 0);
-            wingRight.rotation.z = -Math.PI / 6;
+            // Additional point light for better visibility
+            const pointLight = new BABYLON.PointLight("point", new BABYLON.Vector3(0, 5, 0), scene);
+            pointLight.intensity = 0.6;
 
-            // Tail
-            const tail = BABYLON.MeshBuilder.CreateBox("tail", {
-                width: 1, height: 1, depth: 2
-            }, scene);
-            tail.position = new BABYLON.Vector3(0, 0.5, 2);
+            log("🎨 Creating detailed dragon model...");
 
-            // Legs
-            const leg1 = BABYLON.MeshBuilder.CreateBox("leg1", {
-                width: 0.5, height: 1, depth: 0.5
-            }, scene);
-            leg1.position = new BABYLON.Vector3(0.5, 0, -1);
+            // Create a detailed dragon model procedurally since GLB loading fails
+            function createDetailedDragon(scene) {
+                log("🐉 Building dragon components...");
 
-            const leg2 = BABYLON.MeshBuilder.CreateBox("leg2", {
-                width: 0.5, height: 1, depth: 0.5
-            }, scene);
-            leg2.position = new BABYLON.Vector3(-0.5, 0, -1);
+                // Main body (larger, more dragon-like)
+                const body = BABYLON.MeshBuilder.CreateBox("body", {
+                    width: 2.5, height: 2.5, depth: 4
+                }, scene);
+                body.position.y = 1.2;
 
-            const leg3 = BABYLON.MeshBuilder.CreateBox("leg3", {
-                width: 0.5, height: 1, depth: 0.5
-            }, scene);
-            leg3.position = new BABYLON.Vector3(0.5, 0, 1);
+                // Dragon head (more detailed with snout)
+                const head = BABYLON.MeshBuilder.CreateBox("head", {
+                    width: 2, height: 2, depth: 2
+                }, scene);
+                head.position.y = 2.5;
+                head.position.z = -2;
 
-            const leg4 = BABYLON.MeshBuilder.CreateBox("leg4", {
-                width: 0.5, height: 1, depth: 0.5
-            }, scene);
-            leg4.position = new BABYLON.Vector3(-0.5, 0, 1);
+                // Dragon snout (extended nose)
+                const snout = BABYLON.MeshBuilder.CreateBox("snout", {
+                    width: 1, height: 0.8, depth: 1.2
+                }, scene);
+                snout.position.y = 2.5;
+                snout.position.z = -2.8;
 
-            // Eyes (glowing red)
-            const eyeLeft = BABYLON.MeshBuilder.CreateSphere("eyeLeft", {
-                diameter: 0.2
-            }, scene);
-            eyeLeft.position = new BABYLON.Vector3(-0.5, 1.5, -2);
+                // Dragon horns (small pointed horns on head)
+                const leftHorn = BABYLON.MeshBuilder.CreateBox("leftHorn", {
+                    width: 0.2, height: 0.4, depth: 0.2
+                }, scene);
+                leftHorn.position.x = -0.4;
+                leftHorn.position.y = 2.6;
+                leftHorn.position.z = -1.2;
 
-            const eyeRight = BABYLON.MeshBuilder.CreateSphere("eyeRight", {
-                diameter: 0.2
-            }, scene);
-            eyeRight.position = new BABYLON.Vector3(0.5, 1.5, -2);
+                const rightHorn = BABYLON.MeshBuilder.CreateBox("rightHorn", {
+                    width: 0.2, height: 0.4, depth: 0.2
+                }, scene);
+                rightHorn.position.x = 0.4;
+                rightHorn.position.y = 2.6;
+                rightHorn.position.z = -1.2;
 
-            // Create materials
-            const dragonMat = new BABYLON.StandardMaterial("dragonMat", scene);
-            dragonMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1); // Dark color
+                // Dragon wings (larger, more imposing)
+                const leftWing = BABYLON.MeshBuilder.CreateBox("leftWing", {
+                    width: 4, height: 0.3, depth: 3
+                }, scene);
+                leftWing.position.x = -2;
+                leftWing.position.y = 2.5;
+                leftWing.position.z = 0;
 
-            const eyeMat = new BABYLON.StandardMaterial("eyeMat", scene);
-            eyeMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-            eyeMat.emissiveColor = new BABYLON.Color3(1, 0, 0); // Glowing red
+                const rightWing = BABYLON.MeshBuilder.CreateBox("rightWing", {
+                    width: 4, height: 0.3, depth: 3
+                }, scene);
+                rightWing.position.x = 2;
+                rightWing.position.y = 2.5;
+                rightWing.position.z = 0;
 
-            // Apply materials
-            [body, head, wingLeft, wingRight, tail, leg1, leg2, leg3, leg4].forEach(mesh => {
-                mesh.material = dragonMat;
-            });
+                // Dragon tail (segmented, longer)
+                const tail1 = BABYLON.MeshBuilder.CreateBox("tail1", {
+                    width: 1, height: 1, depth: 1.5
+                }, scene);
+                tail1.position.y = 1.5;
+                tail1.position.z = 2.5;
 
-            eyeLeft.material = eyeMat;
-            eyeRight.material = eyeMat;
+                const tail2 = BABYLON.MeshBuilder.CreateBox("tail2", {
+                    width: 0.8, height: 0.8, depth: 1.2
+                }, scene);
+                tail2.position.y = 1.3;
+                tail2.position.z = 3.8;
 
-            console.log('✅ [BLACK_DRAGON] Procedural dragon created');
-        }
+                const tail3 = BABYLON.MeshBuilder.CreateBox("tail3", {
+                    width: 0.6, height: 0.6, depth: 1
+                }, scene);
+                tail3.position.y = 1.1;
+                tail3.position.z = 4.8;
 
-        // Start render loop
-        engine.runRenderLoop(() => scene.render());
+                // Dragon legs (four legs for stability)
+                const leg1 = BABYLON.MeshBuilder.CreateBox("leg1", {
+                    width: 0.5, height: 1.5, depth: 0.5
+                }, scene);
+                leg1.position.x = -0.7;
+                leg1.position.y = 0.25;
+                leg1.position.z = -1;
 
-        // Handle resize
-        window.addEventListener("resize", () => engine.resize());
+                const leg2 = BABYLON.MeshBuilder.CreateBox("leg2", {
+                    width: 0.5, height: 1.5, depth: 0.5
+                }, scene);
+                leg2.position.x = 0.7;
+                leg2.position.y = 0.25;
+                leg2.position.z = -1;
 
-        console.log('🎉 [BLACK_DRAGON] Preview initialized successfully');
+                const leg3 = BABYLON.MeshBuilder.CreateBox("leg3", {
+                    width: 0.5, height: 1.5, depth: 0.5
+                }, scene);
+                leg3.position.x = -0.7;
+                leg3.position.y = 0.25;
+                leg3.position.z = 1;
+
+                const leg4 = BABYLON.MeshBuilder.CreateBox("leg4", {
+                    width: 0.5, height: 1.5, depth: 0.5
+                }, scene);
+                leg4.position.x = 0.7;
+                leg4.position.y = 0.25;
+                leg4.position.z = 1;
+
+                // Glowing red eyes (smaller, more intense)
+                const leftEye = BABYLON.MeshBuilder.CreateBox("leftEye", {
+                    width: 0.15, height: 0.15, depth: 0.15
+                }, scene);
+                leftEye.position.x = -0.3;
+                leftEye.position.y = 2.2;
+                leftEye.position.z = -2.2;
+
+                const rightEye = BABYLON.MeshBuilder.CreateBox("rightEye", {
+                    width: 0.15, height: 0.15, depth: 0.15
+                }, scene);
+                rightEye.position.x = 0.3;
+                rightEye.position.y = 2.2;
+                rightEye.position.z = -2.2;
+
+                // Dragon material (red dragon with better visibility)
+                const dragonMat = new BABYLON.StandardMaterial("dragonMat", scene);
+                dragonMat.diffuseColor = new BABYLON.Color3(0.8, 0.2, 0.2); // Bright red
+                dragonMat.specularColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+                dragonMat.emissiveColor = new BABYLON.Color3(0.1, 0.05, 0.05); // Slight red glow
+                dragonMat.metallicFactor = 0.1;
+                dragonMat.roughnessFactor = 0.3;
+
+                // Green scale material for accents
+                const scaleMat = new BABYLON.StandardMaterial("scaleMat", scene);
+                scaleMat.diffuseColor = new BABYLON.Color3(0, 0.8, 0); // Bright green
+                scaleMat.specularColor = new BABYLON.Color3(0.2, 0.8, 0.2);
+                scaleMat.metallicFactor = 0.4;
+                scaleMat.roughnessFactor = 0.6;
+
+                // Eye material (intensely glowing red)
+                const eyeMat = new BABYLON.StandardMaterial("eyeMat", scene);
+                eyeMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                eyeMat.emissiveColor = new BABYLON.Color3(1, 0, 0); // Very bright red glow
+
+                // Apply materials
+                body.material = dragonMat;
+                head.material = dragonMat;
+                snout.material = dragonMat;
+                leftHorn.material = dragonMat;
+                rightHorn.material = dragonMat;
+                leftWing.material = dragonMat;
+                rightWing.material = dragonMat;
+                tail1.material = dragonMat;
+                tail2.material = scaleMat; // Green scales on tail
+                tail3.material = scaleMat; // Green scales on tail tip
+                leg1.material = dragonMat;
+                leg2.material = dragonMat;
+                leg3.material = dragonMat;
+                leg4.material = dragonMat;
+                leftEye.material = eyeMat;
+                rightEye.material = eyeMat;
+
+                // Merge all parts into one dragon
+                const dragon = BABYLON.Mesh.MergeMeshes([
+                    body, head, snout, leftHorn, rightHorn,
+                    leftWing, rightWing, tail1, tail2, tail3,
+                    leg1, leg2, leg3, leg4, leftEye, rightEye
+                ], true, true);
+                dragon.name = "dragon";
+
+                // Add rotation animation
+                scene.registerBeforeRender(() => {
+                    dragon.rotation.y += 0.01;
+                });
+
+                log("✅ Detailed dragon created successfully!", 'success');
+                return dragon;
+            }
+
+            // Create the detailed dragon
+            const dragon = createDetailedDragon(scene);
+
+            engine.runRenderLoop(() => scene.render());
+            window.addEventListener("resize", () => engine.resize());
+
+            log("🎬 Render loop started");
+        })();
     </script>
 </body>
 

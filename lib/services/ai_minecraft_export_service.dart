@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/material.dart';
 import '../models/enhanced_creature_attributes.dart';
 import 'ai_animation_service.dart';
 
@@ -384,5 +385,80 @@ class AIMinecraftExportService {
   Future<bool> exportExists(String itemName) async {
     final exportPath = await getExportPath(itemName);
     return await File(exportPath).exists();
+  }
+
+  /// Export creature from blueprint map
+  Future<String> exportCreature(Map<String, dynamic> blueprintMap, String creatureName) async {
+    // Convert blueprint to EnhancedCreatureAttributes
+    final attributes = EnhancedCreatureAttributes(
+      baseType: blueprintMap['object'] ?? 'creature',
+      primaryColor: _getColorFromString(blueprintMap['colorScheme']?[0] ?? 'blue'),
+      secondaryColor: _getColorFromString(blueprintMap['colorScheme']?[1] ?? 'blue'),
+      accentColor: _getColorFromString(blueprintMap['colorScheme']?[2] ?? 'blue'),
+      size: _getSizeFromString(blueprintMap['size'] ?? 'medium'),
+      abilities: _getAbilitiesFromList(blueprintMap['specialFeatures'] ?? []),
+      accessories: [],
+      personality: PersonalityType.friendly,
+      patterns: [],
+      texture: TextureType.smooth,
+      glowEffect: GlowEffect.none,
+      animationStyle: CreatureAnimationStyle.natural,
+      customName: creatureName,
+      description: blueprintMap['description'] ?? 'AI-generated creation',
+    );
+
+    final success = await exportAICreatedItem(
+      itemAttributes: attributes,
+      itemName: creatureName,
+    );
+
+    if (success) {
+      return await getExportPath(creatureName);
+    } else {
+      throw Exception('Failed to export creature');
+    }
+  }
+
+  // BaseType is now a string, so we just return it
+  String _getBaseTypeFromString(String type) {
+    return type.toLowerCase();
+  }
+
+  Color _getColorFromString(String color) {
+    switch (color.toLowerCase()) {
+      case 'red': return Colors.red;
+      case 'blue': return Colors.blue;
+      case 'green': return Colors.green;
+      case 'yellow': return Colors.yellow;
+      case 'purple': return Colors.purple;
+      case 'orange': return Colors.orange;
+      case 'black': return Colors.black;
+      case 'white': return Colors.white;
+      case 'gold': return Colors.amber;
+      case 'silver': return Colors.grey;
+      default: return Colors.blue;
+    }
+  }
+
+  CreatureSize _getSizeFromString(String size) {
+    switch (size.toLowerCase()) {
+      case 'small': return CreatureSize.small;
+      case 'large': return CreatureSize.large;
+      case 'giant': return CreatureSize.giant;
+      default: return CreatureSize.medium;
+    }
+  }
+
+  List<SpecialAbility> _getAbilitiesFromList(List<dynamic> features) {
+    final abilities = <SpecialAbility>[];
+    for (final feature in features) {
+      switch (feature.toString().toLowerCase()) {
+        case 'glowing': abilities.add(SpecialAbility.magic);
+        case 'flying': abilities.add(SpecialAbility.flying);
+        case 'magical': abilities.add(SpecialAbility.magic);
+        default: break;
+      }
+    }
+    return abilities;
   }
 }

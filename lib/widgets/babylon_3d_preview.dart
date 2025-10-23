@@ -42,29 +42,49 @@ class _Babylon3DPreviewState extends State<Babylon3DPreview> {
   }
 
   Future<void> _checkNetworkAndInitialize() async {
-    try {
-      // Check network connectivity - app requires internet
-      final result = await InternetAddress.lookup('cdn.babylonjs.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        _initializeWebView();
-      } else {
-        setState(() {
-          _hasNetworkError = true;
-          _isLoading = false;
-        });
-        throw Exception('Internet connection required for 3D previews. Please check your connection.');
-      }
-    } catch (e) {
-      setState(() {
-        _hasNetworkError = true;
-        _isLoading = false;
-      });
-      throw Exception('Internet connection required for 3D previews. Please check your connection.');
-    }
+    // Initialize WebView directly - no network check needed
+    _initializeWebView();
   }
 
   void _initializeWebView() async {
     print('🎨 [BABYLON] Initializing 3D preview...');
+
+    // Add timeout to prevent hanging forever
+    Future.delayed(const Duration(seconds: 8), () {
+      if (mounted && _isLoading) {
+        print('⏱️ [BABYLON] Loading timeout - dismissing loading indicator');
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
+
+    // Extract attributes
+    print('🔍 [BABYLON] Received creatureAttributes: ${widget.creatureAttributes}');
+    final type = widget.creatureAttributes['creatureType'] ??
+                 widget.creatureAttributes['baseType'] ??
+                 'cube';
+    final color = widget.creatureAttributes['color'] ?? 'blue';
+    final size = widget.creatureAttributes['size'] ?? 'medium';
+    print('🔍 [BABYLON] Extracted - type: $type, color: $color, size: $size');
+
+    // Detect glow
+    String glow = 'none';
+    final customName = (widget.creatureAttributes['customName'] ?? '').toLowerCase();
+    if (customName.contains('glow')) {
+      glow = 'bright';
+    } else if (customName.contains('shimmer') || customName.contains('sparkle')) {
+      glow = 'soft';
+    }
+
+    print('🔍 [BABYLON] Type: $type, Color: $color, Size: $size, Glow: $glow');
+
+    // Use embedded HTML with dynamic attributes
+    _initializeWebViewWithHTML();
+  }
+
+  void _initializeWebViewWithHTML() async {
+    print('🎨 [BABYLON] Initializing 3D preview with embedded HTML...');
 
     // Add timeout to prevent hanging forever
     Future.delayed(const Duration(seconds: 8), () {
@@ -119,7 +139,40 @@ class _Babylon3DPreviewState extends State<Babylon3DPreview> {
             touch-action: none;
         }
     </style>
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/babylon.js" onerror="loadFallbackBabylon()"></script>
+    <script>
+        function loadFallbackBabylon() {
+            console.log('⚠️ [BABYLON] Primary CDN failed, trying fallback...');
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/babylonjs/6.0.0/babylon.js';
+            script.onerror = function() {
+                console.log('❌ [BABYLON] All CDNs failed, using offline mode');
+                createOfflinePreview();
+            };
+            script.onload = function() {
+                console.log('✅ [BABYLON] Fallback CDN loaded successfully');
+                initializeBabylon();
+            };
+            document.head.appendChild(script);
+        }
+        
+        function createOfflinePreview() {
+            console.log('🔄 [BABYLON] Creating offline preview...');
+            const canvas = document.getElementById("renderCanvas");
+            const ctx = canvas.getContext("2d");
+            
+            // Create a simple 2D preview
+            ctx.fillStyle = "#1a1a2e";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "#ff6b6b";
+            ctx.font = "24px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("🐉 " + itemType.toUpperCase(), canvas.width/2, canvas.height/2 - 20);
+            ctx.fillText(itemColor.toUpperCase() + " COLOR", canvas.width/2, canvas.height/2 + 20);
+            ctx.fillText("3D Preview Offline", canvas.width/2, canvas.height/2 + 50);
+        }
+    </script>
 </head>
 <body>
     <canvas id="renderCanvas"></canvas>
@@ -137,9 +190,11 @@ class _Babylon3DPreviewState extends State<Babylon3DPreview> {
         console.log('   itemSize:', itemSize);
         console.log('   Type contains dragon:', itemType.toLowerCase().includes('dragon'));
 
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        const scene = new BABYLON.Scene(engine);
+        function initializeBabylon() {
+            console.log('🎨 [BABYLON] Initializing Babylon.js...');
+            const canvas = document.getElementById("renderCanvas");
+            const engine = new BABYLON.Engine(canvas, true);
+            const scene = new BABYLON.Scene(engine);
         scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 
         // Camera (arc rotate for touch/mouse rotation)
@@ -293,43 +348,15 @@ class _Babylon3DPreviewState extends State<Babylon3DPreview> {
             });
         }
 
-        // Load actual dragon model from file (preferred method)
+        // Create detailed dragon model (enhanced procedural)
         function loadDragonModel(scene, colorName, glow, scale) {
-            console.log('🐉 [BABYLON] Loading dragon model from file');
+            console.log('🐉 [BABYLON] Creating detailed dragon model');
             console.log('   - Color:', colorName);
             console.log('   - Glow:', glow);
             console.log('   - Scale:', scale);
             
-            // Try to load from local assets first
-            const modelUrl = `./assets/3d_preview/black_dragon/black_dragon.glb`;
-            
-            BABYLON.SceneLoader.ImportMeshAsync("", modelUrl, "", scene).then((result) => {
-                if (result.meshes.length > 0) {
-                    const dragon = result.meshes[0];
-                    dragon.scaling = new BABYLON.Vector3(scale, scale, scale);
-                    
-                    // Apply color
-                    const color = getColor(colorName);
-                    const mat = new BABYLON.StandardMaterial("dragonMat", scene);
-                    mat.diffuseColor = color;
-                    
-                    // Apply glow effect
-                    if (glow === 'bright' || glow === 'soft') {
-                        mat.emissiveColor = color.scale(0.3);
-                    }
-                    
-                    dragon.material = mat;
-                    
-                    console.log('✅ [BABYLON] Dragon model loaded successfully');
-                } else {
-                    console.log('⚠️ [BABYLON] No meshes found, falling back to procedural dragon');
-                    createDragon(scene, colorName, glow, scale);
-                }
-            }).catch((error) => {
-                console.log('❌ [BABYLON] Failed to load dragon model:', error);
-                console.log('🔄 [BABYLON] Falling back to procedural dragon');
-                createDragon(scene, colorName, glow, scale);
-            });
+            // Use the enhanced procedural dragon
+            createDragon(scene, colorName, glow, scale);
         }
 
         // Create realistic dragon (Minecraft-style blocky dragon with green scales)
@@ -343,29 +370,29 @@ class _Babylon3DPreviewState extends State<Babylon3DPreview> {
 
             // Main body (larger, more dragon-like)
             const body = BABYLON.MeshBuilder.CreateBox("body", {
-                width: 2 * scale,
-                height: 2 * scale,
-                depth: 3 * scale
+                width: 2.5 * scale,
+                height: 2.5 * scale,
+                depth: 4 * scale
             }, scene);
-            body.position.y = 1 * scale;
+            body.position.y = 1.2 * scale;
 
             // Dragon head (more detailed with snout)
             const head = BABYLON.MeshBuilder.CreateBox("head", {
-                width: 1.5 * scale,
-                height: 1.5 * scale,
-                depth: 1.5 * scale
+                width: 2 * scale,
+                height: 2 * scale,
+                depth: 2 * scale
             }, scene);
-            head.position.y = 2 * scale;
-            head.position.z = -1.5 * scale;
+            head.position.y = 2.5 * scale;
+            head.position.z = -2 * scale;
 
             // Dragon snout (extended nose)
             const snout = BABYLON.MeshBuilder.CreateBox("snout", {
-                width: 0.8 * scale,
-                height: 0.6 * scale,
-                depth: 0.8 * scale
+                width: 1 * scale,
+                height: 0.8 * scale,
+                depth: 1.2 * scale
             }, scene);
-            snout.position.y = 2 * scale;
-            snout.position.z = -2.2 * scale;
+            snout.position.y = 2.5 * scale;
+            snout.position.z = -2.8 * scale;
 
             // Dragon horns (small pointed horns on head)
             const leftHorn = BABYLON.MeshBuilder.CreateBox("leftHorn", {
@@ -388,21 +415,21 @@ class _Babylon3DPreviewState extends State<Babylon3DPreview> {
 
             // Dragon wings (larger, more imposing)
             const leftWing = BABYLON.MeshBuilder.CreateBox("leftWing", {
-                width: 3 * scale,
-                height: 0.2 * scale,
-                depth: 2 * scale
+                width: 4 * scale,
+                height: 0.3 * scale,
+                depth: 3 * scale
             }, scene);
-            leftWing.position.x = -1.5 * scale;
-            leftWing.position.y = 2 * scale;
+            leftWing.position.x = -2 * scale;
+            leftWing.position.y = 2.5 * scale;
             leftWing.position.z = 0 * scale;
 
             const rightWing = BABYLON.MeshBuilder.CreateBox("rightWing", {
-                width: 3 * scale,
-                height: 0.2 * scale,
-                depth: 2 * scale
+                width: 4 * scale,
+                height: 0.3 * scale,
+                depth: 3 * scale
             }, scene);
-            rightWing.position.x = 1.5 * scale;
-            rightWing.position.y = 2 * scale;
+            rightWing.position.x = 2 * scale;
+            rightWing.position.y = 2.5 * scale;
             rightWing.position.z = 0 * scale;
 
             // Dragon tail (segmented, longer)
@@ -649,7 +676,24 @@ class _Babylon3DPreviewState extends State<Babylon3DPreview> {
             engine.resize();
         });
 
-        console.log("✅ 3D preview ready:", itemType, itemColor, itemGlow, itemSize);
+            console.log("✅ 3D preview ready:", itemType, itemColor, itemGlow, itemSize);
+        }
+
+        // Initialize Babylon.js when loaded
+        if (typeof BABYLON !== 'undefined') {
+            console.log('✅ [BABYLON] Babylon.js already loaded, initializing...');
+            initializeBabylon();
+        } else {
+            console.log('⏳ [BABYLON] Waiting for Babylon.js to load...');
+            window.addEventListener('load', function() {
+                if (typeof BABYLON !== 'undefined') {
+                    initializeBabylon();
+                } else {
+                    console.log('❌ [BABYLON] Babylon.js failed to load, using offline mode');
+                    createOfflinePreview();
+                }
+            });
+        }
     </script>
 </body>
 </html>

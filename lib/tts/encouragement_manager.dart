@@ -1,62 +1,40 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class EncouragementManager {
-  static final EncouragementManager _instance = EncouragementManager._internal();
-  factory EncouragementManager() => _instance;
-  EncouragementManager._internal();
+  static final EncouragementManager _i = EncouragementManager._();
+  factory EncouragementManager() => _i;
+  EncouragementManager._();
 
-  final FlutterTts _flutterTts = FlutterTts();
-  bool _isInitialized = false;
+  final _tts = FlutterTts();
+  final _player = AudioPlayer();
+  final _rand = Random();
+
+  final _phrases = const [
+    "That looks awesome!",
+    "Wow, you're so creative!",
+    "Great choice!",
+    "Your imagination is amazing!",
+    "Fantastic work!",
+  ];
 
   Future<void> init() async {
-    if (_isInitialized) return;
-    
-    try {
-      await _flutterTts.setLanguage("en-US");
-      await _flutterTts.setSpeechRate(0.5);
-      await _flutterTts.setVolume(1.0);
-      await _flutterTts.setPitch(1.0);
-      _isInitialized = true;
-    } catch (e) {
-      debugPrint('EncouragementManager initialization failed: $e');
-    }
+    await _tts.setLanguage("en-US");
+    await _tts.setSpeechRate(0.8);
+    await _tts.setPitch(1.1);
+    await _tts.setVolume(0.9);
   }
 
   Future<void> celebrate() async {
-    if (!_isInitialized) {
-      await init();
-    }
-
-    // Play encouraging TTS
-    final encouragingPhrases = [
-      "Amazing! Your dragon is ready!",
-      "Wow! Look at that beautiful creature!",
-      "Fantastic! You created something incredible!",
-      "Excellent work! Your creation is awesome!",
-      "Incredible! That's a magnificent dragon!",
-    ];
-
-    final randomPhrase = encouragingPhrases[
-      DateTime.now().millisecondsSinceEpoch % encouragingPhrases.length
-    ];
-
     try {
-      await _flutterTts.speak(randomPhrase);
+      // optional: add a short bell at assets/sounds/sparkle.mp3 and include in pubspec
+      // await _player.play(AssetSource('sounds/sparkle.mp3'));
+      await _tts.stop();
+      await _tts.speak(_phrases[_rand.nextInt(_phrases.length)]);
     } catch (e) {
-      debugPrint('TTS failed: $e');
-    }
-  }
-
-  Future<void> speak(String text) async {
-    if (!_isInitialized) {
-      await init();
-    }
-
-    try {
-      await _flutterTts.speak(text);
-    } catch (e) {
-      debugPrint('TTS failed: $e');
+      debugPrint('Encouragement error: $e');
     }
   }
 }

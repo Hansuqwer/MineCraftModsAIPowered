@@ -1,9 +1,0 @@
-# This is a placeholder for the black_dragon.glb file
-# In a real implementation, this would be a binary GLB file
-# containing the 3D mesh data for the black dragon
-# 
-# To create a real GLB file, you would:
-# 1. Use Blender, Blockbench, or similar 3D software
-# 2. Create a Minecraft-style dragon model
-# 3. Export as GLB format
-# 4. Replace this placeholder file

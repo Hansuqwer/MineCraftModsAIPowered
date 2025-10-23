@@ -1,0 +1,6 @@
+# Default Placeholder Image
+# This directory should contain a default_placeholder.png file
+# The image should be a simple Minecraft-style placeholder
+# Dimensions: 512x512 pixels
+# Style: Pixel art, Minecraft aesthetic
+# Content: Simple block or "?" symbol

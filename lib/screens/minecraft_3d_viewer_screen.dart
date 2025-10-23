@@ -6,7 +6,7 @@ import '../services/tts_service.dart';
 import '../services/language_service.dart';
 import '../services/ai_minecraft_export_service.dart';
 import '../models/enhanced_creature_attributes.dart';
-import '../widgets/babylon_3d_preview_improved.dart';
+// 3D preview removed - using cinematic preview instead
 import '../theme/minecraft_theme.dart';
 
 /// Minecraft 3D Viewer Screen - Shows items exactly as they will look in Minecraft
@@ -467,9 +467,29 @@ class _Minecraft3DViewerScreenState extends State<Minecraft3DViewerScreen>
                               ),
                             ),
                           )
-        : Babylon3DPreviewImproved(
-            aiData: _currentAttributes.toMap(),
+        : Container(
             height: 400,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.image, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text(
+                    '3D Preview Removed',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                  Text(
+                    'Using Cinematic Preview Mode',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
           ),
                   ),
                 ),

@@ -315,9 +315,29 @@ class _CreaturePreviewApprovalScreenState
       builder: (context, child) {
         return Transform.scale(
           scale: 1.0 + (_sparkleAnimation.value * 0.05),
-          child: Babylon3DPreview(
-            creatureAttributes: widget.creatureAttributes,
+          child: Container(
             height: 350,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.image, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text(
+                    '3D Preview Removed',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                  Text(
+                    'Using Cinematic Preview Mode',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       },

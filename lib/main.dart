@@ -22,6 +22,7 @@ import 'screens/dragon_couch_preview.dart';
 import 'screens/ai_setup_screen.dart';
 import 'screens/minecraft_3d_viewer_screen.dart';
 import 'screens/ai_creation_screen.dart';
+import 'ai/ai_processor.dart';
 import 'screens/kid_friendly_screen.dart';
 import 'screens/voice_calibration_screen.dart';
 import 'screens/voice_settings_screen.dart';
@@ -168,6 +169,7 @@ class _CraftaAppState extends State<CraftaApp> {
           );
         },
         '/ai-creation': (context) => const AICreationScreen(),
+        '/ai-processor': (context) => const AiProcessor(),
         '/kid-friendly': (context) => const KidFriendlyScreen(),
         '/voice-calibration': (context) => const VoiceCalibrationScreen(),
         '/voice-settings': (context) => const VoiceSettingsScreen(),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/babylon_3d_preview_improved.dart';
+// 3D preview removed - using cinematic preview instead
 import '../services/tts_service.dart';
 import '../services/quick_minecraft_export_service.dart';
 import '../services/minecraft_launcher_service.dart';
@@ -548,9 +548,29 @@ class _CreaturePreviewScreenState extends State<CreaturePreviewScreen>
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: Babylon3DPreviewImproved(
-          aiData: widget.creatureAttributes,
+        child: Container(
           height: 300,
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.image, size: 64, color: Colors.grey),
+                SizedBox(height: 16),
+                Text(
+                  '3D Preview Removed',
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+                Text(
+                  'Using Cinematic Preview Mode',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
